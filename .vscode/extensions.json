@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "krainboltgreene.all-builtin-commands",
+    "ms-vscode.atom-keybindings",
+    "jakebecker.elixir-ls",
+    "benvp.vscode-hex-pm-intellisense",
+    "phoenixframework.phoenix",
+    "ms-vsliveshare.vsliveshare",
+    "esbenp.prettier-vscode",
+    "jamilabreu.vscode-phoenix-snippets",
+    "ecmel.vscode-html-css",
+    "mechatroner.rainbow-csv",
+    "mtxr.sqltools-driver-pg",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

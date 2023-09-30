@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix={" · #{Application.get_env(:core, :application_name)}"}>
+      <%= assigns[:page_title] || Application.get_env(:core, :application_name) %>
+    </.live_title>
+
+    <link phx-track-static rel="stylesheet" href={~p"/assets/application.css"} />
+
+    <script src="https://kit.fontawesome.com/d6430f0d36.js" crossorigin="anonymous">
+    </script>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/application.js"}>
+    </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <section class="container-fluid">
+        <.link href={~p"/"} class="navbar-dark-500">
+          <%= Application.get_env(:core, :application_name) %>
+        </.link>
+      </section>
+    </nav>
+
+    <section style="display: flex; width: 800px; flex-direction: column; align-items: center; margin-top: 50px; margin-left: auto; margin-right: auto;">
+      <h1>404 - Not Found</h1>
+      <picture style="border: 5px solid var(--contrast-color)">
+        <img src={~p"/images/404.png"} alt="Not Found" width="512px" height="512px" />
+      </picture>
+    </section>
+  </body>
+</html>

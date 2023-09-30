@@ -1,0 +1,34 @@
+{
+    "name": "project",
+    "version": "1.0.0",
+    "description": "",
+    "private": true,
+    "main": "js/application.js",
+    "directories": {
+      "doc": "docs",
+      "lib": "js",
+      "test": "../test"
+    },
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/krainboltgreene/project.git"
+    },
+    "author": "Kurtis Rainbolt-Greene <kurtis@rainbolt-greene.online>",
+    "license": "SEE LICENSE IN LICENSE",
+    "bugs": {
+      "url": "https://github.com/krainboltgreene/project/issues"
+    },
+    "homepage": "https://github.com/krainboltgreene/project#readme",
+    "dependencies": {
+      "lit": "^2.7.5",
+      "topbar": "^2.0.1",
+      "phoenix": "file:../deps/phoenix",
+      "phoenix_html": "file:../deps/phoenix_html",
+      "phoenix-custom-event-hook": "^0.0.6",
+      "phoenix_live_view": "file:../deps/phoenix_live_view"
+    }
+  }
+  

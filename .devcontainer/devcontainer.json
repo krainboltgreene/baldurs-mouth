@@ -1,0 +1,54 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+  "name": "project",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "application",
+  "workspaceFolder": "/workspace/project",
+  "userEnvProbe": "loginInteractiveShell",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.automationShell.linux": "zsh"
+      },
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"github.codespaces",
+				"ms-azuretools.vscode-docker",
+				"benvp.vscode-hex-pm-intellisense",
+				"ecmel.vscode-html-css",
+				"esbenp.prettier-vscode",
+				"jakebecker.elixir-ls",
+				"ms-vsliveshare.vsliveshare",
+				"mtxr.sqltools-driver-pg",
+				"phoenixframework.phoenix",
+				"github.vscode-github-actions"
+			]
+		}
+	},
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // This can be used to network with other containers or with the host.
+  "forwardPorts": [4000, 4001, 5432],
+  "containerEnv": {
+      "PATH": "/usr/src/elixir/bin/:$PATH"
+  },
+  // A command string or list of command arguments to run on the host machine before the container is created.
+  // "initializeCommand": "bash initialize.sh",
+  // Finalizes container setup when a dev container is created. It and subsequent commands execute inside the container immediately after it has started for the first time.
+  // "onCreateCommand": "bash on-create.sh",
+  // It executes inside the container after onCreateCommand whenever new content is available in the source tree during the creation process.
+  // "updateContentCommand": "bash update-content.sh",
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": ".devcontainer/post-create.sh",
+  // A command to run each time the container is successfully started.
+  "postStartCommand": ".devcontainer/post-start.sh",
+  // A command to run each time a tool has successfully attached to the container.
+  // "postAttachCommand": "",
+
+  // Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "vscode"
+}

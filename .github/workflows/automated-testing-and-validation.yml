@@ -1,0 +1,166 @@
+name: Automated Testing & Validation
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+    paths:
+      - assets/**
+      - config/**
+      - lib/**
+      - priv/**
+      - test/**
+      - mix.*
+      - .formatter.exs
+      - .tool-versions
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - assets/**
+      - config/**
+      - lib/**
+      - priv/**
+      - test/**
+      - mix.*
+      - .formatter.exs
+      - .tool-versions
+  release:
+    types:
+      - created
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15.1
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-test-deps-${{ hashFiles('**/mix.lock') }}
+      - run: mix local.rebar --force
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix deps.compile
+        env:
+          MIX_ENV: test
+      - run: mix compile
+        env:
+          MIX_ENV: test
+      - run: mix test
+  audit:
+    needs: [dialyzer]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-deps-${{ hashFiles('**/mix.lock') }}
+      - run: mix local.rebar --force
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix hex.audit
+  format:
+    needs: [dialyzer]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-deps-${{ hashFiles('**/mix.lock') }}
+      - run: mix local.rebar --force
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix deps.compile
+      - run: mix format --check-formatted
+  credo:
+    needs: [dialyzer]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-deps-${{ hashFiles('**/mix.lock') }}
+      - run: mix local.rebar --force
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix deps.compile
+      - run: mix compile
+      - run: mix credo --ignore-checks Credo.Check.Design
+  dialyzer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-deps-${{ hashFiles('**/mix.lock') }}
+      - uses: actions/cache@v3
+        id: plt_cache
+        with:
+          path: |
+            priv/plts
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt-${{ hashFiles('**/mix.lock') }}
+      - run: mix local.rebar --force
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix deps.compile
+      - run: mix dialyzer --plt
+        if: steps.plt_cache.outputs.cache-hit != 'true'
+      - run: mix dialyzer --format github --no-check

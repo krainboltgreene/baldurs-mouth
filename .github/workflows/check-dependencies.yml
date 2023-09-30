@@ -1,0 +1,66 @@
+name: Check Dependencies
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-deps-${{ hashFiles('**/mix.lock') }}
+      - run: mix deps.get
+  outdated:
+    needs: [install]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-deps-${{ hashFiles('**/mix.lock') }}
+      - run: mix hex.outdated
+  unused-locks:
+    needs: [install]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+          key: ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-deps-${{ hashFiles('**/mix.lock') }}
+      - run: mix deps.unlock --check-unused
