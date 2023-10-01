@@ -95,7 +95,6 @@ defmodule CoreWeb.ContentComponents do
   Renders the site header
   """
   attr :current_account, Core.Users.Account, default: nil
-  attr :namespace, :string, required: true
 
   def site_header(assigns) do
     ~H"""
@@ -104,7 +103,7 @@ defmodule CoreWeb.ContentComponents do
         <div class="flex h-16 justify-between">
           <div class="flex">
             <div class="flex flex-shrink-0 items-center">
-              <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Baldur's Mouth</h1>
+              <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900"><%= Application.get_env(:core, :application_name) %></h1>
             </div>
           </div>
 
@@ -114,23 +113,6 @@ defmodule CoreWeb.ContentComponents do
             <.site_header_link :if={!@current_account} navigate={~p"/accounts/register"}>Register</.site_header_link>
             <.site_header_link :if={!@current_account} navigate={~p"/accounts/log_in"}>Log in</.site_header_link>
           </div>
-        </div>
-      </div>
-      <div class="mx-auto px-4">
-        <div class="flex flex-wrap h-16">
-          <.site_header_link :if={Core.Users.has_permission?(@current_account, "global", "administrator")} navigate={~p"/admin"}>
-            <%= if @namespace == "admin" do %>
-              Dashboard
-            <% else %>
-              Admin
-            <% end %>
-          </.site_header_link>
-          <.site_header_link :for={{path, name} <- admin_links()} :if={@current_account && @namespace == "admin"} navigate={path}>
-            <%= name %>
-          </.site_header_link>
-          <.site_header_link :if={@current_account && @namespace == "admin"} navigate={~p"/admin/phoenix"}>
-            Phoenix
-          </.site_header_link>
         </div>
       </div>
     </nav>
@@ -174,15 +156,6 @@ defmodule CoreWeb.ContentComponents do
               <li class="mb-4">
                 <.link navigate={~p"/"} class="text-light-500 font-medium hover:underline">Home</.link>
               </li>
-              <li class="mb-4">
-                <.link navigate={~p"/pricing"} class="text-light-500 font-medium hover:underline">Pricing</.link>
-              </li>
-              <li class="mb-4">
-                <.link navigate={~p"/faq"} class="text-light-500 font-medium hover:underline">FAQ</.link>
-              </li>
-              <li class="mb-4">
-                <.link navigate={~p"/about_us"} class="text-light-500 font-medium hover:underline">About Us</.link>
-              </li>
             </ul>
           </div>
           <div>
@@ -214,15 +187,4 @@ defmodule CoreWeb.ContentComponents do
     </footer>
     """
   end
-
-  # def table(assigns) do
-  #   ~H"""
-  #   """
-  # end
-  defp admin_links(),
-    do: [
-      {~p"/admin/accounts", "Accounts"},
-      {~p"/admin/organizations", "Organizations"},
-      {~p"/admin/jobs", "Jobs"}
-    ]
 end

@@ -29,20 +29,5 @@
         <img src={~p"/images/500.png"} alt="Not Found" width="512px" height="512px" />
       </picture>
     </section>
-
-    <%= case Sentry.get_last_event_id_and_source() do
-      {event_id, :plug} when is_binary(event_id) ->
-        ~H"""
-        <script src="https://browser.sentry-cdn.com/5.9.1/bundle.min.js" integrity="sha384-/x1aHz0nKRd6zVUazsV6CbQvjJvr6zQL2CHbQZf3yoLkezyEtZUpqUNnOLW9Nt3v" crossorigin="anonymous">
-        </script>
-        <script>
-          Sentry.init({ dsn: '#{Sentry.Config.dsn()}' });
-          Sentry.showReportDialog(#{raw(Jason.encode!(%{eventId: event_id}))})
-        </script>
-        """
-
-      _ ->
-        ""
-    end %>
   </body>
 </html>

@@ -47,12 +47,6 @@ if Mix.env() == :dev do
 
     {:ok, _} = Core.Repo.insert(account_token)
     {:ok, _} = Core.Users.confirm_account(encoded_token)
-
-    {:ok, organization} =
-      Core.Users.join_organization_by_slug(krainboltgreene, "global", "administrator")
-
-    {:ok, _organization} =
-      Core.Users.join_organization_by_slug(josephryan, "global", "administrator")
   end)
 end
 

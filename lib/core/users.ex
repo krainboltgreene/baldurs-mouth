@@ -7,8 +7,6 @@ defmodule Core.Users do
   require Logger
 
   use Scaffolding.Read, [Core.Users.Account, :accounts, :account]
-  use Scaffolding, [Core.Users.Organization, :organizations, :organization]
-  use Scaffolding, [Core.Users.Permission, :permissions, :permission]
 
   def can_read?(_record, %Core.Users.Account{} = _current_account) do
     false
@@ -91,10 +89,8 @@ defmodule Core.Users do
     with {:ok, account} <-
            %Core.Users.Account{}
            |> Core.Users.Account.registration_changeset(attrs)
-           |> Core.Repo.insert(),
-         {:ok, organization} <- create_organization(%{name: "#{account.username}'s Crew"}),
-         {:ok, _} <- join_organization(account, organization, "administrator") do
-      {:ok, account |> Core.Repo.reload() |> Core.Repo.preload(:organizations)}
+           |> Core.Repo.insert() do
+      {:ok, account |> Core.Repo.reload()}
     else
       {:error, _} = error -> error
     end
@@ -348,75 +344,5 @@ defmodule Core.Users do
       {:ok, %{account: account}} -> {:ok, account}
       {:error, :account, changeset, _} -> {:error, changeset}
     end
-  end
-
-  @spec join_organization(Core.Users.Account.t(), Core.Users.Organization.t(), String.t()) ::
-          {:ok, Core.Users.Organization.t()}
-          | {:error, :not_found | Ecto.Changeset.t(Core.Users.OrganizationPermission.t())}
-  def join_organization(account, organization, permission_slug) do
-    with permission when is_struct(permission, Core.Users.Permission) <-
-           Core.Repo.get_by(Core.Users.Permission, %{slug: permission_slug}),
-         {:ok, organization_membership} <-
-           Core.Users.create_organization_membership(%{
-             organization: organization,
-             account: account
-           }),
-         {:ok, _} <-
-           Core.Users.create_organization_permission(%{
-             organization_membership: organization_membership,
-             permission: permission
-           }) do
-      {:ok, organization}
-    else
-      nil -> {:error, {Core.Users.Permission, :not_found}}
-      error -> error
-    end
-  end
-
-  @spec join_organization_by_slug(Core.Users.Account.t(), String.t()) ::
-          {:ok, Core.Users.Organization.t()}
-          | {:error, :not_found | Ecto.Changeset.t(Core.Users.OrganizationPermission.t())}
-  def join_organization_by_slug(account, organization_slug) do
-    join_organization_by_slug(account, organization_slug, "default")
-  end
-
-  @spec join_organization_by_slug(Core.Users.Account.t(), String.t(), String.t()) ::
-          {:ok, Core.Users.Organization.t()}
-          | {:error, :not_found | Ecto.Changeset.t(Core.Users.OrganizationPermission.t())}
-  def join_organization_by_slug(account, organization_slug, permission_slug) do
-    join_organization(
-      account,
-      Core.Repo.get_by(Core.Users.Organization, %{slug: organization_slug}),
-      permission_slug
-    )
-  end
-
-  @spec has_permission?(Core.Users.Account.t() | nil, String.t(), String.t()) :: boolean()
-  def has_permission?(nil, _, _), do: false
-
-  def has_permission?(account, organization_slug, permission_slug) do
-    from(
-      organization_permission in Core.Users.OrganizationPermission,
-      join: account in assoc(organization_permission, :account),
-      join: permission in assoc(organization_permission, :permission),
-      join: organization in assoc(organization_permission, :organization),
-      where:
-        permission.slug == ^permission_slug and
-          organization.slug == ^organization_slug and
-          account.id == ^account.id
-    )
-    |> Core.Repo.exists?()
-  end
-
-  def create_organization_membership(attributes) do
-    %Core.Users.OrganizationMembership{}
-    |> Core.Users.OrganizationMembership.changeset(attributes)
-    |> Core.Repo.insert()
-  end
-
-  def create_organization_permission(attributes) do
-    %Core.Users.OrganizationPermission{}
-    |> Core.Users.OrganizationPermission.changeset(attributes)
-    |> Core.Repo.insert()
   end
 end

@@ -57,8 +57,6 @@ defmodule CoreWeb do
       use Phoenix.LiveView,
         layout: {CoreWeb.Layouts, unquote(layout)}
 
-      on_mount({CoreWeb.Live, :tenancy})
-
       unquote(html_helpers())
     end
   end

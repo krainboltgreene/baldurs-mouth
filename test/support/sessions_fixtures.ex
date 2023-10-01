@@ -22,19 +22,9 @@ defmodule Core.SessionsFixtures do
   """
   def register_and_log_in_account(context) do
     context
-    |> Core.UsersFixtures.with_global_organization()
-    |> Core.UsersFixtures.with_default_permission()
     |> Map.put(:account, Core.UsersFixtures.account_fixture())
     |> then(fn context ->
       Map.put(context, :conn, log_in_account(context.conn, context.account))
-    end)
-  end
-
-  def make_account_an_administrator(%{account: account} = context) do
-    context
-    |> Core.UsersFixtures.with_administrator_permission()
-    |> tap(fn _ ->
-      {:ok, _} = Core.Users.join_organization_by_slug(account, "global", "administrator")
     end)
   end
 

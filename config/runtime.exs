@@ -21,10 +21,6 @@ if System.get_env("PHX_SERVER") && System.get_env("RELEASE_NAME") do
 end
 
 if config_env() == :prod do
-  # Configure Sentry, the service we use to alert us to issues in the application
-  config :sentry,
-    dsn: System.get_env("SENTRY_DSN")
-
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
@@ -121,9 +117,4 @@ if config_env() == :prod do
     client_id: System.get_env("TWITCH_CLIENT_ID"),
     client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
     redirect_uri: System.get_env("TWITCH_REDIRECT_URI")
-
-  config :core,
-    coreweave_secret: System.get_env("COREWEAVE_SECRET") || "none",
-    loki_credentials: System.get_env("LOKI_CREDENTIALS") || "none",
-    genie_sentry_dsn: System.get_env("GENIE_SENTRY_DSN") || "none"
 end

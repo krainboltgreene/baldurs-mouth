@@ -40,14 +40,6 @@ config :ueberauth, Ueberauth,
     twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email"]}
   ]
 
-# Configure papertrail to use the right repository
-config :paper_trail,
-  repo: Core.Repo,
-  item_type: Ecto.UUID,
-  originator: [name: :accounts, model: Core.Users.Account],
-  originator_type: Ecto.UUID,
-  originator_relationship_options: [references: :uuid]
-
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
@@ -90,16 +82,6 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
-
-# Configure Sentry, the service we use to alert us to issues in the application
-config :sentry,
-  environment_name: Mix.env(),
-  included_environments: [:prod]
-
-config :core, Oban,
-  repo: Core.Repo,
-  plugins: [Oban.Plugins.Lifeline, Oban.Plugins.Reindexer],
-  queues: [default: 15]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

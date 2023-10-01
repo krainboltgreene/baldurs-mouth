@@ -17,19 +17,10 @@ defmodule Core.Application do
       # Start Finch
       {
         Finch,
-        name: Core.Finch,
-        pools: %{
-          "https://k8s.ord1.coreweave.com" => [
-            conn_opts: [
-              transport_opts: [verify: :verify_none]
-            ]
-          ]
-        }
+        name: Core.Finch
       },
       # Start the Endpoint (http/https)
       CoreWeb.Endpoint,
-      # Start the background job processor
-      {Oban, Application.fetch_env!(:core, Oban)},
       # Start the Presence tracker
       CoreWeb.Channels.Presence
 
@@ -49,20 +40,6 @@ defmodule Core.Application do
       {[:core, :repo, :query], :queue_time, description: ~s("Ecto Query Queue Time")},
       {[:core, :repo, :query], :idle_time, description: ~s("Ecto Query Idle Time")}
     ])
-
-    # Setup oban to log to stdout
-    :ok = Oban.Telemetry.attach_default_logger(Application.get_env(:oban, :log_level, :debug))
-
-    # This clearly isn't working
-    :ok =
-      :telemetry.attach(
-        "oban-errors",
-        [:oban, :job, :exception],
-        &Utilities.ErrorReporting.handle_event/4,
-        []
-      )
-
-    Logger.add_backend(Sentry.LoggerBackend)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -27,24 +27,6 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
     token = Core.Users.generate_account_session_token(account)
     account_return_to = get_session(conn, :account_return_to)
 
-    Sentry.Context.set_user_context(%{
-      id: account.id,
-      username: account.email_address,
-      organizations:
-        account
-        |> Core.Repo.preload(
-          organization_memberships: [[organization_permissions: [:permission]], :organization]
-        )
-        |> Map.get(:organization_memberships)
-        |> Enum.map(fn %{
-                         organization: %{name: organization_name},
-                         organization_permissions: organization_permissions
-                       } ->
-          "#{organization_name} (#{organization_permissions |> Enum.map(fn %{permission: %{name: name}} -> name end) |> Utilities.List.to_sentence()})"
-        end)
-        |> Utilities.List.to_sentence()
-    })
-
     conn
     |> renew_session()
     |> put_token_in_session(token)
@@ -93,8 +75,6 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
     if live_socket_id = get_session(conn, :live_socket_id) do
       CoreWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
     end
-
-    Sentry.Context.set_user_context(%{})
 
     conn
     |> renew_session()

@@ -21,16 +21,7 @@ config :swoosh, local: false
 
 # Do not print debug messages in production
 config :logger,
-  level: :info,
-  backends: [:console, Sentry.LoggerBackend]
-
-config :oban, log_level: :warning
-
-config :sentry,
-  environment_name: :prod,
-  enable_source_code_context: true,
-  root_source_code_paths: [File.cwd!()],
-  included_environments: [:prod]
+  level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.

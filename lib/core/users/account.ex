@@ -28,9 +28,6 @@ defmodule Core.Users.Account do
     field(:confirmed_at, :naive_datetime)
     embeds_one(:settings, Core.Users.Settings)
     embeds_one(:profile, Core.Users.Profile)
-    has_many(:organization_memberships, Core.Users.OrganizationMembership)
-
-    has_many(:organizations, through: [:organization_memberships, :organization])
 
     timestamps()
   end
@@ -42,13 +39,11 @@ defmodule Core.Users.Account do
           password: String.t() | nil,
           hashed_password: String.t() | nil,
           settings: Core.Users.Settings.t() | nil,
-          profile: Core.Users.Profile.t() | nil,
-          organizations: list(Core.Users.Organization.t() | nil) | nil
+          profile: Core.Users.Profile.t() | nil
         }
 
   def oauth_changeset(record, attributes) do
     record
-    |> Core.Repo.preload(:organizations)
     |> Ecto.Changeset.cast(attributes, [
       :provider,
       :provider_id,
@@ -96,7 +91,6 @@ defmodule Core.Users.Account do
   """
   def registration_changeset(record, attributes, opts \\ []) do
     record
-    |> Core.Repo.preload(:organizations)
     |> Ecto.Changeset.change(with_autousername(attributes))
     |> Ecto.Changeset.cast(attributes, [
       :email_address,

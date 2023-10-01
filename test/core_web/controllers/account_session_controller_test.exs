@@ -43,7 +43,7 @@ defmodule CoreWeb.AccountSessionControllerTest do
       assert redirected_to(conn) == ~p"/"
     end
 
-    # TODO: Implement this feature at some point
+    # Implement this feature at some point
     test "logs the account in with return to", %{conn: conn, account: account} do
       conn =
         conn
