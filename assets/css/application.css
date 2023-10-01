@@ -2,14 +2,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* This file is for your main application CSS */
-:root {
-    --strong-color: #7A200D;
-    --light-color: #FDF1DC;
-    --contrast-color: #a12810;
-    --highlight-color: #E69A28;
-}
-
 pre {
     white-space: pre-wrap;
 }
