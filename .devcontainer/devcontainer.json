@@ -1,9 +1,9 @@
 // For format details, see https://aka.ms/devcontainer.json.
 {
-  "name": "project",
+  "name": "baldurs-mouth",
   "dockerComposeFile": "docker-compose.yml",
   "service": "application",
-  "workspaceFolder": "/workspace/project",
+  "workspaceFolder": "/workspace/baldurs-mouth",
   "userEnvProbe": "loginInteractiveShell",
 
 	// Configure tool-specific properties.
