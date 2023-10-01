@@ -23,7 +23,7 @@ if Mix.env() == :dev do
     {:ok, krainboltgreene} =
       Core.Users.register_account(%{
         name: "Kurtis Rainbolt-Greene",
-        email_address: "kurtis@project.com",
+        email_address: "kurtis@baldurs-mouth.com",
         username: "krainboltgreene",
         password: "passwordpassword"
       })
@@ -37,7 +37,7 @@ if Mix.env() == :dev do
     {:ok, josephryan} =
       Core.Users.register_account(%{
         name: "Joseph Ryan",
-        email_address: "joseph.j.a.ryan@project.com",
+        email_address: "joseph.j.a.ryan@baldurs-mouth.com",
         username: "josephryan",
         password: "passwordpassword"
       })

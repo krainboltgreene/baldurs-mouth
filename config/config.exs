@@ -10,8 +10,8 @@ import Config
 config :core,
   ecto_repos: [Core.Repo],
   generators: [binary_id: true],
-  application_name: "Phoenix Project",
-  support_email_address: "support@project.com",
+  application_name: "Baldur's Mouth",
+  support_email_address: "support@baldurs-mouth.com",
   theme_color: "#ffffff",
   description:
     "",

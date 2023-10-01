@@ -14,14 +14,14 @@
     },
     "repository": {
       "type": "git",
-      "url": "git+https://github.com/krainboltgreene/project.git"
+      "url": "git+https://github.com/krainboltgreene/baldurs-mouth.git"
     },
     "author": "Kurtis Rainbolt-Greene <kurtis@rainbolt-greene.online>",
     "license": "SEE LICENSE IN LICENSE",
     "bugs": {
-      "url": "https://github.com/krainboltgreene/project/issues"
+      "url": "https://github.com/krainboltgreene/baldurs-mouth/issues"
     },
-    "homepage": "https://github.com/krainboltgreene/project#readme",
+    "homepage": "https://github.com/krainboltgreene/baldurs-mouth#readme",
     "dependencies": {
       "lit": "^2.7.5",
       "topbar": "^2.0.1",
@@ -31,4 +31,3 @@
       "phoenix_live_view": "file:../deps/phoenix_live_view"
     }
   }
-  

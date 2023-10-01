@@ -104,7 +104,7 @@ defmodule CoreWeb.ContentComponents do
         <div class="flex h-16 justify-between">
           <div class="flex">
             <div class="flex flex-shrink-0 items-center">
-              <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Phoenix Project</h1>
+              <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Baldur's Mouth</h1>
             </div>
           </div>
 

@@ -11,7 +11,7 @@ defmodule Utilities.Ecto.Query do
 
   Would return:
 
-      [["kurtis@project.com", "Kurtis Rainbolt-Greene"], ["james@project.com", "James Ryan"]]
+      [["kurtis@baldurs-mouth.com", "Kurtis Rainbolt-Greene"], ["james@baldurs-mouth.com", "James Ryan"]]
   """
   @spec pluck(atom | Ecto.Query.t(), atom | list(atom)) :: list(any)
   def pluck(model_or_query, field)

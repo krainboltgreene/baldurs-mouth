@@ -2,8 +2,8 @@ import Config
 
 config :core,
   signing_salt: "JKEx/AEF",
-  domain: "www.project.com",
-  base_url: "https://www.project.com/",
+  domain: "www.baldurs-mouth.com",
+  base_url: "https://www.baldurs-mouth.com/",
   production: true
 
 # Note we also include the path to a cache manifest
