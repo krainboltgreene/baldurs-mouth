@@ -63,6 +63,14 @@ Example:
 - Lines are either done or not done.
 
 
+## Design
+
+- Characters have one race, many levels.
+- Levels have one class.
+- Interactions have many lines, has and belongs to many characters, has many events
+- Lines have one body.
+
+
 ## Setup
 
 To start a new project simply open the terminal and type `mix new . --module {{module name}}` replacing `{{module name}}
