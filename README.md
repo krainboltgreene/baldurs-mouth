@@ -1,19 +1,8 @@
-# elixir-codespace
+# Baldur's Mouth
 
-Rules:
+This is an engine designed to mimic the Baldur's Gate 3 dialog system with some improvements that I think would help the flow.
 
-- All interactions have a series of lines.
-- An interaction is between one-or-more characters.
-- Interactions happen zero-or-more times.
-- Lines happen zero-or-more times.
-- Replies are by a single character, with the character being picked at random from those that apply and/or have the highest of the skill.
-- Interactions with only one reply will simply skip to that reply.
-- Lines can have zero or many pre-emptive required conditions.
-- Replies may have zero or many required conditions.
-- Replies may have zero or many optional conditions.
-- Dice Challenges are split into unknown and known, where known challenges can have actions that change the roll.
-- If the person who wins the unknown challenge is an NPC then they whisper the information in a follow up (???)
-- A reply is either either linked to a subject or a dialog.
+In the below example shows a scenario where 4 adventures (Sarah the tiefling fey warlock college of lore bard, James the orc battlemaster fighter, Phika the gloomstalker ranger assassin rogue, and Willup the enchanter wizard) stumble into a tavern late at night.
 
 Example:
 
@@ -36,13 +25,13 @@ Example:
 
     User selects #1. The character randomly selected is James.
 
-> James: Yes, we'd like one room please.
+> James: "Yes, we'd like one room please."
 
 > Gus, the Tavern Keep: "Sure, that will be 10 gold."
 
-1. `<require gold=10 />` That'll take everything we have, but yes we'd like to take the room.
-2. `<require gold=10..-1 />` We can afford that.
-3. `<require gold=0..9 />` We don't have enough for that, so I guess nevermind.
+1. `<require gold=10 />` "That'll take everything we have, but yes we'd like to take the room."
+2. `<require gold=10..-1 />` "We can afford that."
+3. `<require gold=0..9 />` "We don't have enough for that, so I guess nevermind."
 4. `<optional skill=persuasion dc=12>` "It's one room for four people!"
 5. `<require language=spycode> <require tag=tavern_keeper_known_guild_member />` "We'd like to see where the fox sleeps."
 
@@ -56,6 +45,22 @@ Example:
 > Narrator: The tavern keep looks particularly annoyed, but also very tired.
 
 > Gus, the Tavern Keep: "Alright fine I'll go down to 5 gold, but breakfast isn't free and you better clean up your room after!
+
+## Rules
+
+- All interactions have a series of lines.
+- An interaction is between one-or-more characters.
+- Interactions happen zero-or-more times.
+- Lines happen zero-or-more times.
+- Replies are by a single character, with the character being picked at random from those that apply and/or have the highest of the skill.
+- Interactions with only one reply will simply skip to that reply.
+- Lines can have zero or many pre-emptive required conditions.
+- Replies may have zero or many required conditions.
+- Replies may have zero or many optional conditions.
+- Dice Challenges are split into unknown and known, where known challenges can have actions that change the roll.
+- If the person who wins the unknown challenge is an NPC then they whisper the information in a follow up (???)
+- A reply is either either linked to a subject or a dialog.
+- Lines are either done or not done.
 
 
 ## Setup
