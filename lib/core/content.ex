@@ -3,5 +3,4 @@ defmodule Core.Content do
   Behavior for interacting with user generated content
   """
   require Logger
-
 end

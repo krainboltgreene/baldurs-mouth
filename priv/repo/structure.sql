@@ -284,12 +284,82 @@ CREATE TABLE public.accounts_tokens (
 
 
 --
+-- Name: backgrounds; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.backgrounds (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL
+);
+
+
+--
+-- Name: characters; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.characters (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    pronouns jsonb NOT NULL,
+    account_id uuid NOT NULL,
+    species_id uuid NOT NULL,
+    background_id uuid NOT NULL
+);
+
+
+--
+-- Name: inventories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.inventories (
+    id uuid NOT NULL,
+    character_id uuid NOT NULL,
+    item_id uuid NOT NULL
+);
+
+
+--
+-- Name: items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.items (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL
+);
+
+
+--
+-- Name: levels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.levels (
+    id uuid NOT NULL,
+    number integer NOT NULL,
+    character_id uuid NOT NULL,
+    data jsonb NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.schema_migrations (
     version bigint NOT NULL,
     inserted_at timestamp(0) without time zone
+);
+
+
+--
+-- Name: species; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.species (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL
 );
 
 
@@ -323,11 +393,59 @@ ALTER TABLE ONLY public.accounts_tokens
 
 
 --
+-- Name: backgrounds backgrounds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.backgrounds
+    ADD CONSTRAINT backgrounds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: characters characters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.characters
+    ADD CONSTRAINT characters_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: inventories inventories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.inventories
+    ADD CONSTRAINT inventories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: levels levels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.levels
+    ADD CONSTRAINT levels_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: species species_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.species
+    ADD CONSTRAINT species_pkey PRIMARY KEY (id);
 
 
 --
@@ -367,6 +485,69 @@ CREATE UNIQUE INDEX accounts_tokens_context_token_index ON public.accounts_token
 
 
 --
+-- Name: backgrounds_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX backgrounds_slug_index ON public.backgrounds USING btree (slug);
+
+
+--
+-- Name: characters_account_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX characters_account_id_index ON public.characters USING btree (account_id);
+
+
+--
+-- Name: characters_background_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX characters_background_id_index ON public.characters USING btree (background_id);
+
+
+--
+-- Name: characters_species_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX characters_species_id_index ON public.characters USING btree (species_id);
+
+
+--
+-- Name: inventories_character_id_item_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX inventories_character_id_item_id_index ON public.inventories USING btree (character_id, item_id);
+
+
+--
+-- Name: inventories_item_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX inventories_item_id_index ON public.inventories USING btree (item_id);
+
+
+--
+-- Name: items_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX items_slug_index ON public.items USING btree (slug);
+
+
+--
+-- Name: levels_character_id_number_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX levels_character_id_number_index ON public.levels USING btree (character_id, number);
+
+
+--
+-- Name: species_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX species_slug_index ON public.species USING btree (slug);
+
+
+--
 -- Name: tags_name_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -389,6 +570,54 @@ ALTER TABLE ONLY public.accounts_tokens
 
 
 --
+-- Name: characters characters_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.characters
+    ADD CONSTRAINT characters_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.accounts(id) ON DELETE CASCADE;
+
+
+--
+-- Name: characters characters_background_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.characters
+    ADD CONSTRAINT characters_background_id_fkey FOREIGN KEY (background_id) REFERENCES public.backgrounds(id) ON DELETE CASCADE;
+
+
+--
+-- Name: characters characters_species_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.characters
+    ADD CONSTRAINT characters_species_id_fkey FOREIGN KEY (species_id) REFERENCES public.species(id) ON DELETE CASCADE;
+
+
+--
+-- Name: inventories inventories_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.inventories
+    ADD CONSTRAINT inventories_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+
+
+--
+-- Name: inventories inventories_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.inventories
+    ADD CONSTRAINT inventories_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON DELETE CASCADE;
+
+
+--
+-- Name: levels levels_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.levels
+    ADD CONSTRAINT levels_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -397,3 +626,9 @@ INSERT INTO public."schema_migrations" (version) VALUES (20191225213554);
 INSERT INTO public."schema_migrations" (version) VALUES (20201215210357);
 INSERT INTO public."schema_migrations" (version) VALUES (20220209090825);
 INSERT INTO public."schema_migrations" (version) VALUES (20221230230314);
+INSERT INTO public."schema_migrations" (version) VALUES (20231001233442);
+INSERT INTO public."schema_migrations" (version) VALUES (20231001235545);
+INSERT INTO public."schema_migrations" (version) VALUES (20231001235546);
+INSERT INTO public."schema_migrations" (version) VALUES (20231001235550);
+INSERT INTO public."schema_migrations" (version) VALUES (20231001235551);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002000051);

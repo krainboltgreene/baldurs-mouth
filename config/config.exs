@@ -13,10 +13,8 @@ config :core,
   application_name: "Baldur's Mouth",
   support_email_address: "support@baldurs-mouth.com",
   theme_color: "#ffffff",
-  description:
-    "",
-  short_description:
-    "",
+  description: "",
+  short_description: "",
   google_site_verification: "",
   google_tag_manager_id: ""
 

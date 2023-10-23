@@ -18,6 +18,7 @@ defmodule CoreWeb.PageLive do
   @impl true
   def render(%{live_action: :home} = assigns) do
     ~H"""
+    Test
     """
   end
 end

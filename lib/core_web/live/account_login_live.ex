@@ -7,7 +7,6 @@ defmodule CoreWeb.AccountLoginLive do
     socket
     |> assign(:page_title, "Sign In")
     |> assign(:form, to_form(%{"email_address" => email_address}, as: "account"))
-    # |> (&{:ok, &1, temporary_assigns: [form: form], layout: {CoreWeb.Layouts, :empty}}).()
     |> (&{:ok, &1, layout: {CoreWeb.Layouts, :empty}}).()
   end
 

@@ -14,7 +14,7 @@ defmodule CoreWeb.ContentComponents do
   def page_title(assigns) do
     ~H"""
     <header class="bg-dark-500">
-      <div class="mx-auto max-w-7xl py-2">
+      <div class="mx-auto max-w-7xl py-2 px-3">
         <h1 id="page_title" class="text-3xl font-bold leading-tight tracking-tight text-light-500" {@rest}><%= render_slot(@inner_block) %></h1>
       </div>
     </header>
