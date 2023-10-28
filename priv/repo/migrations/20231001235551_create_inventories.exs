@@ -5,6 +5,7 @@ defmodule Core.Repo.Migrations.CreateInventories do
     create(table(:inventories)) do
       add(:character_id, references(:characters, on_delete: :delete_all), null: false)
       add(:item_id, references(:items, on_delete: :delete_all), null: false)
+      timestamps()
     end
 
     create(index(:inventories, [:character_id, :item_id]))

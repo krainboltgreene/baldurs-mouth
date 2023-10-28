@@ -7,6 +7,11 @@ defmodule Core.Gameplay.Character do
   schema "characters" do
     field(:name, :string)
     field(:slug, :string)
+    belongs_to(:background, Core.Gameplay.Background)
+    belongs_to(:lineage, Core.Gameplay.Lineage)
+    has_many(:levels, Core.Gameplay.Level)
+    has_many(:inventories, Core.Gameplay.Inventory)
+    has_many(:items, through: [:inventories, :item])
 
     timestamps()
   end

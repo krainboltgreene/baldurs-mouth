@@ -1,19 +1,14 @@
-defmodule Core.Gameplay.Class do
+defmodule Core.Gameplay.Dialogue do
   @moduledoc false
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "classes" do
-    field(:name, :string)
-    field(:slug, :string)
-    has_many(:levels, Core.Gameplay.Level)
-    has_many(:characters, through: [:levels, :character])
+  schema "dialogues" do
+
   end
 
   @type t :: %__MODULE__{
-          name: String.t(),
-          slug: String.t()
         }
 
   @doc false

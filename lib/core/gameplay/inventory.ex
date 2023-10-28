@@ -1,13 +1,10 @@
-defmodule Core.Gameplay.Species do
+defmodule Core.Gameplay.Inventory do
   @moduledoc false
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "species" do
-    field(:name, :string)
-    field(:slug, :string)
-
+  schema "inventories" do
     timestamps()
   end
 

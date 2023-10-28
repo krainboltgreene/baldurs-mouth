@@ -5,6 +5,8 @@ defmodule Core.Gameplay.Level do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "levels" do
+    belongs_to(:character, Core.Gameplay.Character)
+    belongs_to(:class, Core.Gameplay.Character)
     timestamps()
   end
 

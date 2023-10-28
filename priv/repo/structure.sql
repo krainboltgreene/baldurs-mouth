@@ -309,6 +309,31 @@ CREATE TABLE public.characters (
 
 
 --
+-- Name: classes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.classes (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL
+);
+
+
+--
+-- Name: dialogues; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dialogues (
+    id uuid NOT NULL,
+    speaker_id uuid NOT NULL,
+    lines text NOT NULL,
+    narration text NOT NULL,
+    skill public.citext,
+    difficulty integer
+);
+
+
+--
 -- Name: inventories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -336,7 +361,8 @@ CREATE TABLE public.items (
 
 CREATE TABLE public.levels (
     id uuid NOT NULL,
-    number integer NOT NULL,
+    index integer NOT NULL,
+    class_id uuid NOT NULL,
     character_id uuid NOT NULL,
     data jsonb NOT NULL
 );
@@ -406,6 +432,22 @@ ALTER TABLE ONLY public.backgrounds
 
 ALTER TABLE ONLY public.characters
     ADD CONSTRAINT characters_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: classes classes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.classes
+    ADD CONSTRAINT classes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dialogues dialogues_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dialogues
+    ADD CONSTRAINT dialogues_pkey PRIMARY KEY (id);
 
 
 --
@@ -513,6 +555,13 @@ CREATE INDEX characters_species_id_index ON public.characters USING btree (speci
 
 
 --
+-- Name: classes_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX classes_slug_index ON public.classes USING btree (slug);
+
+
+--
 -- Name: inventories_character_id_item_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -534,10 +583,24 @@ CREATE UNIQUE INDEX items_slug_index ON public.items USING btree (slug);
 
 
 --
--- Name: levels_character_id_number_index; Type: INDEX; Schema: public; Owner: -
+-- Name: levels_character_id_class_id_index_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX levels_character_id_number_index ON public.levels USING btree (character_id, number);
+CREATE UNIQUE INDEX levels_character_id_class_id_index_index ON public.levels USING btree (character_id, class_id, index);
+
+
+--
+-- Name: levels_class_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX levels_class_id_index ON public.levels USING btree (class_id);
+
+
+--
+-- Name: levels_index_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX levels_index_index ON public.levels USING btree (index);
 
 
 --
@@ -594,6 +657,14 @@ ALTER TABLE ONLY public.characters
 
 
 --
+-- Name: dialogues dialogues_speaker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dialogues
+    ADD CONSTRAINT dialogues_speaker_id_fkey FOREIGN KEY (speaker_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+
+
+--
 -- Name: inventories inventories_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -618,6 +689,14 @@ ALTER TABLE ONLY public.levels
 
 
 --
+-- Name: levels levels_class_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.levels
+    ADD CONSTRAINT levels_class_id_fkey FOREIGN KEY (class_id) REFERENCES public.classes(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -632,3 +711,5 @@ INSERT INTO public."schema_migrations" (version) VALUES (20231001235546);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235550);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235551);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002000051);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002020243);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023305);

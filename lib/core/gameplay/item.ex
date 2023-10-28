@@ -7,8 +7,6 @@ defmodule Core.Gameplay.Item do
   schema "items" do
     field(:name, :string)
     field(:slug, :string)
-
-    timestamps()
   end
 
   @type t :: %__MODULE__{

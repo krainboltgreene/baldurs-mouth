@@ -1,14 +1,12 @@
-defmodule Core.Gameplay.Class do
+defmodule Core.Gameplay.Lineage do
   @moduledoc false
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "classes" do
+  schema "lineages" do
     field(:name, :string)
     field(:slug, :string)
-    has_many(:levels, Core.Gameplay.Level)
-    has_many(:characters, through: [:levels, :character])
   end
 
   @type t :: %__MODULE__{

@@ -1,4 +1,10 @@
 defmodule Core.Gameplay do
+  use Scaffolding, [Core.Gameplay.Lineage, :lineages, :lineage]
+  use Scaffolding, [Core.Gameplay.Item, :items, :item]
+  use Scaffolding, [Core.Gameplay.Inventory, :inventories, :inventory]
+  use Scaffolding, [Core.Gameplay.Class, :classes, :class]
+  use Scaffolding, [Core.Gameplay.Character, :characters, :character]
+  use Scaffolding, [Core.Gameplay.Background, :backgrounds, :background]
   # character = Core.Gameplay.get_character!("James")
   # selected_class = Core.Gameplay.get_class!("paladin")
   # Core.Gameplay.level_up(character, selected_class, 2)

@@ -7,8 +7,7 @@ defmodule Core.Gameplay.Background do
   schema "backgrounds" do
     field(:name, :string)
     field(:slug, :string)
-
-    timestamps()
+    has_many(:characters, Core.Gameplay.Character)
   end
 
   @type t :: %__MODULE__{
