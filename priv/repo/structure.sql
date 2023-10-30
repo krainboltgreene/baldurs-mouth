@@ -301,10 +301,20 @@ CREATE TABLE public.backgrounds (
 CREATE TABLE public.characters (
     id uuid NOT NULL,
     name text NOT NULL,
+    slug public.citext NOT NULL,
+    hitpoints integer DEFAULT 0 NOT NULL,
+    strength integer DEFAULT 8 NOT NULL,
+    dexterity integer DEFAULT 8 NOT NULL,
+    constitution integer DEFAULT 8 NOT NULL,
+    intelligence integer DEFAULT 8 NOT NULL,
+    wisdom integer DEFAULT 8 NOT NULL,
+    charisma integer DEFAULT 8 NOT NULL,
     pronouns jsonb NOT NULL,
     account_id uuid NOT NULL,
-    species_id uuid NOT NULL,
-    background_id uuid NOT NULL
+    lineage_id uuid NOT NULL,
+    background_id uuid NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
 );
 
 
@@ -315,7 +325,10 @@ CREATE TABLE public.characters (
 CREATE TABLE public.classes (
     id uuid NOT NULL,
     name text NOT NULL,
-    slug public.citext NOT NULL
+    slug public.citext NOT NULL,
+    levels jsonb NOT NULL,
+    saving_proficiencies text[] NOT NULL,
+    hit_dice integer NOT NULL
 );
 
 
@@ -325,11 +338,8 @@ CREATE TABLE public.classes (
 
 CREATE TABLE public.dialogues (
     id uuid NOT NULL,
-    speaker_id uuid NOT NULL,
-    lines text NOT NULL,
-    narration text NOT NULL,
-    skill public.citext,
-    difficulty integer
+    speaker_id uuid,
+    body text NOT NULL
 );
 
 
@@ -340,7 +350,9 @@ CREATE TABLE public.dialogues (
 CREATE TABLE public.inventories (
     id uuid NOT NULL,
     character_id uuid NOT NULL,
-    item_id uuid NOT NULL
+    item_id uuid NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
 );
 
 
@@ -364,7 +376,42 @@ CREATE TABLE public.levels (
     index integer NOT NULL,
     class_id uuid NOT NULL,
     character_id uuid NOT NULL,
-    data jsonb NOT NULL
+    choices jsonb NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: lineages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lineages (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL
+);
+
+
+--
+-- Name: participants; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.participants (
+    id uuid NOT NULL,
+    character_id uuid NOT NULL,
+    scene_id uuid NOT NULL
+);
+
+
+--
+-- Name: scenes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.scenes (
+    id uuid NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
 );
 
 
@@ -375,17 +422,6 @@ CREATE TABLE public.levels (
 CREATE TABLE public.schema_migrations (
     version bigint NOT NULL,
     inserted_at timestamp(0) without time zone
-);
-
-
---
--- Name: species; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.species (
-    id uuid NOT NULL,
-    name text NOT NULL,
-    slug public.citext NOT NULL
 );
 
 
@@ -475,19 +511,35 @@ ALTER TABLE ONLY public.levels
 
 
 --
+-- Name: lineages lineages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineages
+    ADD CONSTRAINT lineages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: participants participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.participants
+    ADD CONSTRAINT participants_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: scenes scenes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.scenes
+    ADD CONSTRAINT scenes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
-
-
---
--- Name: species species_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.species
-    ADD CONSTRAINT species_pkey PRIMARY KEY (id);
 
 
 --
@@ -548,10 +600,17 @@ CREATE INDEX characters_background_id_index ON public.characters USING btree (ba
 
 
 --
--- Name: characters_species_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: characters_lineage_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX characters_species_id_index ON public.characters USING btree (species_id);
+CREATE INDEX characters_lineage_id_index ON public.characters USING btree (lineage_id);
+
+
+--
+-- Name: characters_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX characters_slug_index ON public.characters USING btree (slug);
 
 
 --
@@ -559,6 +618,13 @@ CREATE INDEX characters_species_id_index ON public.characters USING btree (speci
 --
 
 CREATE UNIQUE INDEX classes_slug_index ON public.classes USING btree (slug);
+
+
+--
+-- Name: dialogues_speaker_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX dialogues_speaker_id_index ON public.dialogues USING btree (speaker_id);
 
 
 --
@@ -604,10 +670,24 @@ CREATE INDEX levels_index_index ON public.levels USING btree (index);
 
 
 --
--- Name: species_slug_index; Type: INDEX; Schema: public; Owner: -
+-- Name: lineages_slug_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX species_slug_index ON public.species USING btree (slug);
+CREATE UNIQUE INDEX lineages_slug_index ON public.lineages USING btree (slug);
+
+
+--
+-- Name: participants_character_id_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX participants_character_id_scene_id_index ON public.participants USING btree (character_id, scene_id);
+
+
+--
+-- Name: participants_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX participants_scene_id_index ON public.participants USING btree (scene_id);
 
 
 --
@@ -649,11 +729,11 @@ ALTER TABLE ONLY public.characters
 
 
 --
--- Name: characters characters_species_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: characters characters_lineage_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.characters
-    ADD CONSTRAINT characters_species_id_fkey FOREIGN KEY (species_id) REFERENCES public.species(id) ON DELETE CASCADE;
+    ADD CONSTRAINT characters_lineage_id_fkey FOREIGN KEY (lineage_id) REFERENCES public.lineages(id) ON DELETE CASCADE;
 
 
 --
@@ -697,6 +777,22 @@ ALTER TABLE ONLY public.levels
 
 
 --
+-- Name: participants participants_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.participants
+    ADD CONSTRAINT participants_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+
+
+--
+-- Name: participants participants_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.participants
+    ADD CONSTRAINT participants_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -712,4 +808,6 @@ INSERT INTO public."schema_migrations" (version) VALUES (20231001235550);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235551);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002000051);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002020243);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023304);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002023305);
+INSERT INTO public."schema_migrations" (version) VALUES (20231028201929);

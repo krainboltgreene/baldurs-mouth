@@ -10,39 +10,66 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+{:ok, _} = Core.Repo.transaction(fn ->
+  {:ok, _} =
+    Core.Gameplay.create_background(%{
+      name: "Folk Hero",
+      forced_skills: [
+        "Animal Handling",
+        "Survival"
+      ],
+      optional_skills: [],
+      skill_choices: 0,
+      forced_tools: [],
+      tool_choices: 1,
+      tool_categories: ["gaming", "musical"]
+    })
 
-{:ok, svet} = Core.Gameplay.create_character(%{
-  name: "Svet the Happy",
-  lineage: Core.Gameplay.get_lineage_by_slug("half-orc"),
-  background: Core.Gameplay.get_background_by_slug("folk-hero"),
-  lineage_choices: %{},
-  background_choices: %{
-    tool_proficiences: [
-      "dice",
-      "flute"
-    ]
-  }
-})
+  {:ok, _} =
+    Core.Gameplay.create_lineage(%{
+      name: "Half-Orc",
+      features: [
+        "darkvision",
+        "relentless_endurance",
+        "savage_attacks",
+        "menacing"
+      ]
+    })
 
-Core.Gameplay.level_up(%{
-  character: svet,
-  class: Core.Gameplay.get_class_by_slug("fighter"),
-  choices: %{
-    fighting_style: "great-weapon-fighting",
-    skill_proficiencies: [
-      "athletics",
-      "survival"
-    ]
-  }
-})
+  {:ok, _} =
+    Core.Gameplay.create_class(%{
+      name: "Fighter",
+      saving_proficiencies: [
+        "strength",
+        "constitution"
+      ],
+      hit_dice: "10",
+      levels: [
+        %{
+          features: [
+            "fighting_style",
+            "second_wind"
+          ],
+          optional_skills: [
+            "acrobatics",
+            "animal_handling",
+            "athletics",
+            "history",
+            "insight",
+            "intimidation",
+            "perception",
+            "survival"
+          ],
+          skill_choices: 2
+        },
+        %{
+          features: ["action_surge"]
+        }
+      ]
+    })
 
-Core.Gameplay.level_up(%{
-  character: svet,
-  class: Core.Gameplay.get_class_by_slug("fighter"),
-  choices: %{
-    skill_proficiencies: [
-      "athletics",
-      "survival"
-    ]
-  }
-})
+  {:ok, _} =
+    Core.Gameplay.create_item(%{
+      name: "Greatsword"
+    })
+end)
