@@ -75,10 +75,11 @@ Example:
 ## Design
 
 - Characters have one race, many levels. WHAT IF WE TREATED RACE LIKE A 0 LEVEL?!
-- Levels have one class.
 - Scenes have many lines, has and belongs to many characters, has many events
 - Lines have one body.
 - Store XP on character, levels up sum to match xp?
+- Stop new first levels from giving max HP
+- Class Levels isn't displaying level?
 
 
 ## Notes
