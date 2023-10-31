@@ -16,7 +16,6 @@ defmodule Core.Gameplay.Dialogue do
     |> Ecto.Changeset.cast(attributes, [:name])
     |> Slugy.slugify(:name)
     |> Ecto.Changeset.validate_required([:name, :slug])
-    |> Ecto.Changeset.unique_constraint(:name)
     |> Ecto.Changeset.unique_constraint(:slug)
   end
 end

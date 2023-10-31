@@ -14,7 +14,7 @@ defmodule Core.Repo.Migrations.CreateAccounts do
       timestamps()
     end
 
-    create unique_index(:accounts, [:email_address])
-    create index(:accounts, :onboarding_state)
+    create(unique_index(:accounts, [:email_address]))
+    create(index(:accounts, :onboarding_state))
   end
 end

@@ -1,12 +1,13 @@
-defmodule Core.Gameplay.Item do
+defmodule Core.Gameplay.LineageCategory do
   @moduledoc false
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "items" do
+  schema "lineage_categories" do
     field(:name, :string)
     field(:slug, :string)
+    has_many(:lineage_category, Core.Gameplay.LineageCategory)
   end
 
   @type t :: %__MODULE__{

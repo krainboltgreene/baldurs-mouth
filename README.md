@@ -78,6 +78,7 @@ Example:
 - Levels have one class.
 - Scenes have many lines, has and belongs to many characters, has many events
 - Lines have one body.
+- Store XP on character, levels up sum to match xp?
 
 
 ## Notes

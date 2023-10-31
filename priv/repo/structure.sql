@@ -309,6 +309,9 @@ CREATE TABLE public.characters (
     intelligence integer DEFAULT 8 NOT NULL,
     wisdom integer DEFAULT 8 NOT NULL,
     charisma integer DEFAULT 8 NOT NULL,
+    inspiration integer DEFAULT 0 NOT NULL,
+    lineage_choices jsonb DEFAULT '{}'::jsonb NOT NULL,
+    background_choices jsonb DEFAULT '{}'::jsonb NOT NULL,
     pronouns jsonb NOT NULL,
     account_id uuid NOT NULL,
     lineage_id uuid NOT NULL,
@@ -327,7 +330,7 @@ CREATE TABLE public.classes (
     name text NOT NULL,
     slug public.citext NOT NULL,
     levels jsonb NOT NULL,
-    saving_proficiencies text[] NOT NULL,
+    saving_throw_proficiencies text[] NOT NULL,
     hit_dice integer NOT NULL
 );
 
@@ -373,12 +376,23 @@ CREATE TABLE public.items (
 
 CREATE TABLE public.levels (
     id uuid NOT NULL,
-    index integer NOT NULL,
+    "position" integer NOT NULL,
     class_id uuid NOT NULL,
     character_id uuid NOT NULL,
     choices jsonb NOT NULL,
     inserted_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: lineage_categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lineage_categories (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL
 );
 
 
@@ -389,7 +403,8 @@ CREATE TABLE public.levels (
 CREATE TABLE public.lineages (
     id uuid NOT NULL,
     name text NOT NULL,
-    slug public.citext NOT NULL
+    slug public.citext NOT NULL,
+    lineage_category_id uuid
 );
 
 
@@ -508,6 +523,14 @@ ALTER TABLE ONLY public.items
 
 ALTER TABLE ONLY public.levels
     ADD CONSTRAINT levels_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: lineage_categories lineage_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineage_categories
+    ADD CONSTRAINT lineage_categories_pkey PRIMARY KEY (id);
 
 
 --
@@ -649,10 +672,10 @@ CREATE UNIQUE INDEX items_slug_index ON public.items USING btree (slug);
 
 
 --
--- Name: levels_character_id_class_id_index_index; Type: INDEX; Schema: public; Owner: -
+-- Name: levels_character_id_class_id_position_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX levels_character_id_class_id_index_index ON public.levels USING btree (character_id, class_id, index);
+CREATE UNIQUE INDEX levels_character_id_class_id_position_index ON public.levels USING btree (character_id, class_id, "position");
 
 
 --
@@ -663,10 +686,24 @@ CREATE INDEX levels_class_id_index ON public.levels USING btree (class_id);
 
 
 --
--- Name: levels_index_index; Type: INDEX; Schema: public; Owner: -
+-- Name: levels_position_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX levels_index_index ON public.levels USING btree (index);
+CREATE INDEX levels_position_index ON public.levels USING btree ("position");
+
+
+--
+-- Name: lineage_categories_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX lineage_categories_slug_index ON public.lineage_categories USING btree (slug);
+
+
+--
+-- Name: lineages_lineage_category_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX lineages_lineage_category_id_index ON public.lineages USING btree (lineage_category_id);
 
 
 --
@@ -688,13 +725,6 @@ CREATE UNIQUE INDEX participants_character_id_scene_id_index ON public.participa
 --
 
 CREATE INDEX participants_scene_id_index ON public.participants USING btree (scene_id);
-
-
---
--- Name: tags_name_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX tags_name_index ON public.tags USING btree (name);
 
 
 --
@@ -777,6 +807,14 @@ ALTER TABLE ONLY public.levels
 
 
 --
+-- Name: lineages lineages_lineage_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineages
+    ADD CONSTRAINT lineages_lineage_category_id_fkey FOREIGN KEY (lineage_category_id) REFERENCES public.lineage_categories(id) ON DELETE CASCADE;
+
+
+--
 -- Name: participants participants_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -804,6 +842,7 @@ INSERT INTO public."schema_migrations" (version) VALUES (20221230230314);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001233442);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235545);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235546);
+INSERT INTO public."schema_migrations" (version) VALUES (20231001235547);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235550);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235551);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002000051);

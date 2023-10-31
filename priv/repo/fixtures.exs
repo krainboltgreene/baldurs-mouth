@@ -19,82 +19,88 @@ previous_log_level = Logger.level()
 Logger.configure(level: :info)
 
 if Mix.env() == :dev do
-  {:ok, _} = Core.Repo.transaction(fn ->
-    {:ok, krainboltgreene} =
-      Core.Users.register_account(%{
-        name: "Kurtis Rainbolt-Greene",
-        email_address: "kurtis@baldurs-mouth.com",
-        username: "krainboltgreene",
-        password: "passwordpassword"
-      })
+  {:ok, _} =
+    Core.Repo.transaction(fn ->
+      {:ok, krainboltgreene} =
+        Core.Users.register_account(%{
+          name: "Kurtis Rainbolt-Greene",
+          email_address: "kurtis@baldurs-mouth.com",
+          username: "krainboltgreene",
+          password: "passwordpassword"
+        })
 
-    {encoded_token, account_token} =
-      Core.Users.AccountToken.build_email_token(krainboltgreene, "confirm")
+      {encoded_token, account_token} =
+        Core.Users.AccountToken.build_email_token(krainboltgreene, "confirm")
 
-    {:ok, _} = Core.Repo.insert(account_token)
-    {:ok, _} = Core.Users.confirm_account(encoded_token)
+      {:ok, _} = Core.Repo.insert(account_token)
+      {:ok, _} = Core.Users.confirm_account(encoded_token)
 
-    {:ok, josephryan} =
-      Core.Users.register_account(%{
-        name: "Joseph Ryan",
-        email_address: "joseph.j.a.ryan@baldurs-mouth.com",
-        username: "josephryan",
-        password: "passwordpassword"
-      })
+      {:ok, josephryan} =
+        Core.Users.register_account(%{
+          name: "Joseph Ryan",
+          email_address: "joseph.j.a.ryan@baldurs-mouth.com",
+          username: "josephryan",
+          password: "passwordpassword"
+        })
 
-    {encoded_token, account_token} =
-      Core.Users.AccountToken.build_email_token(josephryan, "confirm")
+      {encoded_token, account_token} =
+        Core.Users.AccountToken.build_email_token(josephryan, "confirm")
 
-    {:ok, _} = Core.Repo.insert(account_token)
-    {:ok, _} = Core.Users.confirm_account(encoded_token)
+      {:ok, _} = Core.Repo.insert(account_token)
+      {:ok, _} = Core.Users.confirm_account(encoded_token)
 
-    {:ok, svet} =
-      Core.Gameplay.create_character(%{
-        account: krainboltgreene,
-        name: "Svet the Happy",
-        pronouns: %{
-          normative: "he",
-          accusative: "him",
-          genitive: "his",
-          reflexive: "himself"
-        },
-        lineage: Core.Gameplay.get_lineage_by_slug!("half-orc"),
-        background: Core.Gameplay.get_background_by_slug!("folk-hero"),
-        lineage_choices: %{},
-        background_choices: %{
-          tool_proficiences: [
-            "dice",
-            "flute"
-          ]
-        }
-      })
+      {:ok, svet} =
+        Core.Gameplay.create_character(%{
+          account: krainboltgreene,
+          name: "Svet the Happy",
+          pronouns: %{
+            normative: "he",
+            accusative: "him",
+            genitive: "his",
+            reflexive: "himself"
+          },
+          lineage: Core.Gameplay.get_lineage_by_slug!("half-orc"),
+          background: Core.Gameplay.get_background_by_slug!("folk-hero"),
+          lineage_choices: %{},
+          background_choices: %{
+            tool_proficiences: [
+              "dice",
+              "flute"
+            ]
+          }
+        })
 
-    {:ok, _level} = Core.Gameplay.level_up(
-      svet,
-      Core.Gameplay.get_class_by_slug!("fighter"),
-      %{
-        fighting_style: "great-weapon-fighting",
-        skill_proficiencies: [
-          "athletics",
-          "survival"
-        ]
-      },
-      1
-    )
+      {:ok, _level} =
+        Core.Gameplay.level_up(
+          svet,
+          Core.Gameplay.get_class_by_slug!("fighter"),
+          %{
+            fighting_style: "great-weapon-fighting",
+            skill_proficiencies: [
+              "athletics",
+              "survival"
+            ]
+          },
+          1
+        )
 
-    {:ok, _level} = Core.Gameplay.level_up(
-      svet,
-      Core.Gameplay.get_class_by_slug!("fighter"),
-      %{
-        skill_proficiencies: [
-          "athletics",
-          "survival"
-        ]
-      },
-      2
-    )
+      {:ok, _level} =
+        Core.Gameplay.level_up(
+          svet,
+          Core.Gameplay.get_class_by_slug!("fighter"),
+          %{
+            skill_proficiencies: [
+              "athletics",
+              "survival"
+            ]
+          },
+          2
+        )
 
-  end)
+      svet
+      |> Core.Content.print_character_sheet()
+      |> IO.puts()
+    end)
 end
 
 # Reset the log level back to normal

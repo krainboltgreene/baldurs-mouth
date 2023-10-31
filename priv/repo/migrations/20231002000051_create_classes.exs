@@ -6,7 +6,7 @@ defmodule Core.Repo.Migrations.CreateClasses do
       add(:name, :text, null: false)
       add(:slug, :citext, null: false)
       add(:levels, :jsonb, null: false)
-      add(:saving_proficiencies, {:array, :text}, null: false)
+      add(:saving_throw_proficiencies, {:array, :text}, null: false)
       add(:hit_dice, :integer, null: false)
     end
 
