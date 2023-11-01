@@ -23,9 +23,8 @@ defmodule Pretty do
 
   def get(%Core.Gameplay.Character{levels: levels}, :classes) do
     levels
-    |> Utilities.List.pluck(:class)
-    |> Utilities.List.pluck(:name)
-    |> Enum.uniq()
+    |> Core.Gameplay.last_level_in_classes()
+    |> Enum.map(fn {class, level} -> "#{class.name} (#{level})" end)
     |> Utilities.List.to_sentence()
   end
 
@@ -33,22 +32,21 @@ defmodule Pretty do
     Core.Gameplay.level(levels)
   end
 
-
   def get(%Core.Gameplay.Character{levels: levels}, :xp) do
     Core.Gameplay.xp(levels)
   end
 
   def get(%Core.Gameplay.Character{levels: levels}, :proficiency) do
-    Core.Gameplay.proficiency(levels)
+    levels |> Core.Gameplay.proficiency() |> bonus_or_negative()
   end
 
   # TODO: Fill in with more logic like Durable
   def get(%Core.Gameplay.Character{constitution: constitution}, :hitpoints_modifier) do
-    Core.Gameplay.ability_modifier(constitution)
+    Core.Gameplay.ability_modifier(constitution) |> bonus_or_negative()
   end
 
   def get(%Core.Gameplay.Character{} = record, ability) when ability in @abilities do
-    "#{Map.get(record, ability)} (#{Core.Gameplay.ability_modifier(Map.get(record, ability))})"
+    "#{Map.get(record, ability)} (#{record |> Map.get(ability) |> Core.Gameplay.ability_modifier() |> bonus_or_negative()})"
   end
 
   def get(record, keys) when is_list(keys),
@@ -56,4 +54,8 @@ defmodule Pretty do
 
   def get(%{name: name}, :name) when is_binary(name), do: Utilities.String.titlecase(name)
   def get(record, key) when is_map_key(record, key), do: Map.get(record, key)
+
+  defp bonus_or_negative(value) when value >= 1, do: "+#{value}"
+
+  defp bonus_or_negative(value), do: "#{value}"
 end

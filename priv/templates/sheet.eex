@@ -5,7 +5,7 @@ Level & XP: <%= Pretty.get(character, :level) %> & <%= Pretty.get(character, :xp
 Proficiency Bonus: <%= Pretty.get(character, :proficiency) %>
 Class(es): <%= Pretty.get(character, :classes) %>
 Inspiration: <%= Pretty.get(character, :inspiration) %>
-Hitpoints: <%= Pretty.get(character, :hitpoints) %>/ <%= Pretty.get(character, :hitpoints) %>
+Hitpoints: <%= Pretty.get(character, :hitpoints) %>/<%= Pretty.get(character, :hitpoints) %>
 Ability Scores:
   Strength: <%= Pretty.get(character, :strength) %>
   Dexterity: <%= Pretty.get(character, :dexterity) %>

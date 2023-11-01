@@ -1,13 +1,16 @@
-defmodule Core.Gameplay.Lineage do
+defmodule Core.Content.Campaign do
   @moduledoc false
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "lineages" do
+  schema "campaigns" do
     field(:name, :string)
     field(:slug, :string)
-    belongs_to(:lineage_category, Core.Gameplay.LineageCategory)
+    has_one(:scene, Core.Theater.Scene)
+    has_many(:saves, Core.Content.Save)
+
+    timestamps()
   end
 
   @type t :: %__MODULE__{
@@ -18,18 +21,8 @@ defmodule Core.Gameplay.Lineage do
   @doc false
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
-    record_with_preloaded_relationships =
-      Core.Repo.preload(record, [
-        :lineage_category
-      ])
-
-    record_with_preloaded_relationships
+    record
     |> Ecto.Changeset.cast(attributes, [:name])
-    |> Ecto.Changeset.put_assoc(
-      :lineage_category,
-      attributes[:lineage_category] ||
-        record_with_preloaded_relationships.lineage_category
-    )
     |> Slugy.slugify(:name)
     |> Ecto.Changeset.validate_required([:name, :slug])
     |> Ecto.Changeset.unique_constraint(:slug)

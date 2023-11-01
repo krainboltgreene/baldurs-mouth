@@ -18,7 +18,10 @@ defmodule CoreWeb.PageLive do
   @impl true
   def render(%{live_action: :home} = assigns) do
     ~H"""
-    Test
+    <ul>
+      <li><.link navigate={~p"/play/start"}>Start</.link></li>
+      <li>Credits</li>
+    </ul>
     """
   end
 end

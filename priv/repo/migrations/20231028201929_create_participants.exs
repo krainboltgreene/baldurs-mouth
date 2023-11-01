@@ -2,12 +2,12 @@ defmodule Core.Repo.Migrations.CreateParticipants do
   use Ecto.Migration
 
   def change do
-    create(table(:participants)) do
+    create(table(:participants, primary_key: false)) do
       add(:character_id, references(:characters, on_delete: :delete_all), null: false)
-      add(:scene_id, references(:scenes, on_delete: :delete_all), null: false)
+      add(:save_id, references(:saves, on_delete: :delete_all), null: false)
     end
 
-    create(unique_index(:participants, [:character_id, :scene_id]))
-    create(index(:participants, [:scene_id]))
+    create(unique_index(:participants, [:character_id, :save_id]))
+    create(index(:participants, [:save_id]))
   end
 end

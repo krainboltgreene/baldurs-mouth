@@ -59,6 +59,12 @@ if Mix.env() == :dev do
             genitive: "his",
             reflexive: "himself"
           },
+          strength: 15,
+          dexterity: 12,
+          constitution: 14,
+          inteligence: 12,
+          wisdom: 9,
+          charisma: 10,
           lineage: Core.Gameplay.get_lineage_by_slug!("half-orc"),
           background: Core.Gameplay.get_background_by_slug!("folk-hero"),
           lineage_choices: %{},
@@ -100,6 +106,11 @@ if Mix.env() == :dev do
       svet
       |> Core.Content.print_character_sheet()
       |> IO.puts()
+
+      tavern_scene =
+        Core.Theater.get_scene_by_slug("entering-lucky-foxs-tavern-for-the-first-time")
+
+      Core.Theater.play(tavern_scene, [svet])
     end)
 end
 

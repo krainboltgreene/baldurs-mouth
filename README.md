@@ -89,6 +89,8 @@ Example:
  - journal & journal entry
  - forced dialogs
  - allow character choice in addition to random
+ - npc known is kinda character specific? Maybe a join table
+ - short description added to npc to be used instead of name
 
 
 ## Setup

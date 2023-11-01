@@ -111,7 +111,7 @@ defmodule Core.Gameplay do
   @spec level(list(Core.Gameplay.Level.t())) :: integer()
   def level(levels) when is_list(levels) do
     levels
-    |> class_levels()
+    |> last_level_in_classes()
     |> Map.values()
     |> Enum.sum()
   end
@@ -126,8 +126,10 @@ defmodule Core.Gameplay do
     Enum.at(@proficiency_table, level(levels) - 1)
   end
 
-  @spec class_levels(list(Core.Gameplay.Level.t())) :: %{Core.Gameplay.Class.t() => integer()}
-  def class_levels(levels) when is_list(levels) do
+  @spec last_level_in_classes(list(Core.Gameplay.Level.t())) :: %{
+          Core.Gameplay.Class.t() => integer()
+        }
+  def last_level_in_classes(levels) when is_list(levels) do
     levels
     |> Enum.group_by(&Map.get(&1, :class))
     |> Enum.map(fn {class, sublevels} ->

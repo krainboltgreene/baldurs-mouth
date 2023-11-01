@@ -28,6 +28,7 @@ defmodule Core.Users.Account do
     field(:confirmed_at, :naive_datetime)
     embeds_one(:settings, Core.Users.Settings)
     embeds_one(:profile, Core.Users.Profile)
+    has_many(:characters, Core.Gameplay.Character)
 
     timestamps()
   end

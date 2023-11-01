@@ -1,15 +1,14 @@
-defmodule Core.Theater.Dialogue do
+defmodule Core.Theater.Line do
   @moduledoc false
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "dialogues" do
+  schema "lines" do
     field(:body, :string, default: "")
     embeds_one(:challenge, Core.Theater.Challenge)
-    belongs_to(:for_scene, Core.Theater.Scene)
-    belongs_to(:next_scene, Core.Theater.Scene)
-    belongs_to(:speaker_character, Core.Gameplay.Character)
+    belongs_to(:scene, Core.Theater.Scene)
+    belongs_to(:speaker_npc, Core.Theater.NPC)
   end
 
   @type t :: %__MODULE__{
@@ -21,21 +20,21 @@ defmodule Core.Theater.Dialogue do
   def changeset(record, attributes) do
     record_with_preloaded_relationships =
       Core.Repo.preload(record, [
-        :for_scene,
-        :next_scene
+        :speaker_npc,
+        :scene
       ])
 
     record_with_preloaded_relationships
     |> Ecto.Changeset.cast(attributes, [:body])
     |> Ecto.Changeset.cast_embed(:challenge)
     |> Ecto.Changeset.put_assoc(
-      :for_scene,
-      attributes[:for_scene] || record_with_preloaded_relationships.for_scene
+      :scene,
+      attributes[:scene] || record_with_preloaded_relationships.scene
     )
     |> Ecto.Changeset.put_assoc(
-      :next_scene,
-      attributes[:next_scene] || record_with_preloaded_relationships.next_scene
+      :speaker_npc,
+      attributes[:speaker_npc] || record_with_preloaded_relationships.speaker_npc
     )
-    |> Ecto.Changeset.validate_required([:body])
+    |> Ecto.Changeset.validate_required([:body, :scene, :speaker_npc])
   end
 end

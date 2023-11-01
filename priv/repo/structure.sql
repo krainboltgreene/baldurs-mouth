@@ -315,9 +315,7 @@ CREATE TABLE public.characters (
     pronouns jsonb NOT NULL,
     account_id uuid NOT NULL,
     lineage_id uuid NOT NULL,
-    background_id uuid NOT NULL,
-    inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    background_id uuid NOT NULL
 );
 
 
@@ -341,8 +339,10 @@ CREATE TABLE public.classes (
 
 CREATE TABLE public.dialogues (
     id uuid NOT NULL,
-    speaker_id uuid,
-    body text NOT NULL
+    body text DEFAULT ''::text NOT NULL,
+    challenge jsonb,
+    scene_id uuid,
+    speaker_character_id uuid
 );
 
 
@@ -379,9 +379,7 @@ CREATE TABLE public.levels (
     "position" integer NOT NULL,
     class_id uuid NOT NULL,
     character_id uuid NOT NULL,
-    choices jsonb NOT NULL,
-    inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    choices jsonb NOT NULL
 );
 
 
@@ -409,11 +407,45 @@ CREATE TABLE public.lineages (
 
 
 --
+-- Name: lines; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lines (
+    id uuid NOT NULL,
+    body text DEFAULT ''::text NOT NULL,
+    challenge jsonb,
+    scene_id uuid,
+    speaker_npc_id uuid NOT NULL
+);
+
+
+--
+-- Name: listeners; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.listeners (
+    npc_id uuid NOT NULL,
+    scene_id uuid NOT NULL
+);
+
+
+--
+-- Name: npcs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.npcs (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL,
+    known boolean DEFAULT false NOT NULL
+);
+
+
+--
 -- Name: participants; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.participants (
-    id uuid NOT NULL,
     character_id uuid NOT NULL,
     scene_id uuid NOT NULL
 );
@@ -425,8 +457,8 @@ CREATE TABLE public.participants (
 
 CREATE TABLE public.scenes (
     id uuid NOT NULL,
-    inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    name text NOT NULL,
+    slug public.citext NOT NULL
 );
 
 
@@ -542,11 +574,19 @@ ALTER TABLE ONLY public.lineages
 
 
 --
--- Name: participants participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: lines lines_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.participants
-    ADD CONSTRAINT participants_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.lines
+    ADD CONSTRAINT lines_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: npcs npcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.npcs
+    ADD CONSTRAINT npcs_pkey PRIMARY KEY (id);
 
 
 --
@@ -644,10 +684,17 @@ CREATE UNIQUE INDEX classes_slug_index ON public.classes USING btree (slug);
 
 
 --
--- Name: dialogues_speaker_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: dialogues_scene_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX dialogues_speaker_id_index ON public.dialogues USING btree (speaker_id);
+CREATE INDEX dialogues_scene_id_index ON public.dialogues USING btree (scene_id);
+
+
+--
+-- Name: dialogues_speaker_character_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX dialogues_speaker_character_id_index ON public.dialogues USING btree (speaker_character_id);
 
 
 --
@@ -714,6 +761,41 @@ CREATE UNIQUE INDEX lineages_slug_index ON public.lineages USING btree (slug);
 
 
 --
+-- Name: lines_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX lines_scene_id_index ON public.lines USING btree (scene_id);
+
+
+--
+-- Name: lines_speaker_npc_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX lines_speaker_npc_id_index ON public.lines USING btree (speaker_npc_id);
+
+
+--
+-- Name: listeners_npc_id_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX listeners_npc_id_scene_id_index ON public.listeners USING btree (npc_id, scene_id);
+
+
+--
+-- Name: listeners_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX listeners_scene_id_index ON public.listeners USING btree (scene_id);
+
+
+--
+-- Name: npcs_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX npcs_slug_index ON public.npcs USING btree (slug);
+
+
+--
 -- Name: participants_character_id_scene_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -725,6 +807,13 @@ CREATE UNIQUE INDEX participants_character_id_scene_id_index ON public.participa
 --
 
 CREATE INDEX participants_scene_id_index ON public.participants USING btree (scene_id);
+
+
+--
+-- Name: scenes_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX scenes_slug_index ON public.scenes USING btree (slug);
 
 
 --
@@ -767,11 +856,19 @@ ALTER TABLE ONLY public.characters
 
 
 --
--- Name: dialogues dialogues_speaker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: dialogues dialogues_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.dialogues
-    ADD CONSTRAINT dialogues_speaker_id_fkey FOREIGN KEY (speaker_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+    ADD CONSTRAINT dialogues_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dialogues dialogues_speaker_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dialogues
+    ADD CONSTRAINT dialogues_speaker_character_id_fkey FOREIGN KEY (speaker_character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
 
 
 --
@@ -815,6 +912,38 @@ ALTER TABLE ONLY public.lineages
 
 
 --
+-- Name: lines lines_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lines
+    ADD CONSTRAINT lines_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: lines lines_speaker_npc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lines
+    ADD CONSTRAINT lines_speaker_npc_id_fkey FOREIGN KEY (speaker_npc_id) REFERENCES public.npcs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: listeners listeners_npc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.listeners
+    ADD CONSTRAINT listeners_npc_id_fkey FOREIGN KEY (npc_id) REFERENCES public.npcs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: listeners listeners_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.listeners
+    ADD CONSTRAINT listeners_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+
+
+--
 -- Name: participants participants_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -849,4 +978,7 @@ INSERT INTO public."schema_migrations" (version) VALUES (20231002000051);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002020243);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002023304);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002023305);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023306);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023307);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201929);
+INSERT INTO public."schema_migrations" (version) VALUES (20231028201930);

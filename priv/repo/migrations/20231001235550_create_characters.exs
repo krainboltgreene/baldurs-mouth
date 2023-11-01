@@ -19,7 +19,6 @@ defmodule Core.Repo.Migrations.CreateCharacters do
       add(:account_id, references(:accounts, on_delete: :delete_all), null: false)
       add(:lineage_id, references(:lineages, on_delete: :delete_all), null: false)
       add(:background_id, references(:backgrounds, on_delete: :delete_all), null: false)
-      timestamps()
     end
 
     create(unique_index(:characters, [:slug]))

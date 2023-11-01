@@ -7,7 +7,6 @@ defmodule Core.Repo.Migrations.CreateLevels do
       add(:class_id, references(:classes, on_delete: :delete_all), null: false)
       add(:character_id, references(:characters, on_delete: :delete_all), null: false)
       add(:choices, :jsonb, null: false)
-      timestamps()
     end
 
     create(unique_index(:levels, [:character_id, :class_id, :position]))

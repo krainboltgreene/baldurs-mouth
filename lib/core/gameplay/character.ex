@@ -15,34 +15,9 @@ defmodule Core.Gameplay.Character do
     field(:wisdom, :integer, default: 8)
     field(:charisma, :integer, default: 8)
     field(:inspiration, :integer, default: 0)
-    timestamps()
 
-    belongs_to(:background, Core.Gameplay.Background)
-    belongs_to(:lineage, Core.Gameplay.Lineage)
-    belongs_to(:account, Core.Users.Account)
-    has_many(:levels, Core.Gameplay.Level)
-    has_many(:inventories, Core.Gameplay.Inventory)
-    has_many(:items, through: [:inventories, :item])
-
-    embeds_one(:lineage_choices, Choice) do
-      field(:hitpoints, :integer, default: 0)
-      field(:features, {:array, :string}, default: [])
-      field(:skill_proficiencies, {:array, :string}, default: [])
-      field(:tool_proficiencies, {:array, :string}, default: [])
-      field(:weapon_proficiencies, {:array, :string}, default: [])
-      field(:armor_proficiencies, {:array, :string}, default: [])
-      field(:languages, {:array, :string}, default: [])
-    end
-
-    embeds_one(:background_choices, Choice) do
-      field(:hitpoints, :integer, default: 0)
-      field(:features, {:array, :string}, default: [])
-      field(:skill_proficiencies, {:array, :string}, default: [])
-      field(:tool_proficiencies, {:array, :string}, default: [])
-      field(:weapon_proficiencies, {:array, :string}, default: [])
-      field(:armor_proficiencies, {:array, :string}, default: [])
-      field(:languages, {:array, :string}, default: [])
-    end
+    embeds_one(:lineage_choices, Core.Gameplay.Choices)
+    embeds_one(:background_choices, Core.Gameplay.Choices)
 
     embeds_one(:pronouns, Pronoun) do
       field(:normative, :string)
@@ -50,6 +25,15 @@ defmodule Core.Gameplay.Character do
       field(:genitive, :string)
       field(:reflexive, :string)
     end
+
+    belongs_to(:background, Core.Gameplay.Background)
+    belongs_to(:lineage, Core.Gameplay.Lineage)
+    belongs_to(:account, Core.Users.Account)
+    has_many(:levels, Core.Gameplay.Level)
+    has_many(:inventories, Core.Gameplay.Inventory)
+    has_many(:items, through: [:inventories, :item])
+    many_to_many(:scenes, Core.Theater.Scene, join_through: "participants")
+    has_many(:dialogues, Core.Theater.Dialogue, foreign_key: :speaker_character_id)
   end
 
   @type t :: %__MODULE__{
@@ -60,7 +44,14 @@ defmodule Core.Gameplay.Character do
   @doc false
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
-    record
+    record_with_preloaded_relationships =
+      Core.Repo.preload(record, [
+        :account,
+        :lineage,
+        :background
+      ])
+
+    record_with_preloaded_relationships
     |> Ecto.Changeset.cast(attributes, [
       :name,
       :strength,
@@ -73,19 +64,19 @@ defmodule Core.Gameplay.Character do
       :inspiration
     ])
     |> Ecto.Changeset.cast_embed(:pronouns, required: true, with: &pronouns_changeset/2)
-    |> Ecto.Changeset.cast_embed(:lineage_choices, required: true, with: &choice_changeset/2)
-    |> Ecto.Changeset.cast_embed(:background_choices, required: true, with: &choice_changeset/2)
+    |> Ecto.Changeset.cast_embed(:lineage_choices, required: true)
+    |> Ecto.Changeset.cast_embed(:background_choices, required: true)
     |> Ecto.Changeset.put_assoc(
       :account,
-      attributes[:account] || Core.Repo.preload(record, :account).account
+      attributes[:account] || record_with_preloaded_relationships.account
     )
     |> Ecto.Changeset.put_assoc(
       :lineage,
-      attributes[:lineage] || Core.Repo.preload(record, :lineage).lineage
+      attributes[:lineage] || record_with_preloaded_relationships.lineage
     )
     |> Ecto.Changeset.put_assoc(
       :background,
-      attributes[:background] || Core.Repo.preload(record, :background).background
+      attributes[:background] || record_with_preloaded_relationships.background
     )
     |> Slugy.slugify(:name)
     |> Ecto.Changeset.validate_required([:name, :slug])
@@ -97,11 +88,5 @@ defmodule Core.Gameplay.Character do
     record
     |> Ecto.Changeset.cast(attributes, [:normative, :accusative, :genitive, :reflexive])
     |> Ecto.Changeset.validate_required([:normative, :accusative, :genitive, :reflexive])
-  end
-
-  @spec choice_changeset(struct(), map()) :: Ecto.Changeset.t(t())
-  def choice_changeset(record, attributes) do
-    record
-    |> Ecto.Changeset.cast(attributes, [:hitpoints, :features, :skill_proficiencies, :tool_proficiencies, :weapon_proficiencies, :armor_proficiencies, :languages])
   end
 end
