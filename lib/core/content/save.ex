@@ -7,6 +7,7 @@ defmodule Core.Content.Save do
   schema "saves" do
     belongs_to(:campaign, Core.Content.Campaign)
     belongs_to(:scene, Core.Theater.Scene)
+    belongs_to(:party, Core.Theater.Party)
     belongs_to(:account, Core.Users.Account)
 
     timestamps()
@@ -18,13 +19,19 @@ defmodule Core.Content.Save do
   @doc false
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
-    record_with_preload_relationships = Core.Repo.preload(record, [:campaign, :scene, :account])
+    record_with_preload_relationships = Core.Repo.preload(record, [
+      :campaign,
+      :scene,
+      :account,
+      :party
+    ])
 
     record_with_preload_relationships
     |> Ecto.Changeset.cast(attributes, [:name])
     |> Ecto.Changeset.put_assoc(:scene, attributes[:scene] || record_with_preload_relationships.scene)
     |> Ecto.Changeset.put_assoc(:campaign, attributes[:campaign] || record_with_preload_relationships.campaign)
     |> Ecto.Changeset.put_assoc(:account, attributes[:account] || record_with_preload_relationships.account)
+    |> Ecto.Changeset.put_assoc(:party, attributes[:party] || record_with_preload_relationships.party)
     |> Slugy.slugify(:name)
     |> Ecto.Changeset.validate_required([:name, :slug, :scene, :campaign])
     |> Ecto.Changeset.unique_constraint(:slug)

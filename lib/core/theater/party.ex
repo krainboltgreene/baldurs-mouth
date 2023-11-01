@@ -1,27 +1,24 @@
-defmodule Core.Content.Campaign do
+defmodule Core.Theater.Party do
   @moduledoc false
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "campaigns" do
+  schema "parties" do
     field(:name, :string)
     field(:slug, :string)
-    timestamps()
-    has_many(:scenes, Core.Theater.Scene)
-    has_many(:saves, Core.Content.Save)
+    field(:known, :boolean, default: false)
+    many_to_many(:scenes, Core.Theater.Scene, join_through: "listeners")
+    has_many(:lines, Core.Theater.Line, foreign_key: :speaker_npc_id)
   end
 
-  @type t :: %__MODULE__{
-          name: String.t(),
-          slug: String.t()
-        }
+  @type t :: %__MODULE__{}
 
   @doc false
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
     record
-    |> Ecto.Changeset.cast(attributes, [:name])
+    |> Ecto.Changeset.cast(attributes, [:name, :known])
     |> Slugy.slugify(:name)
     |> Ecto.Changeset.validate_required([:name, :slug])
     |> Ecto.Changeset.unique_constraint(:slug)
