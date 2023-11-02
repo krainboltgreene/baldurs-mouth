@@ -92,6 +92,7 @@ Example:
  - npc known is kinda character specific? Maybe a join table
  - short description added to npc to be used instead of name
  - dialogue that leads back to the same scene shoudl be automatically jumped too
+ - if the last line of dialogue is fromt he same speaker, just avoid the formatting.
 
 
 ## Setup

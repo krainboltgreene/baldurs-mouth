@@ -149,35 +149,35 @@ defmodule CoreWeb.ContentComponents do
       <div class="mx-auto w-full max-w-screen-xl">
         <div class="grid grid-cols-2 gap-8 px-3 py-2">
           <div>
-            <h2 class="mb-6 text-sm font-semibold text-highlight-500 uppercase">
+            <h2 class="mb-4 text-sm font-semibold text-highlight-500 uppercase">
               <%= Application.get_env(:core, :application_name) %>
             </h2>
             <ul>
-              <li class="mb-4">
+              <li class="mb-1">
                 <.link navigate={~p"/"} class="text-light-500 font-medium hover:underline">Home</.link>
               </li>
             </ul>
           </div>
           <div>
-            <h2 class="mb-6 text-sm font-semibold text-highlight-500 uppercase">
+            <h2 class="mb-4 text-sm font-semibold text-highlight-500 uppercase">
               Authentication
             </h2>
             <ul>
-              <li :if={@current_account} class="mb-4">
+              <li :if={@current_account} class="mb-1">
                 <strong class="text-light-500 font-medium"><%= @current_account.username %></strong>
               </li>
-              <li :if={@current_account} class="mb-4">
+              <li :if={@current_account} class="mb-1">
                 <.link navigate={~p"/accounts/settings"} class="text-light-500 font-medium hover:underline">Account</.link>
               </li>
-              <li :if={@current_account} class="mb-4">
+              <li :if={@current_account} class="mb-1">
                 <.link href={~p"/accounts/log_out"} method="delete" class="text-light-500 font-medium hover:underline">
                   Log out
                 </.link>
               </li>
-              <li :if={!@current_account} class="mb-4">
+              <li :if={!@current_account} class="mb-1">
                 <.link navigate={~p"/accounts/register"} class="text-light-500 font-medium hover:underline">Register</.link>
               </li>
-              <li :if={!@current_account} class="mb-4">
+              <li :if={!@current_account} class="mb-1">
                 <.link navigate={~p"/accounts/log_in"} class="text-light-500 font-medium hover:underline">Log in</.link>
               </li>
             </ul>
