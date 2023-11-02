@@ -21,7 +21,7 @@ defmodule CoreWeb.PlayLive do
             lineage: [:lineage_category],
             levels: [class: []]
           ]
-        ],
+        ]
       )
     )
     |> (&{:ok, &1, layout: {CoreWeb.Layouts, :empty}}).()
@@ -108,7 +108,7 @@ defmodule CoreWeb.PlayLive do
     <ul class="mx-auto mx-auto max-w-3xl grid grid-cols-3 gap-3">
       <li :for={character <- @save.characters} class="relative flex items-center space-x-2 rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
         <div class="flex-shrink-0">
-          <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+          <img class="h-10 w-10 rounded-full" src={~p"/images/class-fighter.svg"} alt="">
         </div>
         <div class="min-w-0 flex-1">
           <p class="text-sm font-medium text-gray-900"><%= Pretty.get(character, :name) %></p>
@@ -128,7 +128,8 @@ defmodule CoreWeb.PlayLive do
       </p>
       <ol>
         <li :for={dialogue <- @save.last_scene.dialogues} class="mt-1 text-sm text-gray-500">
-          "<%= dialogue.body %>"
+          <p>"<%= dialogue.body %>"</p>
+          said 
         </li>
       </ol>
     </article>
