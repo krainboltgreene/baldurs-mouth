@@ -118,7 +118,7 @@ defmodule CoreWeb.PlayLive do
       </li>
     </ul>
 
-    <article class="prose mx-auto max-w-3xl px-4 py-12">
+    <article class="mx-auto max-w-3xl px-4 py-12">
       <p :for={line <- @save.last_scene.lines} class="mt-1 text-sm text-gray-500">
         <%= if line.speaker_npc.slug == "narrator" do %>
           <%= line.body %>
@@ -128,8 +128,40 @@ defmodule CoreWeb.PlayLive do
       </p>
       <ol>
         <li :for={dialogue <- @save.last_scene.dialogues} class="mt-1 text-sm text-gray-500">
-          <p>"<%= dialogue.body %>"</p>
-          said 
+          <p>
+            "<%= dialogue.body %>" <.speaker character={Enum.random(@save.characters)} /> or
+            <div class="relative inline-block text-left">
+              <div>
+                <button type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                  Someone else
+                  <.icon as="chevron-down"/>
+                </button>
+              </div>
+
+              <!--
+                Dropdown menu, show/hide based on menu state.
+
+                Entering: "transition ease-out duration-100"
+                  From: "transform opacity-0 scale-95"
+                  To: "transform opacity-100 scale-100"
+                Leaving: "transition ease-in duration-75"
+                  From: "transform opacity-100 scale-100"
+                  To: "transform opacity-0 scale-95"
+              -->
+              <div class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                <div class="py-1" role="none">
+                  <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+                  <a href="#" class="text-gray-700 group flex items-center px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">
+                    <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
+                      <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
+                    </svg>
+                    Edit
+                  </a>
+                </div>
+              </div>
+            </div>
+          </p>
         </li>
       </ol>
     </article>

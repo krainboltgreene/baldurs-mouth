@@ -44,6 +44,18 @@
 
     {:ok, _} =
       Core.Gameplay.create_lineage(%{
+        name: "High-Elf",
+        lineage_category: elf_lineage_category,
+        features: [
+          "darkvision",
+          "relentless_endurance",
+          "savage_attacks",
+          "menacing"
+        ]
+      })
+
+    {:ok, _} =
+      Core.Gameplay.create_lineage(%{
         name: "Half-Orc",
         features: [
           "darkvision",
