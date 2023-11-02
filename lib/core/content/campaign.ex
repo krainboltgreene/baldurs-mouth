@@ -8,6 +8,7 @@ defmodule Core.Content.Campaign do
     field(:name, :string)
     field(:slug, :string)
     timestamps()
+    has_one(:opening_scene, Core.Theater.Scene, where: [opening: true])
     has_many(:scenes, Core.Theater.Scene)
     has_many(:saves, Core.Content.Save)
   end
@@ -20,7 +21,9 @@ defmodule Core.Content.Campaign do
   @doc false
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
-    record
+    record_with_preload_relationships = Core.Repo.preload(record, [])
+
+    record_with_preload_relationships
     |> Ecto.Changeset.cast(attributes, [:name])
     |> Slugy.slugify(:name)
     |> Ecto.Changeset.validate_required([:name, :slug])

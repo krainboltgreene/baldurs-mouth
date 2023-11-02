@@ -5,12 +5,11 @@ defmodule Core.Content.Save do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "saves" do
-    belongs_to(:campaign, Core.Content.Campaign)
-    belongs_to(:scene, Core.Theater.Scene)
-    belongs_to(:party, Core.Theater.Party)
-    belongs_to(:account, Core.Users.Account)
-
+    field(:playing_state, Ecto.Enum, values: [:playing, :completed], default: :playing)
     timestamps()
+    belongs_to(:last_scene, Core.Theater.Scene)
+    has_one(:campaign, through: [:last_scene, :campaign])
+    many_to_many(:characters, Core.Gameplay.Character, join_through: "parties")
   end
 
   @type t :: %__MODULE__{
@@ -20,20 +19,14 @@ defmodule Core.Content.Save do
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
     record_with_preload_relationships = Core.Repo.preload(record, [
-      :campaign,
-      :scene,
-      :account,
-      :party
+      :last_scene,
+      :characters
     ])
 
     record_with_preload_relationships
-    |> Ecto.Changeset.cast(attributes, [:name])
-    |> Ecto.Changeset.put_assoc(:scene, attributes[:scene] || record_with_preload_relationships.scene)
-    |> Ecto.Changeset.put_assoc(:campaign, attributes[:campaign] || record_with_preload_relationships.campaign)
-    |> Ecto.Changeset.put_assoc(:account, attributes[:account] || record_with_preload_relationships.account)
-    |> Ecto.Changeset.put_assoc(:party, attributes[:party] || record_with_preload_relationships.party)
-    |> Slugy.slugify(:name)
-    |> Ecto.Changeset.validate_required([:name, :slug, :scene, :campaign])
-    |> Ecto.Changeset.unique_constraint(:slug)
+    |> Ecto.Changeset.cast(attributes, [:playing_state])
+    |> Ecto.Changeset.put_assoc(:last_scene, attributes[:last_scene] || record_with_preload_relationships.last_scene)
+    |> Ecto.Changeset.put_assoc(:characters, attributes[:characters] || record_with_preload_relationships.characters)
+    |> Ecto.Changeset.validate_required([:playing_state, :last_scene, :characters])
   end
 end

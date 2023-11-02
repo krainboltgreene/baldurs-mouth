@@ -22,15 +22,15 @@ defmodule Core.Users.Account do
     field(:avatar_uri, :string)
     field(:email_address, :string)
     field(:username, :string)
-    field(:onboarding_state, :string, default: "converted")
+    field(:onboarding_state, Ecto.Enum, values: [:converted], default: :converted)
     field(:password, :string, virtual: true, redact: true)
     field(:hashed_password, :string, redact: true)
     field(:confirmed_at, :naive_datetime)
+    timestamps()
     embeds_one(:settings, Core.Users.Settings)
     embeds_one(:profile, Core.Users.Profile)
     has_many(:characters, Core.Gameplay.Character)
-
-    timestamps()
+    has_many(:saves, through: [:characters, :saves])
   end
 
   @type t :: %__MODULE__{

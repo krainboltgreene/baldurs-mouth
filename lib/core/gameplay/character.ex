@@ -32,8 +32,8 @@ defmodule Core.Gameplay.Character do
     has_many(:levels, Core.Gameplay.Level)
     has_many(:inventories, Core.Gameplay.Inventory)
     has_many(:items, through: [:inventories, :item])
-    many_to_many(:scenes, Core.Theater.Scene, join_through: "participants")
     has_many(:dialogues, Core.Theater.Dialogue, foreign_key: :speaker_character_id)
+    many_to_many(:saves, Core.Content.Save, join_through: "parties")
   end
 
   @type t :: %__MODULE__{

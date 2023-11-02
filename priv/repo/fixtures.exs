@@ -107,10 +107,9 @@ if Mix.env() == :dev do
       |> Core.Content.print_character_sheet()
       |> IO.puts()
 
-      tavern_scene =
-        Core.Theater.get_scene_by_slug("entering-lucky-foxs-tavern-for-the-first-time")
+      trade_dispute = Core.Content.get_campaign_by_slug("trade-dispute")
 
-      Core.Theater.play(tavern_scene, [svet])
+      Core.Theater.play(trade_dispute, [svet])
     end)
 end
 

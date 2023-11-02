@@ -93,13 +93,14 @@
       })
 
     {:ok, trade_dispute} =
-      Core.Theater.create_scene(%{
+      Core.Content.create_campaign(%{
         name: "Trade Dispute"
       })
 
     {:ok, tavern_scene} =
       Core.Theater.create_scene(%{
         campaign: trade_dispute,
+        opening: true,
         name: "Entering Lucky Fox's Tavern For The First Time"
       })
 

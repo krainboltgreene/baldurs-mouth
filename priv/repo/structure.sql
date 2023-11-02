@@ -295,6 +295,19 @@ CREATE TABLE public.backgrounds (
 
 
 --
+-- Name: campaigns; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.campaigns (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
 -- Name: characters; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -341,7 +354,8 @@ CREATE TABLE public.dialogues (
     id uuid NOT NULL,
     body text DEFAULT ''::text NOT NULL,
     challenge jsonb,
-    scene_id uuid,
+    for_scene_id uuid,
+    next_scene_id uuid,
     speaker_character_id uuid
 );
 
@@ -442,12 +456,25 @@ CREATE TABLE public.npcs (
 
 
 --
--- Name: participants; Type: TABLE; Schema: public; Owner: -
+-- Name: parties; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.participants (
+CREATE TABLE public.parties (
     character_id uuid NOT NULL,
-    scene_id uuid NOT NULL
+    save_id uuid NOT NULL
+);
+
+
+--
+-- Name: saves; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.saves (
+    id uuid NOT NULL,
+    playing_state public.citext NOT NULL,
+    last_scene_id uuid NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
 );
 
 
@@ -458,7 +485,9 @@ CREATE TABLE public.participants (
 CREATE TABLE public.scenes (
     id uuid NOT NULL,
     name text NOT NULL,
-    slug public.citext NOT NULL
+    slug public.citext NOT NULL,
+    opening boolean DEFAULT false NOT NULL,
+    campaign_id uuid NOT NULL
 );
 
 
@@ -507,6 +536,14 @@ ALTER TABLE ONLY public.accounts_tokens
 
 ALTER TABLE ONLY public.backgrounds
     ADD CONSTRAINT backgrounds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: campaigns campaigns_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.campaigns
+    ADD CONSTRAINT campaigns_pkey PRIMARY KEY (id);
 
 
 --
@@ -590,6 +627,14 @@ ALTER TABLE ONLY public.npcs
 
 
 --
+-- Name: saves saves_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saves
+    ADD CONSTRAINT saves_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: scenes scenes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -649,6 +694,13 @@ CREATE UNIQUE INDEX backgrounds_slug_index ON public.backgrounds USING btree (sl
 
 
 --
+-- Name: campaigns_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX campaigns_slug_index ON public.campaigns USING btree (slug);
+
+
+--
 -- Name: characters_account_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -684,10 +736,17 @@ CREATE UNIQUE INDEX classes_slug_index ON public.classes USING btree (slug);
 
 
 --
--- Name: dialogues_scene_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: dialogues_for_scene_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX dialogues_scene_id_index ON public.dialogues USING btree (scene_id);
+CREATE INDEX dialogues_for_scene_id_index ON public.dialogues USING btree (for_scene_id);
+
+
+--
+-- Name: dialogues_next_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX dialogues_next_scene_id_index ON public.dialogues USING btree (next_scene_id);
 
 
 --
@@ -796,17 +855,45 @@ CREATE UNIQUE INDEX npcs_slug_index ON public.npcs USING btree (slug);
 
 
 --
--- Name: participants_character_id_scene_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: parties_character_id_save_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX participants_character_id_scene_id_index ON public.participants USING btree (character_id, scene_id);
+CREATE UNIQUE INDEX parties_character_id_save_id_index ON public.parties USING btree (character_id, save_id);
 
 
 --
--- Name: participants_scene_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: parties_save_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX participants_scene_id_index ON public.participants USING btree (scene_id);
+CREATE INDEX parties_save_id_index ON public.parties USING btree (save_id);
+
+
+--
+-- Name: saves_last_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX saves_last_scene_id_index ON public.saves USING btree (last_scene_id);
+
+
+--
+-- Name: saves_playing_state_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX saves_playing_state_index ON public.saves USING btree (playing_state);
+
+
+--
+-- Name: scenes_campaign_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX scenes_campaign_id_index ON public.scenes USING btree (campaign_id) WHERE (opening IS TRUE);
+
+
+--
+-- Name: scenes_opening_campaign_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX scenes_opening_campaign_id_index ON public.scenes USING btree (opening, campaign_id);
 
 
 --
@@ -856,11 +943,19 @@ ALTER TABLE ONLY public.characters
 
 
 --
--- Name: dialogues dialogues_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: dialogues dialogues_for_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.dialogues
-    ADD CONSTRAINT dialogues_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+    ADD CONSTRAINT dialogues_for_scene_id_fkey FOREIGN KEY (for_scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dialogues dialogues_next_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dialogues
+    ADD CONSTRAINT dialogues_next_scene_id_fkey FOREIGN KEY (next_scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
 
 
 --
@@ -944,19 +1039,35 @@ ALTER TABLE ONLY public.listeners
 
 
 --
--- Name: participants participants_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: parties parties_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.participants
-    ADD CONSTRAINT participants_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.parties
+    ADD CONSTRAINT parties_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
 
 
 --
--- Name: participants participants_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: parties parties_save_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.participants
-    ADD CONSTRAINT participants_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.parties
+    ADD CONSTRAINT parties_save_id_fkey FOREIGN KEY (save_id) REFERENCES public.saves(id) ON DELETE CASCADE;
+
+
+--
+-- Name: saves saves_last_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saves
+    ADD CONSTRAINT saves_last_scene_id_fkey FOREIGN KEY (last_scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: scenes scenes_campaign_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.scenes
+    ADD CONSTRAINT scenes_campaign_id_fkey FOREIGN KEY (campaign_id) REFERENCES public.campaigns(id) ON DELETE CASCADE;
 
 
 --
@@ -976,9 +1087,11 @@ INSERT INTO public."schema_migrations" (version) VALUES (20231001235550);
 INSERT INTO public."schema_migrations" (version) VALUES (20231001235551);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002000051);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002020243);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023302);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002023304);
-INSERT INTO public."schema_migrations" (version) VALUES (20231002023305);
-INSERT INTO public."schema_migrations" (version) VALUES (20231002023306);
-INSERT INTO public."schema_migrations" (version) VALUES (20231002023307);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023313);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023315);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023356);
+INSERT INTO public."schema_migrations" (version) VALUES (20231002023407);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201929);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201930);

@@ -6,14 +6,15 @@ defmodule Core.Theater do
   use Scaffolding.Read.Slug, [Core.Theater.NPC, :npc]
   use Scaffolding.Read.Slug, [Core.Theater.Scene, :scene]
 
-  @spec play(Core.Theater.Scene.t(), [Core.Gameplay.Character.t()]) :: Core.Theater.Scene.t()
-  def play(%Core.Theater.Scene{} = scene, participants) when is_list(participants) do
-    scene
-    |> Core.Theater.Scene.add_participants_changeset(participants)
-    |> Core.Repo.update!()
+  @spec play(Core.Content.Campaign.t(), list(Core.Gameplay.Character.t())) :: Core.Theater.Scene.t()
+  def play(%Core.Content.Campaign{} = campaign, characters) when is_list(characters) do
+    {:ok, save} = Core.Content.create_save(%{
+      last_scene: Core.Repo.preload(campaign, [:opening_scene]).opening_scene,
+      characters: characters
+    })
 
-    scene
-    |> Core.Repo.preload(lines: [:speaker_npc], dialogues: [])
+    save.last_scene
+    |> Core.Repo.preload(lines: [:speaker_npc], dialogues: [:next_scene])
     |> tap(fn %{lines: lines} ->
       lines
       |> Enum.map(&read/1)
@@ -42,6 +43,10 @@ defmodule Core.Theater do
   end
 
   @spec prompt({Core.Theater.Dialogue.t(), integer()}) :: String.t()
+  def prompt({%Core.Theater.Dialogue{body: body, next_scene: nil}, index}) do
+    "#{index}. \"#{body}\" [Leave]"
+  end
+
   def prompt({%Core.Theater.Dialogue{body: body}, index}) do
     "#{index}. \"#{body}\""
   end
