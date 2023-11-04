@@ -10,7 +10,7 @@ defmodule Core.Content.Campaign do
     timestamps()
     has_one(:opening_scene, Core.Theater.Scene, where: [opening: true])
     has_many(:scenes, Core.Theater.Scene)
-    has_many(:saves, Core.Content.Save)
+    has_many(:saves, through: [:scenes, :saves])
   end
 
   @type t :: %__MODULE__{

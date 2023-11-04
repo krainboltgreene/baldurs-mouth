@@ -11,6 +11,7 @@ defmodule Core.Theater.Scene do
     belongs_to(:campaign, Core.Content.Campaign)
     has_many(:lines, Core.Theater.Line)
     has_many(:dialogues, Core.Theater.Dialogue, foreign_key: :for_scene_id)
+    has_many(:saves, Core.Content.Save, foreign_key: :last_scene_id)
     many_to_many(:listeners, Core.Theater.NPC, join_through: "listeners")
   end
 

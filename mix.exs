@@ -36,7 +36,7 @@ defmodule Core.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:argon2_elixir, "~> 3.0"},
+      {:argon2_elixir, "~> 4.0"},
       {:phoenix, "~> 1.7", override: true},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
@@ -44,9 +44,9 @@ defmodule Core.MixProject do
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.0"},
-      {:floki, "~> 0.34.0", only: :test},
+      {:floki, "~> 0.35.2", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.0"},
-      {:esbuild, "~> 0.7.0", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.8.0", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.16.0"},
@@ -70,7 +70,7 @@ defmodule Core.MixProject do
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:ueberauth, "~> 0.7"},
       {:ueberauth_twitch, "~> 0.1.0"},
-      {:bandit, "~> 1.0-pre"},
+      {:bandit, "~> 1.0"},
       {:ex_machina, "~> 2.7", only: :test}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}

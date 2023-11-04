@@ -8,6 +8,7 @@ defmodule CoreWeb.ContentComponents do
   # alias Phoenix.LiveView.JS
   # import CoreWeb.Gettext
 
+  @spec page_title(map()) :: Phoenix.LiveView.Rendered.t()
   attr :rest, :global
   slot :inner_block, required: true, doc: "The title of the page"
 
@@ -21,6 +22,7 @@ defmodule CoreWeb.ContentComponents do
     """
   end
 
+  @spec section_title(map()) :: Phoenix.LiveView.Rendered.t()
   attr :rest, :global
   attr :id, :string, required: true
 
@@ -52,6 +54,7 @@ defmodule CoreWeb.ContentComponents do
     """
   end
 
+  @spec card_grid(map()) :: Phoenix.LiveView.Rendered.t()
   attr :rest, :global
   slot :empty, doc: "An empty placeholder for the other cards"
   slot :cards, doc: "A list of cards"
@@ -67,6 +70,7 @@ defmodule CoreWeb.ContentComponents do
     """
   end
 
+  @spec card(map()) :: Phoenix.LiveView.Rendered.t()
   attr :rest, :global
   attr :image_url, :string, default: nil
   attr :image_alt, :string, default: nil
@@ -91,6 +95,7 @@ defmodule CoreWeb.ContentComponents do
     """
   end
 
+  @spec site_header(map()) :: Phoenix.LiveView.Rendered.t()
   @doc """
   Renders the site header
   """
@@ -119,6 +124,7 @@ defmodule CoreWeb.ContentComponents do
     """
   end
 
+  @spec site_header_link(map()) :: Phoenix.LiveView.Rendered.t()
   attr :current?, :boolean, default: false
 
   attr :rest, :global,
@@ -138,6 +144,7 @@ defmodule CoreWeb.ContentComponents do
     """
   end
 
+  @spec site_footer(map()) :: Phoenix.LiveView.Rendered.t()
   @doc """
   Renders the site footer.
   """

@@ -24,7 +24,7 @@ defmodule CoreWeb.PlayLive do
         ]
       )
     )
-    |> (&{:ok, &1, layout: {CoreWeb.Layouts, :empty}}).()
+    |> (&{:ok, &1}).()
   end
 
   def mount(%{"id" => save_id}, _session, %{assigns: %{live_action: :show}} = socket) do
@@ -45,7 +45,7 @@ defmodule CoreWeb.PlayLive do
     socket
     |> assign(:save, save)
     |> assign(:page_title, "#{save.campaign.name} - #{save.last_scene.name}")
-    |> (&{:ok, &1, layout: {CoreWeb.Layouts, :empty}}).()
+    |> (&{:ok, &1}).()
   end
 
   @impl true

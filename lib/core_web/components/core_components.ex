@@ -8,6 +8,7 @@ defmodule CoreWeb.CoreComponents do
   # alias Phoenix.LiveView.JS
   # import CoreWeb.Gettext
 
+  @spec tag(map()) :: Phoenix.LiveView.Rendered.t()
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
@@ -19,6 +20,7 @@ defmodule CoreWeb.CoreComponents do
     """
   end
 
+  @spec flash(map()) :: Phoenix.LiveView.Rendered.t()
   @doc """
   Renders flash notices.
   ## Examples
@@ -89,6 +91,7 @@ defmodule CoreWeb.CoreComponents do
     """
   end
 
+  @spec button(map()) :: Phoenix.LiveView.Rendered.t()
   @doc """
   Renders a button.
 
@@ -127,6 +130,7 @@ defmodule CoreWeb.CoreComponents do
     """
   end
 
+  @spec icon(map()) :: Phoenix.LiveView.Rendered.t()
   attr :type, :string, default: "solid"
   attr :as, :string, required: true
   attr :modifiers, :string, default: ""
@@ -138,6 +142,7 @@ defmodule CoreWeb.CoreComponents do
     """
   end
 
+  @spec loading_text_indicator(map()) :: Phoenix.LiveView.Rendered.t()
   attr :size, :integer, default: 12
 
   def loading_text_indicator(assigns) do
@@ -146,6 +151,7 @@ defmodule CoreWeb.CoreComponents do
     """
   end
 
+  @spec timestamp_in_words_ago(map()) :: Phoenix.LiveView.Rendered.t()
   attr :at, NaiveDateTime, required: true
   attr :rest, :global
 
