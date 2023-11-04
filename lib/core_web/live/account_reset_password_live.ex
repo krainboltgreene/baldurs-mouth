@@ -48,7 +48,7 @@ defmodule CoreWeb.AccountResetPasswordLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div>
       <.simple_form for={@form} id="reset_password_form" phx-submit="reset_password" phx-change="validate">
         <.error :if={@form.errors != []}>
           Oops, something went wrong! Please check the errors below.
@@ -57,11 +57,11 @@ defmodule CoreWeb.AccountResetPasswordLive do
         <.input field={@form[:password]} type="password" label="New password" required />
         <.input field={@form[:password_confirmation]} type="password" label="Confirm new password" required />
         <:actions>
-          <.button phx-disable-with="Resetting..." type="submit" usable_icon="unlock">Reset Password</.button>
+          <.button phx-disable-with="Resetting..." type="submit" usable_icon="unlock" kind="primary">Reset Password</.button>
         </:actions>
       </.simple_form>
 
-      <p class="text-center text-sm mt-4">
+      <p>
         <.link navigate={~p"/accounts/register"}>Register</.link> | <.link navigate={~p"/accounts/log_in"}>Log in</.link>
       </p>
     </div>

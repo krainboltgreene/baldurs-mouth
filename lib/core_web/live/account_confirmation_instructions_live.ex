@@ -31,7 +31,7 @@ defmodule CoreWeb.AccountConfirmationInstructionsLive do
 
   def render(assigns) do
     ~H"""
-    <p class="text-center">
+    <p>
       No confirmation instructions received?
       We'll send a new confirmation link to your inbox
     </p>
@@ -39,7 +39,7 @@ defmodule CoreWeb.AccountConfirmationInstructionsLive do
     <.simple_form for={@form} id="resend_confirmation_form" phx-submit="send_instructions">
       <.input field={@form[:email_address]} type="email" label="Email" required />
       <:actions>
-        <.button phx-disable-with="Sending..." type="submit" usable_icon="envelope">
+        <.button phx-disable-with="Sending..." type="submit" usable_icon="envelope" kind="primary">
           Resend confirmation instructions
         </.button>
       </:actions>

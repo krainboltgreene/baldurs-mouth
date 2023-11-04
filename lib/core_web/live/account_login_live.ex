@@ -12,9 +12,9 @@ defmodule CoreWeb.AccountLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
-      <p class="text-center my-4">
-        Don't have an account? <.link navigate={~p"/accounts/register"} class="text-dark-500 font-medium hover:underline">Sign up for a free account now</.link>.
+    <div>
+      <p>
+        Don't have an account? <.link navigate={~p"/accounts/register"}>Sign up for a free account now</.link>.
       </p>
 
       <.simple_form for={@form} id="login_form" action={~p"/accounts/log_in"} phx-update="ignore">
@@ -23,12 +23,12 @@ defmodule CoreWeb.AccountLoginLive do
 
         <:actions>
           <.input field={@form[:remember_me]} type="checkbox" label="Keep me logged in" />
-          <.link href={~p"/accounts/reset_password"} class="text-sm font-semibold">
+          <.link href={~p"/accounts/reset_password"}>
             Forgot your password?
           </.link>
         </:actions>
         <:actions>
-          <.button type="submit" phx-disable-with="Sigining in..." usable_icon="check">
+          <.button type="submit" phx-disable-with="Sigining in..." usable_icon="check" kind="primary">
             Sign in <span aria-hidden="true">→</span>
           </.button>
         </:actions>

@@ -17,17 +17,17 @@
     </script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <section class="container-fluid">
-        <.link href={~p"/"} class="navbar-dark-500">
+    <nav>
+      <section>
+        <.link href={~p"/"}>
           <%= Application.get_env(:core, :application_name) %>
         </.link>
       </section>
     </nav>
 
-    <section style="display: flex; width: 800px; flex-direction: column; align-items: center; margin-top: 50px; margin-left: auto; margin-right: auto;">
+    <section>
       <h1>404 - Not Found</h1>
-      <picture style="border: 5px solid var(--contrast-color)">
+      <picture>
         <img src={~p"/images/404.png"} alt="Not Found" width="512px" height="512px" />
       </picture>
     </section>

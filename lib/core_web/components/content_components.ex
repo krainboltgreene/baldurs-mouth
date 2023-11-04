@@ -13,9 +13,9 @@ defmodule CoreWeb.ContentComponents do
 
   def page_title(assigns) do
     ~H"""
-    <header class="bg-dark-500">
-      <div class="mx-auto max-w-7xl py-2 px-3">
-        <h1 id="page_title" class="text-3xl font-bold leading-tight tracking-tight text-light-500" {@rest}><%= render_slot(@inner_block) %></h1>
+    <header>
+      <div>
+        <h1 id="page_title" {@rest}><%= render_slot(@inner_block) %></h1>
       </div>
     </header>
     """
@@ -33,22 +33,17 @@ defmodule CoreWeb.ContentComponents do
 
   def section_title(assigns) do
     ~H"""
-    <div class="border-b border-gray-200 mt-8 mb-4">
-      <div class="ml-2 mt-2 flex flex-wrap items-baseline">
-        <h3 class="ml-2 mt-2 text-base font-semibold leading-6 text-gray-900" id={@id} {@rest}>
-          <%= render_slot(@inner_block) %>
-        </h3>
-        <div :if={assigns[:tab]} class="mt-4">
-          <nav class="-mb-px flex space-x-8">
-            <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-            <.link :for={tab <- @tab} patch={tab.patch} class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 px-1 pb-2 text-sm font-medium">
-              <%= render_slot(tab) %>
-            </.link>
-          </nav>
-        </div>
-        <p :if={@subtitle} class="ml-2 mt-1 truncate text-sm text-gray-500"><%= render_slot(@subtitle) %></p>
-      </div>
+    <h3 id={@id} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </h3>
+    <div :if={assigns[:tab]}>
+      <nav>
+        <.link :for={tab <- @tab} patch={tab.patch}>
+          <%= render_slot(tab) %>
+        </.link>
+      </nav>
     </div>
+    <p :if={@subtitle}><%= render_slot(@subtitle) %></p>
     """
   end
 
@@ -59,7 +54,7 @@ defmodule CoreWeb.ContentComponents do
 
   def card_grid(assigns) do
     ~H"""
-    <ul role="list" class="grid grid-cols-1 gap-6 grid-cols-3" {@rest}>
+    <ul role="list" {@rest}>
       <%= @empty && render_slot(@empty) %>
       <%= render_slot(@inner_block) %>
       <%= render_slot(@cards) %>
@@ -77,16 +72,16 @@ defmodule CoreWeb.ContentComponents do
 
   def card(assigns) do
     ~H"""
-    <li class="max-w-sm rounded overflow-shadow-lg border-dark-500 bg-white flex flex-col items-center border-2 border-contrast-500" {@rest}>
-      <div class="px-6 py-4 basis-3/4 flex flex-col justify-center">
+    <li {@rest}>
+      <section>
         <%= render_slot(@image) %>
-        <img :if={@image_url} class="mx-auto h-32 w-32 flex-shrink-0" src={@image_url} alt={@image_alt} />
+        <img :if={@image_url} src={@image_url} alt={@image_alt} />
         <%= render_slot(@title) %>
         <%= render_slot(@inner_block) %>
-      </div>
-      <div :if={@footer} class="px-6 pt-4 pb-2 basis-1/4 flex flex-col justify-center">
+      </section>
+      <footer :if={@footer}>
         <%= render_slot(@footer) %>
-      </div>
+      </footer>
     </li>
     """
   end
@@ -98,23 +93,17 @@ defmodule CoreWeb.ContentComponents do
 
   def site_header(assigns) do
     ~H"""
-    <nav class="">
-      <div class="mx-auto px-4 border-b-2 border-dark-500 bg-white">
-        <div class="flex h-16 justify-between">
-          <div class="flex">
-            <div class="flex flex-shrink-0 items-center">
-              <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900"><%= Application.get_env(:core, :application_name) %></h1>
-            </div>
-          </div>
+    <nav class="navbar navbar-expand-lg" style="background-color: #26324a;">
+      <section class="container-fluid">
+        <.link class="navbar-brand" href={~p"/"}><%= Application.get_env(:core, :application_name) %></.link>
 
-          <div class="flex">
-            <.site_header_link :if={@current_account} navigate={~p"/accounts/settings"}>Account</.site_header_link>
-            <.site_header_link :if={@current_account} href={~p"/accounts/log_out"} method="delete">Log out</.site_header_link>
-            <.site_header_link :if={!@current_account} navigate={~p"/accounts/register"}>Register</.site_header_link>
-            <.site_header_link :if={!@current_account} navigate={~p"/accounts/log_in"}>Log in</.site_header_link>
-          </div>
-        </div>
-      </div>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <.site_header_link :if={@current_account} navigate={~p"/accounts/settings"}>Account</.site_header_link>
+          <.site_header_link :if={@current_account} href={~p"/accounts/log_out"} method="delete">Log out</.site_header_link>
+          <.site_header_link :if={!@current_account} navigate={~p"/accounts/register"}>Register</.site_header_link>
+          <.site_header_link :if={!@current_account} navigate={~p"/accounts/log_in"}>Log in</.site_header_link>
+        </ul>
+      </section>
     </nav>
     """
   end
@@ -129,12 +118,14 @@ defmodule CoreWeb.ContentComponents do
 
   def site_header_link(assigns) do
     ~H"""
-    <.link :if={@current?} class="border-indigo-500 text-contrast-500 inline-flex items-center px-1 pt-1 text-sm font-medium decoration-solid" aria-current="page" {@rest}>
-      <%= render_slot(@inner_block) %>
-    </.link>
-    <.link :if={!@current?} class="text-contrast-500 hover:border-gray-300 hover:text-highlight-500 inline-flex items-center px-1 pt-1 text-sm font-medium decoration-solid" {@rest}>
-      <%= render_slot(@inner_block) %>
-    </.link>
+    <li class="nav-item">
+      <.link :if={@current?} aria-current="page" class="nav-link active" {@rest}>
+        <%= render_slot(@inner_block) %>
+      </.link>
+      <.link :if={!@current?} class="nav-link" {@rest}>
+        <%= render_slot(@inner_block) %>
+      </.link>
+    </li>
     """
   end
 
@@ -145,44 +136,60 @@ defmodule CoreWeb.ContentComponents do
 
   def site_footer(assigns) do
     ~H"""
-    <footer class="bg-dark-500 text-contrast-500">
-      <div class="mx-auto w-full max-w-screen-xl">
-        <div class="grid grid-cols-2 gap-8 px-3 py-2">
-          <div>
-            <h2 class="mb-4 text-sm font-semibold text-highlight-500 uppercase">
-              <%= Application.get_env(:core, :application_name) %>
-            </h2>
-            <ul>
-              <li class="mb-1">
-                <.link navigate={~p"/"} class="text-light-500 font-medium hover:underline">Home</.link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h2 class="mb-4 text-sm font-semibold text-highlight-500 uppercase">
-              Authentication
-            </h2>
-            <ul>
-              <li :if={@current_account} class="mb-1">
-                <strong class="text-light-500 font-medium"><%= @current_account.username %></strong>
-              </li>
-              <li :if={@current_account} class="mb-1">
-                <.link navigate={~p"/accounts/settings"} class="text-light-500 font-medium hover:underline">Account</.link>
-              </li>
-              <li :if={@current_account} class="mb-1">
-                <.link href={~p"/accounts/log_out"} method="delete" class="text-light-500 font-medium hover:underline">
-                  Log out
-                </.link>
-              </li>
-              <li :if={!@current_account} class="mb-1">
-                <.link navigate={~p"/accounts/register"} class="text-light-500 font-medium hover:underline">Register</.link>
-              </li>
-              <li :if={!@current_account} class="mb-1">
-                <.link navigate={~p"/accounts/log_in"} class="text-light-500 font-medium hover:underline">Log in</.link>
-              </li>
-            </ul>
-          </div>
+    <footer class="container py-5">
+      <div class="row">
+        <div class="col-4 mb-3">
+          <h2>
+            <%= Application.get_env(:core, :application_name) %>
+          </h2>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><.link class="nav-link p-0 text-body-secondary" navigate={~p"/"}>Home</.link></li>
+            <li class="nav-item mb-2"><.link class="nav-link p-0 text-body-secondary" navigate={~p"/"}>Credits</.link></li>
+            <li class="nav-item mb-2"><.link class="nav-link p-0 text-body-secondary" navigate={~p"/"}>FAQ</.link></li>
+          </ul>
         </div>
+        <div class="col-4 mb-3">
+          <h5>User</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2" :if={@current_account}>
+              <strong><%= @current_account.username %></strong>
+            </li>
+            <li class="nav-item mb-2" :if={@current_account}>
+              <.link class="nav-link p-0 text-body-secondary" navigate={~p"/accounts/settings"}>Account</.link>
+            </li>
+            <li class="nav-item mb-2" :if={@current_account}>
+              <.link class="nav-link p-0 text-body-secondary" href={~p"/accounts/log_out"} method="delete">
+                Log out
+              </.link>
+            </li>
+            <li class="nav-item mb-2" :if={!@current_account}>
+              <.link class="nav-link p-0 text-body-secondary" navigate={~p"/accounts/register"}>Register</.link>
+            </li>
+            <li class="nav-item mb-2" :if={!@current_account}>
+              <.link class="nav-link p-0 text-body-secondary" navigate={~p"/accounts/log_in"}>Log in</.link>
+            </li>
+          </ul>
+        </div>
+        <div class="col-4 mb-3">
+          <form>
+            <h5>Subscribe to our newsletter</h5>
+            <p>Monthly digest of what's new and exciting from us.</p>
+            <div class="d-flex flex-column w-100 gap-2">
+              <label for="newsletter1" class="visually-hidden">Email address</label>
+              <input id="newsletter1" type="text" class="form-control" placeholder="Email address">
+              <button class="btn btn-primary" type="button">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column justify-content-between py-4 my-4 border-top">
+        <p>© 2023 Company, Inc. All rights reserved.</p>
+        <ul class="list-unstyled d-flex">
+          <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>
+          <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"></use></svg></a></li>
+          <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"></use></svg></a></li>
+        </ul>
       </div>
     </footer>
     """

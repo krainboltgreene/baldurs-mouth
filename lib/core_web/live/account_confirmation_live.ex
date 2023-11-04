@@ -41,7 +41,7 @@ defmodule CoreWeb.AccountConfirmationLive do
     <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
       <.input field={@form[:token]} type="hidden" />
       <:actions>
-        <.button phx-disable-with="Confirming..." type="submit" usable_icon="envelope">
+        <.button phx-disable-with="Confirming..." type="submit" usable_icon="envelope" kind="primary">
           Confirm my account
         </.button>
       </:actions>

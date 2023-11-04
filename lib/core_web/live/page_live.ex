@@ -18,16 +18,16 @@ defmodule CoreWeb.PageLive do
   @impl true
   def render(%{live_action: :home} = assigns) do
     ~H"""
-    <div class="mx-auto max-w-lg px-4 py-12">
-      <ul role="list" class="divide-y divide-gray-100">
-        <li class="flex gap-x-4 py-5">
-          <div class="min-w-0">
-            <p class="text-sm font-semibold leading-6 text-gray-900"><.link navigate={~p"/play/start"} class="font-medium underline">Start</.link></p>
+    <div>
+      <ul role="list">
+        <li>
+          <div>
+            <p><.link navigate={~p"/play/start"}>Start</.link></p>
           </div>
         </li>
-        <li class="flex gap-x-4 py-5">
-          <div class="min-w-0">
-            <p class="text-sm font-semibold leading-6 text-gray-900">Credits</p>
+        <li>
+          <div>
+            <p>Credits</p>
           </div>
         </li>
       </ul>

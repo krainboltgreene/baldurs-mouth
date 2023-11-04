@@ -27,19 +27,19 @@ defmodule CoreWeb.AccountForgotPasswordLive do
 
   def render(assigns) do
     ~H"""
-    <p class="text-center">
+    <p>
       We'll send a password reset link to your inbox
     </p>
 
     <.simple_form for={@form} id="reset_password_form" phx-submit="send_email">
       <.input field={@form[:email_address]} type="email" placeholder="Email" required />
       <:actions>
-        <.button phx-disable-with="Sending..." type="submit" usable_icon="envelope">
+        <.button phx-disable-with="Sending..." type="submit" usable_icon="envelope" kind="primary">
           Send password reset instructions
         </.button>
       </:actions>
     </.simple_form>
-    <p class="text-center text-sm mt-4">
+    <p>
       <.link href={~p"/accounts/register"}>Register</.link> | <.link href={~p"/accounts/log_in"}>Log in</.link>
     </p>
     """

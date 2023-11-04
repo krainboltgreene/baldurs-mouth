@@ -13,7 +13,7 @@ defmodule CoreWeb.CoreComponents do
 
   def tag(assigns) do
     ~H"""
-    <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10" {@rest}>
+    <span {@rest}>
       <%= render_slot(@inner_block) %>
     </span>
     """
@@ -49,38 +49,38 @@ defmodule CoreWeb.CoreComponents do
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
       class={[
-        "rounded-md p-4",
-        @kind == :info && "bg-blue-50",
-        @kind == :error && "bg-yellow-50"
+        "",
+        @kind == :info && "",
+        @kind == :error && ""
       ]}
       role="alert"
       {@rest}
     >
-      <div class="flex">
-        <div :if={@icon} class="flex-shrink-0">
+      <div>
+        <div :if={@icon}>
           <%= @icon %> Icon
         </div>
-        <div class="ml-3">
-          <h3 :if={@title} class={["text-sm font-medium", @kind == :info && "bg-blue-50", @kind == :error && "text-yellow-800"]}><%= @title %></h3>
-          <div class={["mt-2 text-sm", @kind == :info && "bg-blue-50", @kind == :error && "text-yellow-700"]}>
+        <div>
+          <h3 :if={@title} class={["", @kind == :info && "", @kind == :error && ""]}><%= @title %></h3>
+          <div class={["", @kind == :info && "", @kind == :error && ""]}>
             <%= msg %>
           </div>
-          <div :if={@context} class={["mt-2 text-sm", @kind == :info && "bg-blue-50", @kind == :error && "text-yellow-700"]}>
+          <div :if={@context} class={["", @kind == :info && "", @kind == :error && ""]}>
             <%= @context %>
           </div>
         </div>
-        <div class="ml-auto pl-3">
-          <div class="-mx-1.5 -my-1.5">
-            <%!-- Switch to button component --%>
+        <div>
+          <div>
             <.button
               type="button"
               class={[
-                "inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2",
-                @kind == :success && "bg-green-50 text-green-500 hover:bg-green-100 focus:ring-offset-green-50"
+                "",
+                @kind == :success && ""
               ]}
               usable_icon="xmark"
+              phx-click="clear_flash"
             >
-              <span class="sr-only">Dismiss</span>
+              Dismiss
             </.button>
           </div>
         </div>
@@ -103,25 +103,26 @@ defmodule CoreWeb.CoreComponents do
   attr :failure_icon, :string, default: "bug"
   attr :successful_icon, :string, default: "check"
   attr :usable_icon, :string, required: true
+  attr :kind, :string, default: nil
   attr :class, :list, default: []
   attr :rest, :global, include: ~w(disabled form name value)
   slot :inner_block, required: true
 
   def button(assigns) do
     ~H"""
-    <button :if={@state == "rejection"} disabled class={["inline-flex items-center gap-x-1.5 rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600", @class]} {@rest}>
+    <button :if={@state == "rejection"} disabled class={["btn", "btn-warning", @class]} {@rest}>
       <.icon as={@rejection_icon} /> <%= render_slot(@inner_block) %> Rejected
     </button>
-    <button :if={@state == "failure"} disabled class={["inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
+    <button :if={@state == "failure"} disabled class={["btn", "btn-danger", @class]} {@rest}>
       <.icon as={@failure_icon} /> <%= render_slot(@inner_block) %> Failed
     </button>
-    <button :if={@state == "successful"} disabled class={["inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
+    <button :if={@state == "successful"} disabled class={["btn", "btn-success", @class]} {@rest}>
       <.icon as={@successful_icon} /> <%= render_slot(@inner_block) %> Successful
     </button>
-    <button :if={@state == "busy"} disabled class={["inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
+    <button :if={@state == "busy"} disabled class={["btn", "btn-#{@kind}", @class]} {@rest}>
       <.icon as={@busy_icon} /> Busy...
     </button>
-    <button :if={@state == "usable" || @state == nil} class={["inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
+    <button :if={@state == "usable" || @state == nil} class={["btn", "btn-#{@kind}", @class]} {@rest}>
       <.icon as={@usable_icon} /> <%= render_slot(@inner_block) %>
     </button>
     """
@@ -142,7 +143,7 @@ defmodule CoreWeb.CoreComponents do
 
   def loading_text_indicator(assigns) do
     ~H"""
-    <.icon :for={number <- 1..@size} as="square-full" modifiers="fa-fade text-highlight-500" style={"--fa-animation-duration: 3s; --fa-fade-opacity: 0.2; --fa-animation-delay: #{number / 2.0}s"} />
+    <.icon :for={number <- 1..@size} as="square-full" modifiers="fa-fade" style={"--fa-animation-duration: 3s; --fa-fade-opacity: 0.2; --fa-animation-delay: #{number / 2.0}s"} />
     """
   end
 

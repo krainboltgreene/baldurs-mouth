@@ -1,18 +1,9 @@
 <.flash kind={:info} flash={@flash} />
 <.flash kind={:error} flash={@flash} />
-<div class="min-h-full bg-light-500">
-  <.site_header current_account={@current_account} />
 
-  <div class="py-10 min-h-screen">
-    <div class="mx-auto my-4 bg-white max-w-7xl rounded min-h-screen">
-      <.page_title><%= assigns[:page_title] || Application.get_env(:core, :application_name) %></.page_title>
-      <main>
-        <div class="mx-auto max-w-7xl py-3 px-2">
-          <%= @inner_content %>
-        </div>
-      </main>
-    </div>
-  </div>
-
-  <.site_footer current_account={@current_account} />
-</div>
+<.site_header current_account={@current_account} />
+<.page_title class="container"><%= assigns[:page_title] || Application.get_env(:core, :application_name) %></.page_title>
+<main class="container min-vh-100">
+  <%= @inner_content %>
+</main>
+<.site_footer current_account={@current_account} />

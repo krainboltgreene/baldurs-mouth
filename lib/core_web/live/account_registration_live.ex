@@ -44,9 +44,9 @@ defmodule CoreWeb.AccountRegistrationLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
-      <p class="text-center my-4">
-        Already registered? <.link navigate={~p"/accounts/log_in"} class="text-dark-500 font-medium hover:underline">Sign in to your account now.</.link>
+    <div>
+      <p>
+        Already registered? <.link navigate={~p"/accounts/log_in"}>Sign in to your account now.</.link>
       </p>
 
       <.simple_form for={@form} id="registration_form" phx-submit="save" phx-change="validate" phx-trigger-action={@trigger_submit} action={~p"/accounts/log_in?_action=registered"} method="post">
@@ -58,7 +58,7 @@ defmodule CoreWeb.AccountRegistrationLive do
         <.input field={@form[:password]} type="password" label="Password" required />
 
         <:actions>
-          <.button type="submit" phx-disable-with="Creating account..." usable_icon="check">
+          <.button type="submit" phx-disable-with="Creating account..." usable_icon="check" kind="primary">
             Create an account
           </.button>
         </:actions>

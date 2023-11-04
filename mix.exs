@@ -46,8 +46,8 @@ defmodule Core.MixProject do
       {:phoenix_live_view, "~> 0.20.0"},
       {:floki, "~> 0.34.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.0"},
-      {:esbuild, "~> 0.7.0", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.8.0", runtime: Mix.env() == :dev},
+      {:dart_sass, "~> 0.5", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.16.0"},
       {:telemetry_metrics, "~> 0.6.0"},
@@ -113,12 +113,12 @@ defmodule Core.MixProject do
         "test"
       ],
       "assets.setup": [
-        "tailwind.install --if-missing",
+        "sass.install --if-missing",
         "esbuild.install --if-missing",
         "cmd --cd assets/ npm install"
       ],
-      "assets.build": ["assets.setup", "tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      "assets.build": ["assets.setup", "sass default", "esbuild default"],
+      "assets.deploy": ["sass default --no-source-map --style=compressed", "esbuild default --minify", "phx.digest"],
       check: ["compile", "credo", "dialyzer --quiet"]
     ]
   end

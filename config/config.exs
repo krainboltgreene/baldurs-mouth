@@ -57,15 +57,11 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
-# Configure tailwind (the version is required)
-config :tailwind,
-  version: "3.3.2",
+# Configure sass (the version is required)
+config :dart_sass,
+  version: "1.61.0",
   default: [
-    args: ~w(
-      --config=tailwind.config.js
-      --input=css/application.css
-      --output=../priv/static/assets/application.css
-    ),
+    args: ~w(css/application.scss ../priv/static/assets/application.css),
     cd: Path.expand("../assets", __DIR__)
   ]
 
