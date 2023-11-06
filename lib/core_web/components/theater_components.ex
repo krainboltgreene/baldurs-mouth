@@ -9,17 +9,9 @@ defmodule CoreWeb.TheaterComponents do
   @spec speaker(%{character: Core.Gameplay.Character.t()}) :: Phoenix.LiveView.Rendered.t()
   def speaker(assigns) do
     ~H"""
-    <div class="group block flex-shrink-0">
-      <div class="flex items-center">
-        <div>
-          <img class="inline-block h-9 w-9 rounded-full" src="@character.avatar" alt="" />
-        </div>
-        <div class="ml-3">
-          <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900"><%= Pretty.get(@character, :name) %></p>
-          <p class="text-xs font-medium text-gray-500 group-hover:text-gray-700"><%= Pretty.get(@character.lineage, :name) %> <%= Pretty.get(@character.background, :name) %></p>
-          <p class="text-xs font-medium text-gray-500 group-hover:text-gray-700"><%= Pretty.get(@character, :classes) %></p>
-        </div>
-      </div>
+    <div class="group inline-block rounded-md mt-0.5 px-1.5 py-0.5 text-xs ring-1 ring-inset bg-gray-50 border border-gray-300 ring-gray-500/10 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+      <img class="inline-block h-9 w-9 rounded-full" src={~p"/images/class-fighter.svg"} alt="" />
+      <%= Pretty.get(@character, :name) %>
     </div>
     """
   end
