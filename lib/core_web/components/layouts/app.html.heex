@@ -4,7 +4,7 @@
   <.site_header current_account={@current_account} />
 
   <div class="py-2">
-    <div class="mx-auto my-4 bg-white max-w-2xl rounded min-h-screen">
+    <div class="mx-auto my-4 bg-white max-w-3xl rounded min-h-screen">
       <.page_title><%= assigns[:page_title] || Application.get_env(:core, :application_name) %></.page_title>
       <main class="py-2 px-4">
         <%= @inner_content %>

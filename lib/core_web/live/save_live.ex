@@ -28,26 +28,34 @@ defmodule CoreWeb.SaveLive do
   end
 
   def mount(%{"id" => save_id}, _session, %{assigns: %{live_action: :show}} = socket) do
-    save =
-      Core.Content.get_save(save_id)
-      |> Core.Repo.preload(
-        campaign: [],
-        last_scene: [
-          lines: [:speaker_npc],
-          dialogues: [:next_scene]
-        ],
-        characters: [
-          background: [],
-          lineage: [:lineage_category],
-          levels: [class: []]
-        ]
-      )
+    if connected?(socket) do
+      save =
+        Core.Content.get_save(save_id)
+        |> Core.Repo.preload(
+          campaign: [],
+          last_scene: [
+            lines: [:speaker_npc],
+            dialogues: [:next_scene]
+          ],
+          characters: [
+            background: [],
+            lineage: [:lineage_category],
+            levels: [class: []]
+          ]
+        )
 
-    socket
-    |> assign(:save, save)
-    |> assign(:scene, save.last_scene)
-    |> assign(:page_title, "#{save.campaign.name} - #{save.last_scene.name}")
-    |> (&{:ok, &1}).()
+      socket
+      |> assign(:save, save)
+      |> assign(:scene, save.last_scene)
+      |> assign(:speaker, Enum.random(save.characters))
+      |> assign(:page_title, "#{save.campaign.name} - #{save.last_scene.name}")
+      |> (&{:ok, &1}).()
+    else
+      socket
+      |> assign(:page_title, "Loading save...")
+      |> assign(:page_loading, true)
+      |> (&{:ok, &1}).()
+    end
   end
 
   @impl true
@@ -57,8 +65,22 @@ defmodule CoreWeb.SaveLive do
   end
 
   @impl true
+  def handle_event("switch_speaker", %{"id" => character_id}, %{assigns: %{save: %{characters: characters}}} = socket) do
+
+    socket
+    |> assign(:speaker, Enum.find(characters, fn character -> character.id == character_id end))
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
   @spec render(%{:live_action => :list | :show, optional(any()) => any()}) ::
           Phoenix.LiveView.Rendered.t()
+  def render(%{page_loading: true} = assigns) do
+    ~H"""
+    Loading...
+    """
+  end
+
   def render(%{live_action: :list} = assigns) do
     ~H"""
     <ul role="list" class="divide-y divide-gray-100">
@@ -97,21 +119,26 @@ defmodule CoreWeb.SaveLive do
   def render(%{live_action: :show} = assigns) do
     ~H"""
     <ul></ul>
-    <ul class="mx-auto mx-auto max-w-3xl grid grid-cols-3 gap-3">
-      <li :for={character <- @save.characters} class="relative flex items-center space-x-2 rounded-lg border border-gray-300 bg-white px-2 py-1 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-        <div class="flex-shrink-0">
-          <img class="h-5 w-5 rounded-full" src={~p"/images/class-fighter.svg"} alt="" />
+    <ul class="mx-auto mx-auto max-w-3xl grid grid-cols-3 gap-2">
+      <li :for={character <- @save.characters} class={["rounded-lg border border-gray-300 bg-white shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400", @speaker == character && "border-highlight-400 hover:border-highlight-600"]}>
+        <div class="grid grid-cols-[1fr_max-content] content-start space-x-2 pr-2 py-2">
+          <p class="ml-2 text-md font-medium"><%= Pretty.get(character, :name) %></p>
+          <img class="h-6 w-6" src={~p"/images/class-fighter.svg"} alt="" />
+          <div class="col-span-2">
+            <p class="truncate text-sm text-gray-500"><%= Pretty.get(character.lineage, :name) %> <%= Pretty.get(character, :classes) %></p>
+          </div>
         </div>
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium"><%= Pretty.get(character, :name) %></p>
-          <p class="truncate text-sm text-gray-500"><%= Pretty.get(character.lineage, :name) %> <%= Pretty.get(character.background, :name) %></p>
-          <p class="truncate text-sm text-gray-500"><%= Pretty.get(character, :classes) %></p>
+        <div :if={@speaker == character} class="rounded-b-md bg-highlight-400 text-center uppercase font-medium text-light-500">
+          Speaker
+        </div>
+        <div :if={@speaker != character} phx-click="switch_speaker" phx-value-id={character.id} class="text-center uppercase font-medium   opacity-0 hover:opacity-100 hover:cursor-pointer">
+          Switch
         </div>
       </li>
     </ul>
 
     <article class="mx-auto max-w-3xl px-4 py-4">
-      <p :for={{line, index} <- @scene.lines |> Enum.with_index} class="my-3" style={"opacity: 0%; animation: 1.25s ease-out #{1.75 * index}s normal forwards 1 fade-in-keys;"}>
+      <p :for={{line, index} <- @scene.lines |> Enum.with_index} class="my-3 opacity-0" style={"animation: 1.25s ease-out #{1.75 * index}s normal forwards 1 fade-in-keys;"}>
         <%= if line.speaker_npc.slug == "narrator" do %>
           <span class="italic"><%= line.body %></span>
         <% else %>
@@ -119,9 +146,9 @@ defmodule CoreWeb.SaveLive do
         <% end %>
       </p>
       <ol class="list-decimal">
-        <li :for={dialogue <- @scene.dialogues} class="my-3" style={"opacity: 0%; animation: 0.5s ease-out #{2 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
+        <li :for={dialogue <- @scene.dialogues} class="my-3 opacity-0" style={"animation: 0.5s ease-out #{2 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
           <p>
-            "<%= dialogue.body %>" <.speaker character={@save.characters |> Enum.at(0)} /> <.speaker character={@save.characters |> Enum.at(1)} /> <.speaker character={@save.characters |> Enum.at(2)} />
+            <.speaker character={@speaker} /> <.link navigate>"<%= dialogue.body %>"</.link>
           </p>
         </li>
       </ol>
