@@ -1,41 +1,30 @@
-# fly.toml app configuration file generated for plotgenerator on 2023-09-15T02:19:56Z
+# fly.toml app configuration file generated for baldurs-mouth on 2023-11-06T08:30:35Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = "baldurs-mouth"
+primary_region = "sea"
 kill_signal = "SIGTERM"
-kill_timeout = "5s"
+swap_size_mb = 512
 
-[experimental]
-  auto_rollback = true
+[build]
 
 [deploy]
   release_command = "/app/bin/migrate"
 
 [env]
-  PHX_HOST = "www.baldurs-mouth.com"
+  PHX_HOST = "baldurs-mouth.fly.dev"
   PORT = "8080"
 
-[[services]]
-  protocol = "tcp"
+[http_service]
   internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
   processes = ["app"]
-
-  [[services.ports]]
-    port = 80
-    handlers = ["http"]
-    force_https = true
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
-  [services.concurrency]
+  [http_service.concurrency]
     type = "connections"
-    hard_limit = 25
-    soft_limit = 20
-
-  [[services.tcp_checks]]
-    interval = "15s"
-    timeout = "2s"
-    grace_period = "1s"
+    hard_limit = 1000
+    soft_limit = 1000
