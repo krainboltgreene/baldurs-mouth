@@ -7,14 +7,12 @@ defmodule Core.Gameplay.Character do
   schema "characters" do
     field(:name, :string)
     field(:slug, :string)
-    field(:hitpoints, :integer, default: 0)
     field(:strength, :integer, default: 8)
     field(:dexterity, :integer, default: 8)
     field(:constitution, :integer, default: 8)
     field(:intelligence, :integer, default: 8)
     field(:wisdom, :integer, default: 8)
     field(:charisma, :integer, default: 8)
-    field(:inspiration, :integer, default: 0)
 
     embeds_one(:lineage_choices, Core.Gameplay.Choices)
     embeds_one(:background_choices, Core.Gameplay.Choices)
@@ -59,13 +57,11 @@ defmodule Core.Gameplay.Character do
       :constitution,
       :intelligence,
       :wisdom,
-      :charisma,
-      :hitpoints,
-      :inspiration
+      :charisma
     ])
     |> Ecto.Changeset.cast_embed(:pronouns, required: true, with: &pronouns_changeset/2)
-    |> Ecto.Changeset.cast_embed(:lineage_choices, required: true)
-    |> Ecto.Changeset.cast_embed(:background_choices, required: true)
+    |> Ecto.Changeset.cast_embed(:lineage_choices)
+    |> Ecto.Changeset.cast_embed(:background_choices)
     |> Ecto.Changeset.put_assoc(
       :account,
       attributes[:account] || record_with_preloaded_relationships.account

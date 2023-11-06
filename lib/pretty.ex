@@ -13,12 +13,10 @@ defmodule Pretty do
   ]
 
   @spec get(map(), list(atom()) | atom()) :: String.t()
-  def get(%Core.Gameplay.Character{hitpoints: hitpoints, levels: levels}, :hitpoints) do
+  def get(%Core.Gameplay.Character{levels: levels}, :hitpoints) do
     levels
-    |> Enum.map(&Map.get(&1, :choices))
     |> Enum.map(&Map.get(&1, :hitpoints, 0))
     |> Enum.sum()
-    |> Kernel.+(hitpoints)
   end
 
   def get(%Core.Gameplay.Character{levels: levels}, :classes) do
@@ -36,8 +34,8 @@ defmodule Pretty do
     Core.Gameplay.xp(levels)
   end
 
-  def get(%Core.Gameplay.Character{levels: levels}, :proficiency) do
-    levels |> Core.Gameplay.proficiency() |> bonus_or_negative()
+  def get(%Core.Gameplay.Character{levels: levels}, :proficiency_bonus) do
+    levels |> Core.Gameplay.proficiency_bonus() |> bonus_or_negative()
   end
 
   # TODO: Fill in with more logic like Durable

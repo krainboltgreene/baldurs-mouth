@@ -2,9 +2,8 @@ Name: <%= Pretty.get(character, :name) %>
 Lineage: <%= Pretty.get(character.lineage, :name) %>
 Background: <%= Pretty.get(character.background, :name) %>
 Level & XP: <%= Pretty.get(character, :level) %> & <%= Pretty.get(character, :xp) %>xp
-Proficiency Bonus: <%= Pretty.get(character, :proficiency) %>
+Proficiency Bonus: <%= Pretty.get(character, :proficiency_bonus) %>
 Class(es): <%= Pretty.get(character, :classes) %>
-Inspiration: <%= Pretty.get(character, :inspiration) %>
 Hitpoints: <%= Pretty.get(character, :hitpoints) %>/<%= Pretty.get(character, :hitpoints) %>
 Ability Scores:
   Strength: <%= Pretty.get(character, :strength) %>

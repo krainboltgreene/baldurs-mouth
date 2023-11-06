@@ -27,14 +27,24 @@
       Core.Gameplay.create_background(%{
         name: "Folk Hero",
         forced_skills: [
-          "Animal Handling",
-          "Survival"
+          "animal-handling",
+          "survival"
         ],
-        optional_skills: [],
+        selectable_skills: [],
         skill_choices: 0,
         forced_tools: [],
         tool_choices: 1,
-        tool_categories: ["gaming", "musical"]
+        selectable_tools: ["gaming", "musical"]
+      })
+
+    {:ok, _} =
+      Core.Gameplay.create_background(%{
+        name: "Failed Merchant"
+      })
+
+    {:ok, _} =
+      Core.Gameplay.create_background(%{
+        name: "Acolyte"
       })
 
     {:ok, elf_lineage_category} =
@@ -42,84 +52,93 @@
         name: "Elf"
       })
 
-    {:ok, _} =
-      Core.Gameplay.create_lineage(%{
-        name: "High-Elf",
-        lineage_category: elf_lineage_category,
-        features: [
-          "darkvision",
-          "relentless_endurance",
-          "savage_attacks",
-          "menacing"
-        ]
+    {:ok, tiefling_lineage_category} =
+      Core.Gameplay.create_lineage_category(%{
+        name: "Tiefling"
       })
 
     {:ok, _} =
       Core.Gameplay.create_lineage(%{
-        name: "Half-Orc",
-        features: [
-          "darkvision",
-          "relentless_endurance",
-          "savage_attacks",
-          "menacing"
-        ]
+        name: "High-Elf",
+        lineage_category: elf_lineage_category
+      })
+
+    {:ok, _} =
+      Core.Gameplay.create_lineage(%{
+        name: "Half-Orc"
+      })
+
+    {:ok, _} =
+      Core.Gameplay.create_lineage(%{
+        name: "Asmodeous Tiefling",
+        lineage_category: tiefling_lineage_category
+      })
+
+    {:ok, _} =
+      Core.Gameplay.create_class(%{
+        name: "Paladin",
+        hit_dice: 10,
+        saving_throw_proficiencies: [
+          "wisdom",
+          "charisma"
+        ],
+        spellcasting_ability: "charisma"
       })
 
     {:ok, _} =
       Core.Gameplay.create_class(%{
         name: "Fighter",
-        hit_dice: "10",
+        hit_dice: 10,
         saving_throw_proficiencies: [
           "strength",
           "constitution"
-        ],
-        levels: [
-          %{
-            weapon_proficiencies: ["simple weapons", "martial weapon"],
-            armor_proficiencies: ["light armour", "medium armour", "heavy armour", "shield"],
-            features: [
-              "fighting_style",
-              "second_wind"
-            ],
-            optional_skills: [
-              "acrobatics",
-              "animal_handling",
-              "athletics",
-              "history",
-              "insight",
-              "intimidation",
-              "perception",
-              "survival"
-            ],
-            skill_choices: 2
-          },
-          %{
-            features: ["action_surge"]
-          }
         ]
       })
 
     {:ok, _} =
+      Core.Gameplay.create_class(%{
+        name: "Bard",
+        hit_dice: 8,
+        saving_throw_proficiencies: [
+          "dexterity",
+          "charisma"
+        ],
+        spellcasting_ability: "charisma"
+      })
+
+    {:ok, _} =
+      Core.Gameplay.create_class(%{
+        name: "Wizard",
+        hit_dice: 6,
+        saving_throw_proficiencies: [
+          "intelligence",
+          "wisdom"
+        ],
+        spellcasting_ability: "intelligence"
+      })
+
+    {:ok, _} =
       Core.Gameplay.create_item(%{
-        name: "Greatsword"
+        name: "Greatsword",
+        tags: ["martial-weapons"]
       })
 
-    {:ok, trade_dispute} =
+    {:ok, campaign} =
       Core.Content.create_campaign(%{
-        name: "Trade Dispute"
+        name: "Ill-Omens at Daggerford"
       })
 
-    {:ok, tavern_scene} =
+    {:ok, opening_scene} =
       Core.Theater.create_scene(%{
-        campaign: trade_dispute,
+        campaign: campaign,
         opening: true,
-        name: "Entering Lucky Fox's Tavern For The First Time"
+        name: "Entering Lucky Fox Tavern For The First Time"
       })
 
     {:ok, _} =
       Core.Theater.create_line(%{
         speaker_npc: narrator,
-        scene: tavern_scene,
+        scene: opening_scene,
         body:
           "As you approach the bar the pudgy tavern keep looks up, clearly happy to see the new guests."
       })
@@ -127,7 +146,7 @@
     {:ok, _} =
       Core.Theater.create_line(%{
         speaker_npc: gritford,
-        scene: tavern_scene,
+        scene: opening_scene,
         body:
           "Hello there, welcome to the Lucky Fox! We have one small room open, but it's only got one bed. What can I do for you?"
       })
@@ -135,27 +154,27 @@
     {:ok, _} =
       Core.Theater.create_line(%{
         speaker_npc: narrator,
-        scene: tavern_scene,
+        scene: opening_scene,
         body:
           "Directly above the tavern keeper is a small eye carved into the wood. It's the symbol for the Guild's membership. He is either a part of the guild or a pawn."
       })
 
     {:ok, _} =
       Core.Theater.create_dialogue(%{
-        for_scene: tavern_scene,
+        for_scene: opening_scene,
         body: "Yes, we'd like one room please."
       })
 
     {:ok, _} =
       Core.Theater.create_dialogue(%{
-        for_scene: tavern_scene,
+        for_scene: opening_scene,
         body:
           "Actually, we're wondering if there's another inn near by? This place seems rather...damp."
       })
 
     {:ok, _} =
       Core.Theater.create_dialogue(%{
-        for_scene: tavern_scene,
+        for_scene: opening_scene,
         challenge: %{
           type: "required",
           track: "tavern_keeper_secret_basement",
@@ -167,7 +186,7 @@
 
     {:ok, _} =
       Core.Theater.create_dialogue(%{
-        for_scene: tavern_scene,
+        for_scene: opening_scene,
         challenge: %{
           type: "required",
           track: "tavern_keeper_secret_basement",
@@ -179,7 +198,7 @@
 
     {:ok, _} =
       Core.Theater.create_dialogue(%{
-        for_scene: tavern_scene,
+        for_scene: opening_scene,
         challenge: %{
           type: "required",
           track: "tavern_keeper_secret_basement",
@@ -190,7 +209,7 @@
 
     {:ok, _} =
       Core.Theater.create_dialogue(%{
-        for_scene: tavern_scene,
+        for_scene: opening_scene,
         challenge: %{
           type: "optional",
           skill: "deception",

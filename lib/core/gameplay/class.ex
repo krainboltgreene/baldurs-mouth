@@ -9,14 +9,7 @@ defmodule Core.Gameplay.Class do
     field(:slug, :string)
     field(:saving_throw_proficiencies, {:array, :string})
     field(:hit_dice, :integer)
-
-    embeds_many :levels, Level do
-      field(:features, {:array, :string})
-      field(:optional_skills, {:array, :string})
-      field(:skill_choices, :integer)
-      field(:weapon_proficiencies, {:array, :string})
-      field(:armor_proficiencies, {:array, :string})
-    end
+    field(:spellcasting_ability, Ecto.Enum, values: [:charisma, :wisdom, :intelligence])
   end
 
   @type t :: %__MODULE__{
@@ -30,15 +23,14 @@ defmodule Core.Gameplay.Class do
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
     record
-    |> Ecto.Changeset.cast(attributes, [:name, :saving_throw_proficiencies, :hit_dice])
-    |> Ecto.Changeset.cast_embed(:levels, required: true, with: &level_changeset/2)
+    |> Ecto.Changeset.cast(attributes, [
+      :name,
+      :saving_throw_proficiencies,
+      :spellcasting_ability,
+      :hit_dice
+    ])
     |> Slugy.slugify(:name)
-    |> Ecto.Changeset.validate_required([:name, :slug])
+    |> Ecto.Changeset.validate_required([:name, :slug, :saving_throw_proficiencies, :hit_dice])
     |> Ecto.Changeset.unique_constraint(:slug)
-  end
-
-  def level_changeset(record, attributes) do
-    record
-    |> Ecto.Changeset.cast(attributes, [:features, :optional_skills, :skill_choices])
   end
 end

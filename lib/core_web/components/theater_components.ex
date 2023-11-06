@@ -12,7 +12,7 @@ defmodule CoreWeb.TheaterComponents do
     <div class="group block flex-shrink-0">
       <div class="flex items-center">
         <div>
-          <img class="inline-block h-9 w-9 rounded-full" src="@character.avatar" alt="">
+          <img class="inline-block h-9 w-9 rounded-full" src="@character.avatar" alt="" />
         </div>
         <div class="ml-3">
           <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900"><%= Pretty.get(@character, :name) %></p>

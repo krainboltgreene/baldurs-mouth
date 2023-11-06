@@ -3,13 +3,11 @@
 <div class="min-h-full bg-light-500">
   <.site_header current_account={@current_account} />
 
-  <div class="py-10 min-h-screen">
-    <div class="mx-auto my-4 bg-white max-w-7xl rounded min-h-screen">
+  <div class="py-2">
+    <div class="mx-auto my-4 bg-white max-w-2xl rounded min-h-screen">
       <.page_title><%= assigns[:page_title] || Application.get_env(:core, :application_name) %></.page_title>
-      <main>
-        <div class="mx-auto max-w-7xl py-3 px-2">
-          <%= @inner_content %>
-        </div>
+      <main class="py-2 px-4">
+        <%= @inner_content %>
       </main>
     </div>
   </div>

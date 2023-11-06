@@ -84,15 +84,17 @@ Example:
 
 ## Notes
 
- - attacking
- - bartering
- - journal & journal entry
- - forced dialogs
- - allow character choice in addition to random
- - npc known is kinda character specific? Maybe a join table
- - short description added to npc to be used instead of name
- - dialogue that leads back to the same scene shoudl be automatically jumped too
- - if the last line of dialogue is fromt he same speaker, just avoid the formatting.
+- attacking
+- bartering
+- journal & journal entry
+- forced dialogs
+- allow character choice in addition to random
+- npc known is kinda character specific? Maybe a join table
+- short description added to npc to be used instead of name
+- dialogue that leads back to the same scene shoudl be automatically jumped too
+- if the last line of dialogue is fromt he same speaker, just avoid the formatting.
+- add flash to empty
+- account settings live needs render at bottom
 
 
 ## Setup

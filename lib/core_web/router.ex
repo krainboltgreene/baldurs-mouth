@@ -67,8 +67,8 @@ defmodule CoreWeb.Router do
       on_mount: [
         {CoreWeb.AccountAuthenticationHelpers, :ensure_authenticated}
       ] do
-      live "/play/start", CoreWeb.PlayLive, :start
-      live "/play/:id", CoreWeb.PlayLive, :show
+      live "/saves", CoreWeb.SaveLive, :list
+      live "/saves/:id", CoreWeb.SaveLive, :show
       live "/accounts/settings", CoreWeb.AccountSettingsLive, :edit
       live "/accounts/settings/confirm_email/:token", CoreWeb.AccountSettingsLive, :confirm_email
     end

@@ -315,14 +315,12 @@ CREATE TABLE public.characters (
     id uuid NOT NULL,
     name text NOT NULL,
     slug public.citext NOT NULL,
-    hitpoints integer DEFAULT 0 NOT NULL,
     strength integer DEFAULT 8 NOT NULL,
     dexterity integer DEFAULT 8 NOT NULL,
     constitution integer DEFAULT 8 NOT NULL,
     intelligence integer DEFAULT 8 NOT NULL,
     wisdom integer DEFAULT 8 NOT NULL,
     charisma integer DEFAULT 8 NOT NULL,
-    inspiration integer DEFAULT 0 NOT NULL,
     lineage_choices jsonb DEFAULT '{}'::jsonb NOT NULL,
     background_choices jsonb DEFAULT '{}'::jsonb NOT NULL,
     pronouns jsonb NOT NULL,
@@ -340,9 +338,9 @@ CREATE TABLE public.classes (
     id uuid NOT NULL,
     name text NOT NULL,
     slug public.citext NOT NULL,
-    levels jsonb NOT NULL,
     saving_throw_proficiencies text[] NOT NULL,
-    hit_dice integer NOT NULL
+    hit_dice integer NOT NULL,
+    spellcasting_ability public.citext
 );
 
 
@@ -380,7 +378,8 @@ CREATE TABLE public.inventories (
 CREATE TABLE public.items (
     id uuid NOT NULL,
     name text NOT NULL,
-    slug public.citext NOT NULL
+    slug public.citext NOT NULL,
+    tags public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL
 );
 
 
@@ -391,9 +390,18 @@ CREATE TABLE public.items (
 CREATE TABLE public.levels (
     id uuid NOT NULL,
     "position" integer NOT NULL,
+    hitpoints integer DEFAULT 1 NOT NULL,
+    features public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    weapon_proficiencies public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    armor_proficiencies public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    skill_proficiencies public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    skill_expertises public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    tool_proficiencies public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    tool_expertises public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    cantrips public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
+    languages public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
     class_id uuid NOT NULL,
-    character_id uuid NOT NULL,
-    choices jsonb NOT NULL
+    character_id uuid NOT NULL
 );
 
 
@@ -472,6 +480,7 @@ CREATE TABLE public.parties (
 CREATE TABLE public.saves (
     id uuid NOT NULL,
     playing_state public.citext NOT NULL,
+    inspiration integer DEFAULT 0 NOT NULL,
     last_scene_id uuid NOT NULL,
     inserted_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL

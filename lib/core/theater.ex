@@ -6,12 +6,14 @@ defmodule Core.Theater do
   use Scaffolding.Read.Slug, [Core.Theater.NPC, :npc]
   use Scaffolding.Read.Slug, [Core.Theater.Scene, :scene]
 
-  @spec play(Core.Content.Campaign.t(), list(Core.Gameplay.Character.t())) :: Core.Theater.Scene.t()
+  @spec play(Core.Content.Campaign.t(), list(Core.Gameplay.Character.t())) ::
+          Core.Theater.Scene.t()
   def play(%Core.Content.Campaign{} = campaign, characters) when is_list(characters) do
-    {:ok, save} = Core.Content.create_save(%{
-      last_scene: Core.Repo.preload(campaign, [:opening_scene]).opening_scene,
-      characters: characters
-    })
+    {:ok, save} =
+      Core.Content.create_save(%{
+        last_scene: Core.Repo.preload(campaign, [:opening_scene]).opening_scene,
+        characters: characters
+      })
 
     save.last_scene
     |> Core.Repo.preload(lines: [:speaker_npc], dialogues: [:next_scene])

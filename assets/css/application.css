@@ -2,6 +2,11 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+a {
+    @apply underline;
+    @apply hover:text-highlight-500;
+}
+
 pre {
     white-space: pre-wrap;
 }
