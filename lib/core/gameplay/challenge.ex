@@ -1,4 +1,4 @@
-defmodule Core.Theater.Challenge do
+defmodule Core.Gameplay.Challenge do
   @moduledoc false
   use Ecto.Schema
 

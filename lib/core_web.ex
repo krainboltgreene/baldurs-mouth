@@ -91,6 +91,7 @@ defmodule CoreWeb do
       import CoreWeb.FormComponents
       import CoreWeb.ContentComponents
       import CoreWeb.TheaterComponents
+      import CoreWeb.GameplayComponents
       import CoreWeb.Gettext
 
       # Shortcut for generating JS commands

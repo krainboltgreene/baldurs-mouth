@@ -17,6 +17,7 @@ defmodule Core.Gameplay.Fighter do
     %{}
   end
 end
+
 # Armor: All armor, shields
 # Weapons: Simple weapons, martial weapons
 # Tools: None

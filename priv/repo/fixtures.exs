@@ -86,7 +86,7 @@ if Mix.env() == :dev do
         })
 
       svet
-      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
       |> tap(&Core.Gameplay.preview(&1, :lineage))
       |> tap(&Core.Gameplay.preview(&1, :background))
       |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("fighter"), 1))
@@ -94,7 +94,7 @@ if Mix.env() == :dev do
       |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("fighter"), 3))
 
       svet
-      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
       |> tap(&Core.Gameplay.level_up(&1, :lineage, %{}))
       |> tap(&Core.Gameplay.level_up(&1, :background, %{}))
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("fighter"), 1, %{}))
@@ -117,7 +117,7 @@ if Mix.env() == :dev do
         })
 
       onyeje
-      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
       |> tap(&Core.Gameplay.preview(&1, :lineage))
       |> tap(&Core.Gameplay.preview(&1, :background))
       |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("bard"), 1))
@@ -125,7 +125,7 @@ if Mix.env() == :dev do
       |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("bard"), 3))
 
       onyeje
-      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
       |> tap(&Core.Gameplay.level_up(&1, :lineage, %{}))
       |> tap(&Core.Gameplay.level_up(&1, :background, %{}))
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("bard"), 1, %{}))
@@ -148,7 +148,7 @@ if Mix.env() == :dev do
         })
 
       shankar
-      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
       |> tap(&Core.Gameplay.preview(&1, :lineage))
       |> tap(&Core.Gameplay.preview(&1, :background))
       |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("wizard"), 1))
@@ -156,7 +156,7 @@ if Mix.env() == :dev do
       |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("wizard"), 3))
 
       shankar
-      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
       |> tap(&Core.Gameplay.level_up(&1, :lineage, %{}))
       |> tap(&Core.Gameplay.level_up(&1, :background, %{}))
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("wizard"), 1, %{}))

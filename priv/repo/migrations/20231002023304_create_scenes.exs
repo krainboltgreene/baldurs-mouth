@@ -10,7 +10,7 @@ defmodule Core.Repo.Migrations.CreateScenes do
     end
 
     create(unique_index(:scenes, [:slug]))
-    create(unique_index(:scenes, [:opening, :campaign_id]))
-    create(index(:scenes, [:campaign_id], where: "opening is TRUE"))
+    create(unique_index(:scenes, [:opening, :campaign_id], where: "opening is TRUE"))
+    create(index(:scenes, [:campaign_id]))
   end
 end

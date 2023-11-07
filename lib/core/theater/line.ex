@@ -6,7 +6,7 @@ defmodule Core.Theater.Line do
   @foreign_key_type :binary_id
   schema "lines" do
     field(:body, :string, default: "")
-    embeds_one(:challenge, Core.Theater.Challenge)
+    embeds_one(:challenge, Core.Gameplay.Challenge)
     belongs_to(:scene, Core.Theater.Scene)
     belongs_to(:speaker_npc, Core.Theater.NPC)
   end

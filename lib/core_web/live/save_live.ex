@@ -48,7 +48,8 @@ defmodule CoreWeb.SaveLive do
       |> assign(:save, save)
       |> assign(:scene, save.last_scene)
       |> assign(:speaker, Enum.random(save.characters))
-      |> assign(:page_title, "#{save.campaign.name} - #{save.last_scene.name}")
+      |> assign(:page_title, save.last_scene.name)
+      |> assign(:page_subtitle, save.campaign.name)
       |> (&{:ok, &1}).()
     else
       socket
@@ -65,8 +66,11 @@ defmodule CoreWeb.SaveLive do
   end
 
   @impl true
-  def handle_event("switch_speaker", %{"id" => character_id}, %{assigns: %{save: %{characters: characters}}} = socket) do
-
+  def handle_event(
+        "switch_speaker",
+        %{"id" => character_id},
+        %{assigns: %{save: %{characters: characters}}} = socket
+      ) do
     socket
     |> assign(:speaker, Enum.find(characters, fn character -> character.id == character_id end))
     |> (&{:noreply, &1}).()
@@ -118,8 +122,20 @@ defmodule CoreWeb.SaveLive do
 
   def render(%{live_action: :show} = assigns) do
     ~H"""
-    <ul></ul>
-    <ul class="mx-auto mx-auto grid grid-cols-3 gap-2">
+
+    <article class="mx-auto px-4 py-4">
+      <div :for={{line, index} <- @scene.lines |> Enum.with_index()} class="my-2 mx-auto opacity-5 prose rounded-lg border border-dark-700 bg-dark-500 text-light-500 p-8 font-serif" style={"animation: 1.25s ease-out #{1.75 * index}s normal forwards 1 fade-in-keys;"}>
+        <p>
+          <%= if line.speaker_npc.slug == "narrator" do %>
+            <em><%= line.body %></em>
+          <% else %>
+            <strong><.link href="#" class="text-highlight-300"><%= Pretty.get(line.speaker_npc, :name) %></.link></strong> shouts "<%= line.body %>"
+          <% end %>
+        </p>
+      </div>
+    </article>
+
+    <ul class="mx-auto mx-auto grid grid-cols-3 gap-2 opacity-5" style={"animation: 0.5s ease-out #{1.75 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
       <li :for={character <- @save.characters} class={["rounded-lg border border-gray-300 bg-white shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400", @speaker == character && "border-highlight-400 hover:border-highlight-600"]}>
         <div class="grid grid-cols-[1fr_max-content] content-start space-x-2 pr-2 py-2">
           <p class="ml-2 text-md font-medium"><.link href="#" class="text-highlight-300"><%= Pretty.get(character, :name) %></.link></p>
@@ -131,34 +147,23 @@ defmodule CoreWeb.SaveLive do
         <div :if={@speaker == character} class="rounded-b-md bg-highlight-400 text-center uppercase font-medium text-light-500">
           Speaker
         </div>
-        <div :if={@speaker != character} phx-click="switch_speaker" phx-value-id={character.id} class="text-center uppercase font-medium   opacity-0 hover:opacity-100 hover:cursor-pointer">
+        <div :if={@speaker != character} phx-click="switch_speaker" phx-value-id={character.id} class="text-center uppercase opacity-25 hover:opacity-100 hover:cursor-pointer">
           Switch
         </div>
       </li>
     </ul>
 
-    <article class="mx-auto px-4 py-4">
-      <div :for={{line, index} <- @scene.lines |> Enum.with_index} class="my-2 mx-auto opacity-100 prose rounded-lg border border-dark-700 bg-dark-500 text-light-500 p-8 font-serif" style={"xanimation: 1.25s ease-out #{1.75 * index}s normal forwards 1 fade-in-keys;"}>
-        <p>
-          <%= if line.speaker_npc.slug == "narrator" do %>
-            <em><%= line.body %></em>
-          <% else %>
-            <strong><.link href="#" class="text-highlight-300"><%= Pretty.get(line.speaker_npc, :name) %></.link></strong> shouts "<%= line.body %>"
-          <% end %>
-        </p>
-      </div>
-    </article>
-    <article class="mx-auto px-4 py-4 prose">
+    <article class="mx-auto py-4 prose opacity-5" style={"animation: 0.5s ease-out #{1.75 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
       <p>
         <strong><%= Pretty.get(@speaker, :name) %></strong> says ...
       </p>
-      <ol class="ml-2">
-        <li :for={dialogue <- @scene.dialogues} class="my-3 opacity-100" style={"xanimation: 0.5s ease-out #{2 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
+      <ol>
+        <li :for={dialogue <- @scene.dialogues}>
           <p>
             "<.link href="#"><%= dialogue.body %></.link>"
-          <span :if={!dialogue.next_scene_id} class="text-xs text-grey-400">
-            <em>This will end the conversation.</em>
-          </span>
+            <span :if={!dialogue.next_scene_id} class="text-xs text-grey-400">
+              <em>This will end the conversation.</em>
+            </span>
           </p>
         </li>
       </ol>

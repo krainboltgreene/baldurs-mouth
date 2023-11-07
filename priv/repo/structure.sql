@@ -354,6 +354,7 @@ CREATE TABLE public.dialogues (
     challenge jsonb,
     for_scene_id uuid,
     next_scene_id uuid,
+    failure_scene_id uuid,
     speaker_character_id uuid
 );
 
@@ -745,6 +746,13 @@ CREATE UNIQUE INDEX classes_slug_index ON public.classes USING btree (slug);
 
 
 --
+-- Name: dialogues_failure_scene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX dialogues_failure_scene_id_index ON public.dialogues USING btree (failure_scene_id);
+
+
+--
 -- Name: dialogues_for_scene_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -895,14 +903,14 @@ CREATE INDEX saves_playing_state_index ON public.saves USING btree (playing_stat
 -- Name: scenes_campaign_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX scenes_campaign_id_index ON public.scenes USING btree (campaign_id) WHERE (opening IS TRUE);
+CREATE INDEX scenes_campaign_id_index ON public.scenes USING btree (campaign_id);
 
 
 --
 -- Name: scenes_opening_campaign_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX scenes_opening_campaign_id_index ON public.scenes USING btree (opening, campaign_id);
+CREATE UNIQUE INDEX scenes_opening_campaign_id_index ON public.scenes USING btree (opening, campaign_id) WHERE (opening IS TRUE);
 
 
 --
@@ -949,6 +957,14 @@ ALTER TABLE ONLY public.characters
 
 ALTER TABLE ONLY public.characters
     ADD CONSTRAINT characters_lineage_id_fkey FOREIGN KEY (lineage_id) REFERENCES public.lineages(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dialogues dialogues_failure_scene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dialogues
+    ADD CONSTRAINT dialogues_failure_scene_id_fkey FOREIGN KEY (failure_scene_id) REFERENCES public.scenes(id) ON DELETE CASCADE;
 
 
 --

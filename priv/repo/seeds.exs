@@ -128,93 +128,100 @@
         name: "Ill-Omens at Daggerford"
       })
 
+    {:ok, purchasing_a_room_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Paying For Room & Board"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, the_cost_of_room_and_board_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "The Cost of Room & Board"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, haggling_win_a_room_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Successfully Haggling the Price of Room & Board"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, haggling_fail_a_room_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Unsuccessfully Haggling the Price of Room & Board"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, denies_zhentarim_allegation_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Owner Denies Unfounded Allegation of Zhentarim Allegience"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, denies_existence_of_basement_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Owner Denies Existence of Vaunted Basement Lodgings"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, appreciates_zhentarim_allegation_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Owner Appreciates Zhentarim Connection"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, cedes_to_fake_demands_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Owner Cedes to the Citywatch Authority!"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
+    {:ok, called_bluff_scene} =
+      Core.Theater.create_scene(%{
+        campaign: campaign,
+        name: "Owner Calls Your Bluff!"
+      })
+      |> tap(&Core.Theater.add_line_to(&1, "Oh no, you've stumbled onto a scene that hasn't been quite realized into existence. I don't think you'll be surviving this.", narrator))
+
     {:ok, opening_scene} =
       Core.Theater.create_scene(%{
         campaign: campaign,
         opening: true,
         name: "Entering Lucky Fox Tavern For The First Time"
       })
-
-    {:ok, _} =
-      Core.Theater.create_line(%{
-        speaker_npc: narrator,
-        scene: opening_scene,
-        body:
-          "As you approach the bar the pudgy tavern keep looks up, clearly happy to see the new guests."
-      })
-
-    {:ok, _} =
-      Core.Theater.create_line(%{
-        speaker_npc: gritford,
-        scene: opening_scene,
-        body:
-          "Hello there, welcome to the Lucky Fox! We have one small room open, but it's only got one bed. What can I do for you?"
-      })
-
-    {:ok, _} =
-      Core.Theater.create_line(%{
-        speaker_npc: narrator,
-        scene: opening_scene,
-        body:
-          "Directly above the tavern keeper is a small eye carved into the wood. It's the symbol for the Guild's membership. He is either a part of the guild or a pawn."
-      })
-
-    {:ok, _} =
-      Core.Theater.create_dialogue(%{
-        for_scene: opening_scene,
-        body: "Yes, we'd like one room please."
-      })
-
-    {:ok, _} =
-      Core.Theater.create_dialogue(%{
-        for_scene: opening_scene,
-        body:
-          "Actually, we're wondering if there's another inn near by? This place seems rather...damp."
-      })
-
-    {:ok, _} =
-      Core.Theater.create_dialogue(%{
-        for_scene: opening_scene,
-        challenge: %{
+      |> tap(&Core.Theater.add_line_to(&1, "As you approach the bar the pudgy tavern keep looks up, clearly happy to see the new guests.", narrator))
+      |> tap(&Core.Theater.add_line_to(&1, "Hello there, welcome to the Lucky Fox! We have one small room open, but it's only got one bed. What can I do for you?", gritford))
+      |> tap(&Core.Theater.add_line_to(&1, "Directly above the tavern keeper is a small dragon carved into the wood. It's the symbol for the Zhentarim's membership. He is either a part of the guild or a pawn.", narrator))
+      |> tap(&Core.Theater.add_dialogue_to(&1, "Yes, we'd like one room please.", the_cost_of_room_and_board_scene))
+      |> tap(&Core.Theater.add_dialogue_to(&1, "Actually, we're wondering if there's another inn near by? This place seems rather...damp."))
+      |> tap(&Core.Theater.add_dialogue_to(&1, "Oh, are you a part of those Zhentarim fellows?", denies_zhentarim_allegation_scene, %{
           type: "required",
           track: "tavern_keeper_secret_basement",
           state: "known_guild_participant",
           language: "thieves_cant"
-        },
-        body: "Oh, are you a part of the Guild?"
-      })
-
-    {:ok, _} =
-      Core.Theater.create_dialogue(%{
-        for_scene: opening_scene,
-        challenge: %{
+        }))
+      |> tap(&Core.Theater.add_dialogue_to(&1, "We'd like to see where the fox sleeps.", appreciates_zhentarim_allegation_scene, %{
           type: "required",
           track: "tavern_keeper_secret_basement",
           state: "known_guild_participant",
           language: "thieves_cant"
-        },
-        body: "We'd like to see where the fox sleeps."
-      })
-
-    {:ok, _} =
-      Core.Theater.create_dialogue(%{
-        for_scene: opening_scene,
-        challenge: %{
+        }))
+      |> tap(&Core.Theater.add_dialogue_to(&1, "We're looking to get into that basement of yours, what's the price?", denies_existence_of_basement_scene, %{
           type: "required",
           track: "tavern_keeper_secret_basement",
           state: "discovered_note"
-        },
-        body: "We're looking to get into that basement of yours, what's the price?"
-      })
-
-    {:ok, _} =
-      Core.Theater.create_dialogue(%{
-        for_scene: opening_scene,
-        challenge: %{
+        }))
+      |> tap(&Core.Theater.add_dialogue_to(&1, "We're looking to get into that basement of yours, what's the price?", cedes_to_fake_demands_scene, %{
           type: "optional",
           skill: "deception",
           target: 18
-        },
-        body: "By right of eminent domain from the City Guard captain we are to have two rooms!"
-      })
+        }, called_bluff_scene))
   end)

@@ -64,13 +64,16 @@ defmodule Core.Gameplay do
     Core.Gameplay.Wizard.preview(character, position)
   end
 
-
   @spec preview(
           Core.Gameplay.Character.t(),
           atom()
         ) :: Core.Gameplay.Level.options_t()
   def preview(
-        %Core.Gameplay.Character{lineage: %Core.Gameplay.Lineage{lineage_category: %Core.Gameplay.LineageCategory{slug: "elf"}}} = character,
+        %Core.Gameplay.Character{
+          lineage: %Core.Gameplay.Lineage{
+            lineage_category: %Core.Gameplay.LineageCategory{slug: "elf"}
+          }
+        } = character,
         :lineage
       ) do
     Core.Gameplay.Elf.preview(character)
@@ -84,7 +87,11 @@ defmodule Core.Gameplay do
   end
 
   def preview(
-        %Core.Gameplay.Character{lineage: %Core.Gameplay.Lineage{lineage_category: %Core.Gameplay.LineageCategory{slug: "tiefling"}}} = character,
+        %Core.Gameplay.Character{
+          lineage: %Core.Gameplay.Lineage{
+            lineage_category: %Core.Gameplay.LineageCategory{slug: "tiefling"}
+          }
+        } = character,
         :lineage
       ) do
     Core.Gameplay.Tiefling.preview(character)

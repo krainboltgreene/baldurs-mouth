@@ -9,6 +9,7 @@ defmodule CoreWeb.ContentComponents do
   # import CoreWeb.Gettext
 
   @spec page_title(map()) :: Phoenix.LiveView.Rendered.t()
+  attr :subtitle, :string, doc: "A smaller piece of accompanying text"
   attr :rest, :global
   slot :inner_block, required: true, doc: "The title of the page"
 
@@ -16,7 +17,8 @@ defmodule CoreWeb.ContentComponents do
     ~H"""
     <header class="bg-dark-500">
       <div class="mx-auto max-w-7xl py-2 px-3">
-        <h1 id="page_title" class="text-3xl font-bold leading-tight tracking-tight text-light-500" {@rest}><%= render_slot(@inner_block) %></h1>
+        <h1 id="page_title" class="text-2xl font-bold leading-tight tracking-tight text-highlight-500" {@rest}><%= render_slot(@inner_block) %></h1>
+        <p :if={assigns[:subtitle]} id="page_subtitle" class="text-sm font-semibold leading-tight tracking-tight text-highlight-600" {@rest}><%= @subtitle %></p>
       </div>
     </header>
     """
@@ -156,7 +158,7 @@ defmodule CoreWeb.ContentComponents do
       <div class="mx-auto w-full max-w-screen-xl">
         <div class="grid grid-cols-2 gap-8 px-3 py-2">
           <div>
-            <h2 class="mb-4 text-sm font-semibold text-highlight-500 uppercase">
+            <h2 class="mb-4 text-lg font-semibold text-highlight-300 uppercase">
               <%= Application.get_env(:core, :application_name) %>
             </h2>
             <ul>
