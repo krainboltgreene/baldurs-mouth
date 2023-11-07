@@ -119,10 +119,10 @@ defmodule CoreWeb.SaveLive do
   def render(%{live_action: :show} = assigns) do
     ~H"""
     <ul></ul>
-    <ul class="mx-auto mx-auto max-w-3xl grid grid-cols-3 gap-2">
+    <ul class="mx-auto mx-auto grid grid-cols-3 gap-2">
       <li :for={character <- @save.characters} class={["rounded-lg border border-gray-300 bg-white shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400", @speaker == character && "border-highlight-400 hover:border-highlight-600"]}>
         <div class="grid grid-cols-[1fr_max-content] content-start space-x-2 pr-2 py-2">
-          <p class="ml-2 text-md font-medium"><%= Pretty.get(character, :name) %></p>
+          <p class="ml-2 text-md font-medium"><.link href="#" class="text-highlight-300"><%= Pretty.get(character, :name) %></.link></p>
           <img class="h-6 w-6" src={~p"/images/class-fighter.svg"} alt="" />
           <div class="col-span-2">
             <p class="truncate text-sm text-gray-500"><%= Pretty.get(character.lineage, :name) %> <%= Pretty.get(character, :classes) %></p>
@@ -137,18 +137,28 @@ defmodule CoreWeb.SaveLive do
       </li>
     </ul>
 
-    <article class="mx-auto max-w-3xl px-4 py-4">
-      <p :for={{line, index} <- @scene.lines |> Enum.with_index} class="my-3 opacity-0" style={"animation: 1.25s ease-out #{1.75 * index}s normal forwards 1 fade-in-keys;"}>
-        <%= if line.speaker_npc.slug == "narrator" do %>
-          <span class="italic"><%= line.body %></span>
-        <% else %>
-          <span class="font-bold"><%= Pretty.get(line.speaker_npc, :name) %></span>: "<%= line.body %>"
-        <% end %>
+    <article class="mx-auto px-4 py-4">
+      <div :for={{line, index} <- @scene.lines |> Enum.with_index} class="my-2 mx-auto opacity-100 prose rounded-lg border border-dark-700 bg-dark-500 text-light-500 p-8 font-serif" style={"xanimation: 1.25s ease-out #{1.75 * index}s normal forwards 1 fade-in-keys;"}>
+        <p>
+          <%= if line.speaker_npc.slug == "narrator" do %>
+            <em><%= line.body %></em>
+          <% else %>
+            <strong><.link href="#" class="text-highlight-300"><%= Pretty.get(line.speaker_npc, :name) %></.link></strong> shouts "<%= line.body %>"
+          <% end %>
+        </p>
+      </div>
+    </article>
+    <article class="mx-auto px-4 py-4 prose">
+      <p>
+        <strong><%= Pretty.get(@speaker, :name) %></strong> says ...
       </p>
-      <ol class="list-decimal">
-        <li :for={dialogue <- @scene.dialogues} class="my-3 opacity-0" style={"animation: 0.5s ease-out #{2 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
+      <ol class="ml-2">
+        <li :for={dialogue <- @scene.dialogues} class="my-3 opacity-100" style={"xanimation: 0.5s ease-out #{2 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
           <p>
-            <.speaker character={@speaker} /> <.link navigate>"<%= dialogue.body %>"</.link>
+            "<.link href="#"><%= dialogue.body %></.link>"
+          <span :if={!dialogue.next_scene_id} class="text-xs text-grey-400">
+            <em>This will end the conversation.</em>
+          </span>
           </p>
         </li>
       </ol>

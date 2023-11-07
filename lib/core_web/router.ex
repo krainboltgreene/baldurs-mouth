@@ -2,6 +2,7 @@ defmodule CoreWeb.Router do
   use CoreWeb, :router
 
   import CoreWeb.AccountAuthenticationHelpers
+  import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -62,6 +63,7 @@ defmodule CoreWeb.Router do
 
   scope "/" do
     pipe_through [:browser, :require_authenticated_account]
+    live_dashboard "/phoenix", metrics: CoreWeb.Telemetry
 
     live_session :require_authenticated_account,
       on_mount: [

@@ -12,6 +12,10 @@ module.exports = {
     "../lib/*_web/**/*.*ex"
   ],
   theme: {
+    fontFamily: {
+      'sans': ['Noto Sans', 'ui-sans-serif', 'system-ui'],
+      'serif': ['Noto Serif', 'ui-serif'],
+    },
     extend: {
       colors: {
         dark: {
