@@ -3,6 +3,13 @@ defmodule CoreWeb.PageLive do
   use CoreWeb, :live_view
 
   @impl true
+  def mount(_params, _session, %{transport_pid: nil} = socket),
+    do:
+      socket
+      |> assign(:page_title, "Loading...")
+      |> assign(:page_loading, true)
+      |> (&{:ok, &1}).()
+
   def mount(_params, _session, %{assigns: %{live_action: :home}} = socket) do
     socket
     |> assign(:page_title, "Welcome to #{Application.get_env(:core, :application_name)}")
@@ -28,39 +35,39 @@ defmodule CoreWeb.PageLive do
         newspaper of the titular Baldur's Gate in the fictional world of Faerûn.
       </p>
     </div>
-    <div class="mx-12">
+    <div>
       <ul role="list" class="divide-y divide-gray-100">
         <li :if={@current_account} class="flex gap-x-4 py-4">
           <div class="min-w-0">
-            <p class="font-medium leading-6 text-gray-900">
-              <.icon as="play" /> <.link navigate={~p"/saves"} class="underline">Start new game</.link>
+            <p class="font-medium">
+              <.icon as="play" /> <.link navigate={~p"/saves/new"} class="underline">Start new game</.link>
             </p>
           </div>
         </li>
         <li :if={@current_account} class="flex gap-x-4 py-4">
           <div class="min-w-0">
-            <p class="font-medium leading-6 text-gray-900">
+            <p class="font-medium">
               <.icon as="save" /> <.link navigate={~p"/saves"}>Load game</.link>
             </p>
           </div>
         </li>
         <li :if={!@current_account} class="flex gap-x-4 py-4">
           <div class="min-w-0">
-            <p class="font-medium leading-6 text-gray-900">
+            <p class="font-medium">
               <.link navigate={~p"/accounts/log_in"} class="underline">Sign in</.link>
             </p>
           </div>
         </li>
         <li :if={!@current_account} class="flex gap-x-4 py-4">
           <div class="min-w-0">
-            <p class="font-medium leading-6 text-gray-900">
+            <p class="font-medium">
               <.link navigate={~p"/accounts/register"} class="underline">Sign up</.link>
             </p>
           </div>
         </li>
         <li class="flex gap-x-4 py-5">
           <div class="min-w-0">
-            <p class="font-medium leading-6 text-gray-900">Credits</p>
+            <p class="font-medium">Credits</p>
           </div>
         </li>
       </ul>

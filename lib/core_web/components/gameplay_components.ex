@@ -1,12 +1,12 @@
 defmodule CoreWeb.GameplayComponents do
   @moduledoc """
-  Provides thearer UI components.
+  Provides gameplay UI components.
   """
   use Phoenix.Component
   use CoreWeb, :verified_routes
 
-  attr :character, Core.Gameplay.Character, required: true
   @spec sheet(%{character: Core.Gameplay.Character.t()}) :: Phoenix.LiveView.Rendered.t()
+  attr :character, Core.Gameplay.Character, required: true
   def sheet(assigns) do
     ~H"""
     <form class="charsheet">

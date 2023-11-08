@@ -3,6 +3,39 @@ defmodule CoreWeb.SaveLive do
   use CoreWeb, :live_view
 
   @impl true
+  def mount(_params, _session, %{transport_pid: nil} = socket),
+    do:
+      socket
+      |> assign(:page_title, "Loading...")
+      |> assign(:page_loading, true)
+      |> (&{:ok, &1}).()
+
+  def mount(
+        _params,
+        _session,
+        %{assigns: %{live_action: :new, current_account: current_account}} = socket
+      ) do
+    socket
+    |> assign(:page_title, "Start a new campaign")
+    |> assign(
+      :current_account,
+      current_account
+      |> Core.Repo.preload(
+        saves: [
+          campaign: []
+        ]
+      )
+    )
+    |> assign(:campaigns, Core.Content.list_campaigns())
+    |> assign(:form,
+      %Core.Content.Save{}
+      |> Core.Repo.preload([:campaign, :characters])
+      |> Core.Content.new_save(%{})
+      |> to_form()
+    )
+    |> (&{:ok, &1}).()
+  end
+
   def mount(
         _params,
         _session,
@@ -28,35 +61,28 @@ defmodule CoreWeb.SaveLive do
   end
 
   def mount(%{"id" => save_id}, _session, %{assigns: %{live_action: :show}} = socket) do
-    if connected?(socket) do
-      save =
-        Core.Content.get_save(save_id)
-        |> Core.Repo.preload(
-          campaign: [],
-          last_scene: [
-            lines: [:speaker_npc],
-            dialogues: [:next_scene]
-          ],
-          characters: [
-            background: [],
-            lineage: [:lineage_category],
-            levels: [class: []]
-          ]
-        )
+    save =
+      Core.Content.get_save(save_id)
+      |> Core.Repo.preload(
+        campaign: [],
+        last_scene: [
+          lines: [:speaker_npc],
+          dialogues: [:next_scene]
+        ],
+        characters: [
+          background: [],
+          lineage: [:lineage_category],
+          levels: [class: []]
+        ]
+      )
 
-      socket
-      |> assign(:save, save)
-      |> assign(:scene, save.last_scene)
-      |> assign(:speaker, Enum.random(save.characters))
-      |> assign(:page_title, save.last_scene.name)
-      |> assign(:page_subtitle, save.campaign.name)
-      |> (&{:ok, &1}).()
-    else
-      socket
-      |> assign(:page_title, "Loading save...")
-      |> assign(:page_loading, true)
-      |> (&{:ok, &1}).()
-    end
+    socket
+    |> assign(:save, save)
+    |> assign(:scene, save.last_scene)
+    |> assign(:speaker, Enum.random(save.characters))
+    |> assign(:page_title, save.last_scene.name)
+    |> assign(:page_subtitle, save.campaign.name)
+    |> (&{:ok, &1}).()
   end
 
   @impl true
@@ -66,6 +92,15 @@ defmodule CoreWeb.SaveLive do
   end
 
   @impl true
+  def handle_event(
+        "validate",
+        params,
+        %{assigns: %{form: form}} = socket
+      ) do
+    socket
+    |> (&{:noreply, &1}).()
+  end
+
   def handle_event(
         "switch_speaker",
         %{"id" => character_id},
@@ -82,6 +117,17 @@ defmodule CoreWeb.SaveLive do
   def render(%{page_loading: true} = assigns) do
     ~H"""
     Loading...
+    """
+  end
+
+  def render(%{live_action: :new} = assigns) do
+    ~H"""
+    <.simple_form for={@form} phx-change="validate" phx-submit="save">
+      <.input field={@form[:campaign]} label="Campaign" type="select" prompt="Select a campaign" options={@campaigns |> Enum.map(fn campaign -> {campaign.name, campaign.id} end)}/>
+      <:actions>
+        <.button usable_icon="plus">Start New Campaign</.button>
+      </:actions>
+    </.simple_form>
     """
   end
 

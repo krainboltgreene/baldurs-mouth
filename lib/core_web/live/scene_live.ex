@@ -3,25 +3,32 @@ defmodule CoreWeb.SceneLive do
   use CoreWeb, :live_view
 
   @impl true
-  def mount(%{"id" => scene_id}, _session, %{assigns: %{live_action: :show}} = socket) do
-    if connected?(socket) do
-      scene =
-        Core.Theater.get_scene(scene_id)
-        |> Core.Repo.preload(
-          dialogues: [:next_scene, :failure_scene],
-          lines: [:speaker_npc]
-        )
+  def mount(
+        _params,
+        _session,
+        %{assigns: %{current_account: %Core.Users.Account{username: username}}}
+      )
+      when username != "krainboltgreene",
+      do: raise(CoreWeb.Exceptions.NotFoundException)
 
+  def mount(_params, _session, %{transport_pid: nil} = socket),
+    do:
       socket
-      |> assign(:scene, scene)
-      |> assign(:page_title, scene.name)
-      |> (&{:ok, &1}).()
-    else
-      socket
-      |> assign(:page_title, "Loading save...")
+      |> assign(:page_title, "Loading...")
       |> assign(:page_loading, true)
       |> (&{:ok, &1}).()
-    end
+  def mount(%{"id" => scene_id}, _session, %{assigns: %{live_action: :show}} = socket) do
+    scene =
+      Core.Theater.get_scene(scene_id)
+      |> Core.Repo.preload(
+        dialogues: [:next_scene, :failure_scene],
+        lines: [:speaker_npc]
+      )
+
+    socket
+    |> assign(:scene, scene)
+    |> assign(:page_title, scene.name)
+    |> (&{:ok, &1}).()
   end
 
   @impl true

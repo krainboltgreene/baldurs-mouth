@@ -4,6 +4,14 @@ defmodule Scaffolding.Write.Change do
            when is_atom(singular) do
     quote location: :keep do
       @doc """
+      Creates an empty `#{unquote(schema)}` and applies no attributes to it via `#{unquote(schema)}.#{unquote(create_changeset)}/2`
+      """
+      @spec unquote(:"new_#{singular}")(map()) ::
+              Ecto.Changeset.t(unquote(schema).t())
+      def unquote(:"new_#{singular}")(attributes \\ %{}),
+          do: unquote(:"new_#{singular}")(%unquote(schema){}, attributes)
+
+      @doc """
       Takes an empty `#{unquote(schema)}` and applies `attributes` to it via `#{unquote(schema)}.#{unquote(create_changeset)}/2`
       """
       @spec unquote(:"new_#{singular}")(struct(), map()) ::
