@@ -95,6 +95,8 @@ Example:
 - if the last line of dialogue is fromt he same speaker, just avoid the formatting.
 - add flash to empty
 - account settings live needs render at bottom
+- ROLLBACK
+- location as fallback scene?
 
 
 ## Setup

@@ -11,7 +11,7 @@ defmodule CoreWeb.SaveLive do
     socket
     |> assign(:page_title, "Select a saved game")
     |> assign(
-      :account,
+      :current_account,
       current_account
       |> Core.Repo.preload(
         saves: [
@@ -88,7 +88,7 @@ defmodule CoreWeb.SaveLive do
   def render(%{live_action: :list} = assigns) do
     ~H"""
     <ul role="list" class="divide-y divide-gray-100">
-      <li :for={save <- @account.saves} class="flex items-center justify-between gap-x-6 py-5">
+      <li :for={save <- @current_account.saves} class="flex items-center justify-between gap-x-6 py-5">
         <div class="min-w-0">
           <div class="flex items-start gap-x-3">
             <p class="font-semibold"><.link navigate={~p"/saves/#{save.id}"}><%= Pretty.get(save.campaign, :name) %></.link></p>
@@ -122,7 +122,6 @@ defmodule CoreWeb.SaveLive do
 
   def render(%{live_action: :show} = assigns) do
     ~H"""
-
     <article class="mx-auto px-4 py-4">
       <div :for={{line, index} <- @scene.lines |> Enum.with_index()} class="my-2 mx-auto opacity-5 prose rounded-lg border border-dark-700 bg-dark-500 text-light-500 p-8 font-serif" style={"animation: 1.25s ease-out #{1.75 * index}s normal forwards 1 fade-in-keys;"}>
         <p>

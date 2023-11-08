@@ -69,6 +69,9 @@ defmodule CoreWeb.Router do
       on_mount: [
         {CoreWeb.AccountAuthenticationHelpers, :ensure_authenticated}
       ] do
+      live "/campaigns", CoreWeb.CampaignLive, :list
+      live "/campaigns/:id", CoreWeb.CampaignLive, :show
+      live "/scenes/:id", CoreWeb.SceneLive, :show
       # live "/characters", CoreWeb.CharacterLive, :list
       # live "/characters/:id", CoreWeb.CharacterLive, :show
       live "/saves", CoreWeb.SaveLive, :list

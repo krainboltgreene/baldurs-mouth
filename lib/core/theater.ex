@@ -6,58 +6,97 @@ defmodule Core.Theater do
   use Scaffolding.Read.Slug, [Core.Theater.NPC, :npc]
   use Scaffolding.Read.Slug, [Core.Theater.Scene, :scene]
 
-  @spec add_line_to(Core.Theater.Scene.t(), String.t(), Core.Theater.NPC.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Core.Theater.Line.t()}
-  def add_line_to(for_scene, body, speaker) do
-    create_line(%{
-      for_scene: for_scene,
+  @spec add_line_to!(Core.Theater.Scene.t(), String.t(), Core.Theater.NPC.t()) ::
+          Core.Theater.Line.t()
+  def add_line_to!(%Core.Theater.Scene{} = scene, body, %Core.Theater.NPC{} = speaker_npc) do
+    create_line!(%{
+      scene: scene,
       body: body,
-      speaker: speaker
+      speaker_npc: speaker_npc
     })
   end
 
-  @spec add_line_to(Core.Theater.Scene.t(), String.t(), Core.Theater.NPC.t(), Core.Gameplay.Challenge.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Core.Theater.Line.t()}
-  def add_line_to(for_scene, body, speaker, challenge) do
-    create_line(%{
-      for_scene: for_scene,
+  @spec add_line_to!(
+          Core.Theater.Scene.t(),
+          String.t(),
+          Core.Theater.NPC.t(),
+          Core.Gameplay.Challenge.t()
+        ) :: Core.Theater.Line.t()
+  def add_line_to!(
+        %Core.Theater.Scene{} = scene,
+        body,
+        %Core.Theater.NPC{} = speaker_npc,
+        %{} = challenge
+      ) do
+    create_line!(%{
+      scene: scene,
       body: body,
-      speaker: speaker,
+      speaker_npc: speaker_npc,
       challenge: challenge
     })
   end
 
-  @spec add_dialogue_to(Core.Theater.Scene.t(), String.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Core.Theater.Dialogue.t()}
-  def add_dialogue_to(for_scene, body) do
-    create_dialogue(%{
+  @spec add_dialogue_to!(Core.Theater.Scene.t(), String.t()) ::
+          Core.Theater.Dialogue.t()
+  def add_dialogue_to!(%Core.Theater.Scene{} = for_scene, body) do
+    create_dialogue!(%{
       for_scene: for_scene,
       body: body
     })
   end
 
-  @spec add_dialogue_to(Core.Theater.Scene.t(), String.t(), Core.Theater.Scene.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Core.Theater.Dialogue.t()}
-  def add_dialogue_to(for_scene, body, to_scene) do
-    create_dialogue(%{
+  @spec add_dialogue_to!(Core.Theater.Scene.t(), String.t(), Core.Theater.Scene.t()) ::
+          Core.Theater.Dialogue.t()
+  def add_dialogue_to!(
+        %Core.Theater.Scene{} = for_scene,
+        body,
+        %Core.Theater.Scene{} = next_scene
+      ) do
+    create_dialogue!(%{
       for_scene: for_scene,
       body: body,
-      to_scene: to_scene
+      next_scene: next_scene
     })
   end
 
-  @spec add_dialogue_to(Core.Theater.Scene.t(), String.t(), Core.Theater.Scene.t(), Core.Gameplay.Challenge.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Core.Theater.Dialogue.t()}
-  def add_dialogue_to(for_scene, body, to_scene, challenge) do
-    create_dialogue(%{
+  @spec add_dialogue_to!(
+          Core.Theater.Scene.t(),
+          String.t(),
+          Core.Theater.Scene.t(),
+          Core.Gameplay.Challenge.t()
+        ) :: Core.Theater.Dialogue.t()
+  def add_dialogue_to!(
+        %Core.Theater.Scene{} = for_scene,
+        body,
+        %Core.Theater.Scene{} = next_scene,
+        %{} = challenge
+      ) do
+    create_dialogue!(%{
       for_scene: for_scene,
       body: body,
-      to_scene: to_scene,
+      next_scene: next_scene,
       challenge: challenge
     })
   end
 
-  @spec add_dialogue_to(Core.Theater.Scene.t(), String.t(), Core.Theater.Scene.t(), Core.Gameplay.Challenge.t(), Core.Theater.Scene.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Core.Theater.Dialogue.t()}
-  def add_dialogue_to(for_scene, body, to_scene, challenge, failure_scene) do
-    create_dialogue(%{
+  @spec add_dialogue_to!(
+          Core.Theater.Scene.t(),
+          String.t(),
+          Core.Theater.Scene.t(),
+          Core.Gameplay.Challenge.t(),
+          Core.Theater.Scene.t()
+        ) :: Core.Theater.Dialogue.t()
+  def add_dialogue_to!(
+        %Core.Theater.Scene{} = for_scene,
+        body,
+        %Core.Theater.Scene{} = next_scene,
+        %{} = challenge,
+        %Core.Theater.Scene{} = failure_scene
+      ) do
+    create_dialogue!(%{
       for_scene: for_scene,
       body: body,
-      to_scene: to_scene,
+      next_scene: next_scene,
       challenge: challenge,
       failure_scene: failure_scene
     })
