@@ -5,10 +5,10 @@
 @import "./phoenix.css";
 
 a {
-    @apply underline;
-    @apply hover:text-highlight-500;
+  @apply underline;
+  @apply hover:text-highlight-500;
 }
 
 pre {
-    white-space: pre-wrap;
+  white-space: pre-wrap;
 }
