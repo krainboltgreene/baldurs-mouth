@@ -214,6 +214,10 @@ defmodule CoreWeb.SaveLive do
         </li>
       </ol>
     </article>
+
+    <.slideover id={character.id} label={"Character sheet for #{character.name}"} :for={character <- @save.characters}>
+      <.sheet character={character} />
+    </.slideover>
     """
   end
 end

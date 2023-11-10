@@ -240,9 +240,9 @@ defmodule CoreWeb.CoreComponents do
     <div class="my-2">
       <dl class="-my-4 divide-y divide-zinc-100">
         <div :for={item <- @item} class="flex gap-4 py-4 leading-6">
-          <dt :if={item[:title]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500 text-right"><%= item.title %></dt>
+          <dt :if={item[:title]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500"><%= item.title %></dt>
           <dt :if={item[:icon]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500 text-right"><.icon {item.icon} /></dt>
-          <dd class="text-zinc-700"><%= render_slot(item) %></dd>
+          <dd class="w-3/4 text-zinc-700"><%= render_slot(item) %></dd>
         </div>
       </dl>
     </div>
@@ -272,7 +272,7 @@ defmodule CoreWeb.CoreComponents do
 
   @spec timestamp_in_words_ago(map()) :: Phoenix.LiveView.Rendered.t()
   attr :at, NaiveDateTime, required: true
-  attr :rest, :global
+  attr :rest, :global, include: ~w(disabled form name value class)
 
   def timestamp_in_words_ago(assigns) do
     ~H"""
@@ -281,7 +281,7 @@ defmodule CoreWeb.CoreComponents do
   end
 
   @spec tag(map()) :: Phoenix.LiveView.Rendered.t()
-  attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
+  attr :rest, :global, include: ~w(disabled form name value class), doc: "the arbitrary HTML attributes to add to the flash container"
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
   def tag(assigns) do
@@ -294,7 +294,7 @@ defmodule CoreWeb.CoreComponents do
 
   @spec page_title(map()) :: Phoenix.LiveView.Rendered.t()
   attr :subtitle, :string, doc: "A smaller piece of accompanying text"
-  attr :rest, :global
+  attr :rest, :global, include: ~w(disabled form name value class)
   slot :inner_block, required: true, doc: "The title of the page"
 
   def page_title(assigns) do
@@ -309,7 +309,7 @@ defmodule CoreWeb.CoreComponents do
   end
 
   @spec section_title(map()) :: Phoenix.LiveView.Rendered.t()
-  attr :rest, :global
+  attr :rest, :global, include: ~w(disabled form name value class)
   attr :id, :string, required: true
 
   slot :tab, doc: "A list of tabs" do
@@ -341,7 +341,7 @@ defmodule CoreWeb.CoreComponents do
   end
 
   @spec card_grid(map()) :: Phoenix.LiveView.Rendered.t()
-  attr :rest, :global
+  attr :rest, :global, include: ~w(disabled form name value class)
   slot :empty, doc: "An empty placeholder for the other cards"
   slot :cards, doc: "A list of cards"
   slot :inner_block, doc: "The main content of the card"
@@ -357,7 +357,7 @@ defmodule CoreWeb.CoreComponents do
   end
 
   @spec card(map()) :: Phoenix.LiveView.Rendered.t()
-  attr :rest, :global
+  attr :rest, :global, include: ~w(disabled form name value class)
   attr :image_url, :string, default: nil
   attr :image_alt, :string, default: nil
   slot :title, doc: "The title of the card"
@@ -378,6 +378,55 @@ defmodule CoreWeb.CoreComponents do
         <%= render_slot(@footer) %>
       </div>
     </li>
+    """
+  end
+
+  @spec slideover(map()) :: Phoenix.LiveView.Rendered.t()
+  attr :label, :string, doc: "A description of the content"
+  attr :rest, :global, include: ~w(disabled form name value class)
+  slot :inner_block, required: true, doc: "The content that is hidden"
+  def slideover(assigns) do
+    ~H"""
+    <div class="relative z-10" aria-labelledby={@label} role="dialog" aria-modal="true">
+      <!-- Background backdrop, show/hide based on slide-over state. -->
+      <div class="fixed inset-0"></div>
+
+      <div class="fixed inset-0 overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden">
+          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <!--
+              Slide-over panel, show/hide based on slide-over state.
+
+              Entering: "transform transition ease-in-out duration-500"
+                From: "translate-x-full"
+                To: "translate-x-0"
+              Leaving: "transform transition ease-in-out duration-500"
+                From: "translate-x-0"
+                To: "translate-x-full"
+            -->
+            <div class="pointer-events-auto w-screen max-w-2xl">
+              <div class="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                <div class="px-4">
+                  <div class="flex items-start justify-between">
+                    <h2 class="text-base font-semibold leading-6 text-gray-900"><%= @label %></h2>
+                    <div class="ml-3 flex h-7 items-center">
+                      <button type="button" class="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <span class="absolute -inset-2.5"></span>
+                        <span class="sr-only">Close panel</span>
+                        <.icon as="times" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="relative mt-6 flex-1 px-4">
+                  <%= render_slot(@inner_block) %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     """
   end
 end
