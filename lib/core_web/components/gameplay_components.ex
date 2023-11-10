@@ -7,6 +7,7 @@ defmodule CoreWeb.GameplayComponents do
 
   @spec sheet(%{character: Core.Gameplay.Character.t()}) :: Phoenix.LiveView.Rendered.t()
   attr :character, Core.Gameplay.Character, required: true
+
   def sheet(assigns) do
     ~H"""
     <form class="charsheet">

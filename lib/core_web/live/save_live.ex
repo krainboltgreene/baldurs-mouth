@@ -27,7 +27,8 @@ defmodule CoreWeb.SaveLive do
       )
     )
     |> assign(:campaigns, Core.Content.list_campaigns())
-    |> assign(:form,
+    |> assign(
+      :form,
       %Core.Content.Save{}
       |> Core.Repo.preload([:campaign, :characters])
       |> Core.Content.new_save(%{})
@@ -94,8 +95,8 @@ defmodule CoreWeb.SaveLive do
   @impl true
   def handle_event(
         "validate",
-        params,
-        %{assigns: %{form: form}} = socket
+        _params,
+        %{assigns: %{form: _form}} = socket
       ) do
     socket
     |> (&{:noreply, &1}).()
@@ -123,7 +124,7 @@ defmodule CoreWeb.SaveLive do
   def render(%{live_action: :new} = assigns) do
     ~H"""
     <.simple_form for={@form} phx-change="validate" phx-submit="save">
-      <.input field={@form[:campaign]} label="Campaign" type="select" prompt="Select a campaign" options={@campaigns |> Enum.map(fn campaign -> {campaign.name, campaign.id} end)}/>
+      <.input field={@form[:campaign]} label="Campaign" type="select" prompt="Select a campaign" options={@campaigns |> Enum.map(fn campaign -> {campaign.name, campaign.id} end)} />
       <:actions>
         <.button usable_icon="plus">Start New Campaign</.button>
       </:actions>

@@ -17,10 +17,12 @@ defmodule CoreWeb.SceneLive do
       |> assign(:page_title, "Loading...")
       |> assign(:page_loading, true)
       |> (&{:ok, &1}).()
+
   def mount(%{"id" => scene_id}, _session, %{assigns: %{live_action: :show}} = socket) do
     scene =
       Core.Theater.get_scene(scene_id)
       |> Core.Repo.preload(
+        campaign: [],
         dialogues: [:next_scene, :failure_scene],
         lines: [:speaker_npc]
       )
@@ -28,6 +30,7 @@ defmodule CoreWeb.SceneLive do
     socket
     |> assign(:scene, scene)
     |> assign(:page_title, scene.name)
+    |> assign(:page_subtitle, "Scene")
     |> (&{:ok, &1}).()
   end
 
@@ -56,15 +59,31 @@ defmodule CoreWeb.SceneLive do
     """
   end
 
-  def render(%{live_action: :list} = assigns) do
-    ~H"""
-
-    """
-  end
-
   def render(%{live_action: :show} = assigns) do
     ~H"""
-
+    <.list>
+      <:item title="Campaign">
+        <.link navigate={~p"/campaigns/#{@scene.campaign.id}"}><%= Pretty.get(@scene.campaign, :name) %></.link>
+      </:item>
+      <:item title="Lines">
+        <div class="prose">
+          <ul>
+            <li :for={line <- @scene.lines}>
+              <.link navigate={~p"/npcs/#{line.speaker_npc.id}"}><%= Pretty.get(line.speaker_npc, :name) %></.link>: "<.link navigate={~p"/lines/#{line.id}"}><%= Pretty.get(line, :body) %></.link>"
+            </li>
+          </ul>
+        </div>
+      </:item>
+      <:item title="Dialogues">
+        <div class="prose">
+          <ul>
+            <li :for={dialogue <- @scene.dialogues}>
+              "<.link navigate={~p"/dialogues/#{dialogue.id}"}><%= Pretty.get(dialogue, :body) %></.link>"
+            </li>
+          </ul>
+        </div>
+      </:item>
+    </.list>
     """
   end
 end

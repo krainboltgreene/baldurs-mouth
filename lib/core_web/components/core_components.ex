@@ -77,7 +77,7 @@ defmodule CoreWeb.CoreComponents do
     <div id={@id}>
       <.flash kind={:info} title="Success!" flash={@flash} />
       <.flash kind={:error} title="Error!" flash={@flash} />
-      <.flash id="client-error" kind={:error} title="We can't find the internet"  hidden>
+      <.flash id="client-error" kind={:error} title="We can't find the internet" hidden>
         Attempting to reconnect <.icon as="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
       </.flash>
 
@@ -231,15 +231,17 @@ defmodule CoreWeb.CoreComponents do
       </.list>
   """
   slot :item, required: true do
-    attr :title, :string, required: true
+    attr :title, :string, doc: "Must have either a title or icon"
+    attr :icon, :map, required: false, doc: "Must have either a title or icon"
   end
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14">
+    <div class="my-2">
       <dl class="-my-4 divide-y divide-zinc-100">
-        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6">
-          <dt class="w-1/4 flex-none text-zinc-500"><%= item.title %></dt>
+        <div :for={item <- @item} class="flex gap-4 py-4 leading-6">
+          <dt :if={item[:title]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500 text-right"><%= item.title %></dt>
+          <dt :if={item[:icon]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500 text-right"><.icon {item.icon} /></dt>
           <dd class="text-zinc-700"><%= render_slot(item) %></dd>
         </div>
       </dl>

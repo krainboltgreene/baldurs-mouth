@@ -16,6 +16,12 @@ defmodule CoreWeb.PageLive do
     |> (&{:ok, &1, layout: {CoreWeb.Layouts, :empty}}).()
   end
 
+  def mount(_params, _session, %{assigns: %{live_action: :credits}} = socket) do
+    socket
+    |> assign(:page_title, "Credits")
+    |> (&{:ok, &1, layout: {CoreWeb.Layouts, :empty}}).()
+  end
+
   @impl true
   def handle_params(_params, _url, socket) do
     socket
@@ -35,41 +41,40 @@ defmodule CoreWeb.PageLive do
         newspaper of the titular Baldur's Gate in the fictional world of Faerûn.
       </p>
     </div>
-    <div>
-      <ul role="list" class="divide-y divide-gray-100">
-        <li :if={@current_account} class="flex gap-x-4 py-4">
-          <div class="min-w-0">
-            <p class="font-medium">
-              <.icon as="play" /> <.link navigate={~p"/saves/new"} class="underline">Start new game</.link>
-            </p>
-          </div>
-        </li>
-        <li :if={@current_account} class="flex gap-x-4 py-4">
-          <div class="min-w-0">
-            <p class="font-medium">
-              <.icon as="save" /> <.link navigate={~p"/saves"}>Load game</.link>
-            </p>
-          </div>
-        </li>
-        <li :if={!@current_account} class="flex gap-x-4 py-4">
-          <div class="min-w-0">
-            <p class="font-medium">
-              <.link navigate={~p"/accounts/log_in"} class="underline">Sign in</.link>
-            </p>
-          </div>
-        </li>
-        <li :if={!@current_account} class="flex gap-x-4 py-4">
-          <div class="min-w-0">
-            <p class="font-medium">
-              <.link navigate={~p"/accounts/register"} class="underline">Sign up</.link>
-            </p>
-          </div>
-        </li>
-        <li class="flex gap-x-4 py-5">
-          <div class="min-w-0">
-            <p class="font-medium">Credits</p>
-          </div>
-        </li>
+    <div class="mx-auto max-w-lg">
+      <.list>
+        <:item :if={@current_account} icon={%{as: "play"}}>
+          Start new game<.link navigate={~p"/saves/new"} class="underline"></.link>
+        </:item>
+        <:item :if={@current_account} icon={%{as: "save"}}>
+          <.link navigate={~p"/saves"}>Load game</.link>
+        </:item>
+        <:item :if={@current_account} icon={%{as: "person"}}>
+          <.link navigate={~p"/characters"}>Characters</.link>
+        </:item>
+        <:item :if={@current_account} icon={%{as: "map"}}>
+          <.link navigate={~p"/campaigns"}>Campaigns</.link>
+        </:item>
+        <:item :if={!@current_account}>
+          <.link navigate={~p"/accounts/log_in"} class="underline">Sign in</.link>
+        </:item>
+        <:item :if={!@current_account}>
+          <.link navigate={~p"/accounts/register"} class="underline">Sign up</.link>
+        </:item>
+        <:item icon={%{as: "list"}}>
+          <.link navigate={~p"/credits"} class="underline">Credits</.link>
+        </:item>
+      </.list>
+    </div>
+    """
+  end
+
+  def render(%{live_action: :credits} = assigns) do
+    ~H"""
+    <div class="prose mx-auto my-4">
+      <ul>
+        <li>Kurtis Rainbolt-Greene</li>
+        <li>David</li>
       </ul>
     </div>
     """

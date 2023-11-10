@@ -315,7 +315,7 @@
       |> tap(
         &Core.Theater.add_dialogue_to!(
           &1,
-          "We're looking to get into that basement of yours, what's the price?",
+          "The city guard said we're to have two rooms, so kick out whomever you have to!",
           cedes_to_fake_demands_scene,
           %{
             type: "optional",

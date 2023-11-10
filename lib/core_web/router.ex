@@ -56,6 +56,7 @@ defmodule CoreWeb.Router do
         {CoreWeb.AccountAuthenticationHelpers, :mount_current_account}
       ] do
       live "/", CoreWeb.PageLive, :home
+      live "/credits", CoreWeb.PageLive, :credits
       live "/accounts/confirm/:token", CoreWeb.AccountConfirmationLive, :edit
       live "/accounts/confirm", CoreWeb.AccountConfirmationInstructionsLive, :new
     end
@@ -72,8 +73,11 @@ defmodule CoreWeb.Router do
       live "/campaigns", CoreWeb.CampaignLive, :list
       live "/campaigns/:id", CoreWeb.CampaignLive, :show
       live "/scenes/:id", CoreWeb.SceneLive, :show
-      # live "/characters", CoreWeb.CharacterLive, :list
-      # live "/characters/:id", CoreWeb.CharacterLive, :show
+      live "/dialogues/:id", CoreWeb.DialogueLive, :show
+      live "/lines/:id", CoreWeb.LineLive, :show
+      live "/npcs/:id", CoreWeb.NPCLive, :show
+      live "/characters", CoreWeb.CharacterLive, :list
+      live "/characters/:id", CoreWeb.CharacterLive, :show
       live "/saves", CoreWeb.SaveLive, :list
       live "/saves/new", CoreWeb.SaveLive, :new
       live "/saves/:id", CoreWeb.SaveLive, :show
