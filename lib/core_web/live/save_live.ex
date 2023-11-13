@@ -3,20 +3,13 @@ defmodule CoreWeb.SaveLive do
   use CoreWeb, :live_view
 
   @impl true
-  def mount(_params, _session, %{transport_pid: nil} = socket),
-    do:
-      socket
-      |> assign(:page_title, "Loading...")
-      |> assign(:page_loading, true)
-      |> (&{:ok, &1}).()
-
+  @spec mount(map(), map(), map()) :: {:ok, map()}
   def mount(
         _params,
         _session,
         %{assigns: %{live_action: :new, current_account: current_account}} = socket
       ) do
     socket
-    |> assign(:page_title, "Start a new campaign")
     |> assign(
       :current_account,
       current_account
@@ -28,13 +21,6 @@ defmodule CoreWeb.SaveLive do
     )
     |> assign(:characters, Core.Gameplay.list_characters())
     |> assign(:campaigns, Core.Content.list_campaigns())
-    |> assign(
-      :form,
-      %Core.Content.Save{}
-      |> Core.Repo.preload([:campaign, :characters])
-      |> Core.Content.new_save(%{})
-      |> to_form()
-    )
     |> (&{:ok, &1}).()
   end
 
@@ -44,7 +30,6 @@ defmodule CoreWeb.SaveLive do
         %{assigns: %{live_action: :list, current_account: current_account}} = socket
       ) do
     socket
-    |> assign(:page_title, "Select a saved game")
     |> assign(
       :current_account,
       current_account
@@ -59,10 +44,38 @@ defmodule CoreWeb.SaveLive do
         ]
       )
     )
+    |> assign(:page_title, "Select a saved game")
     |> (&{:ok, &1}).()
   end
 
-  def mount(%{"id" => save_id}, _session, %{assigns: %{live_action: :show}} = socket) do
+  def mount(_params, _session, socket) do
+    socket
+    |> (&{:ok, &1}).()
+  end
+
+  @impl true
+  @spec handle_params(map(), String.t(), map()) :: {:noreply, map()}
+  def handle_params(_params, _url, %{transport_pid: nil} = socket),
+    do:
+      socket
+      |> assign(:page_title, "Loading...")
+      |> assign(:page_loading, true)
+      |> (&{:noreply, &1}).()
+
+  def handle_params(_params, _url, %{assigns: %{live_action: :new}} = socket) do
+    socket
+    |> assign(:page_title, "Start a new campaign")
+    |> assign(
+      :form,
+      %Core.Content.Save{}
+      |> Core.Repo.preload([:campaign, :characters])
+      |> Core.Content.new_save(%{})
+      |> to_form()
+    )
+    |> (&{:noreply, &1}).()
+  end
+
+  def handle_params(%{"id" => save_id}, _url, %{assigns: %{live_action: :show}} = socket) do
     save =
       Core.Content.get_save(save_id)
       |> Core.Repo.preload(
@@ -84,10 +97,9 @@ defmodule CoreWeb.SaveLive do
     |> assign(:speaker, Enum.random(save.characters))
     |> assign(:page_title, save.last_scene.name)
     |> assign(:page_subtitle, save.campaign.name)
-    |> (&{:ok, &1}).()
+    |> (&{:noreply, &1}).()
   end
 
-  @impl true
   def handle_params(_params, _url, socket) do
     socket
     |> (&{:noreply, &1}).()
@@ -126,7 +138,6 @@ defmodule CoreWeb.SaveLive do
         |> put_flash(:info, "Enjoy the game!")
         |> push_navigate(to: ~p"/saves/#{save.id}")
     end
-    |> dbg()
     |> (&{:noreply, &1}).()
   end
 
@@ -138,6 +149,39 @@ defmodule CoreWeb.SaveLive do
       ) do
     socket
     |> assign(:speaker, Enum.find(characters, fn character -> character.id == character_id end))
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event(
+        "open_character_sheet",
+        %{"id" => character_id},
+        socket
+      ) do
+    CoreWeb.Components.SlidesheetComponent.open(character_id)
+    socket
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event(
+        "select_dialogue",
+        %{"id" => dialogue_id},
+        %{assigns: %{save: save}} = socket
+      ) do
+    with %Core.Theater.Dialogue{next_scene: next_scene} <- Core.Repo.preload(Core.Theater.get_dialogue(dialogue_id), [:next_scene]),
+      {:ok, transitioned_save} <- Core.Content.update_save(save, %{"last_scene" => next_scene}) do
+        socket
+        |> put_flash(:info, "Changed to #{next_scene.id}")
+        |> push_navigate(to: ~p"/saves/#{transitioned_save.id}")
+    else
+      nil ->
+        socket
+        |> put_flash(:error, "Couldn't find that dialogue!")
+      {:error, changeset} ->
+        socket
+        |> put_flash(:error, "Couldn't save your dialogue choice!")
+    end
     |> (&{:noreply, &1}).()
   end
 
@@ -224,24 +268,6 @@ defmodule CoreWeb.SaveLive do
       </div>
     </article>
 
-    <ul class="mx-auto mx-auto grid grid-cols-3 gap-2 opacity-5" style={"animation: 0.5s ease-out #{1.75 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
-      <li :for={character <- @save.characters} class={["rounded-lg border border-gray-300 bg-white shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400", @speaker == character && "border-highlight-400 hover:border-highlight-600"]}>
-        <div class="grid grid-cols-[1fr_max-content] content-start space-x-2 pr-2 py-2">
-          <p class="ml-2 text-md font-medium"><.link href="#" class="text-highlight-300"><%= Pretty.get(character, :name) %></.link></p>
-          <img class="h-6 w-6" src={~p"/images/class-fighter.svg"} alt="" />
-          <div class="col-span-2">
-            <p class="truncate text-sm text-gray-500"><%= Pretty.get(character.lineage, :name) %> <%= Pretty.get(character, :classes) %></p>
-          </div>
-        </div>
-        <div :if={@speaker == character} class="rounded-b-md bg-highlight-400 text-center uppercase font-medium text-light-500">
-          Speaker
-        </div>
-        <div :if={@speaker != character} phx-click="switch_speaker" phx-value-id={character.id} class="text-center uppercase opacity-25 hover:opacity-100 hover:cursor-pointer">
-          Switch
-        </div>
-      </li>
-    </ul>
-
     <article class="mx-auto py-4 prose opacity-5" style={"animation: 0.5s ease-out #{1.75 * length(@scene.lines)}s normal forwards 1 fade-in-keys;"}>
       <p>
         <strong><%= Pretty.get(@speaker, :name) %></strong> says ...
@@ -249,7 +275,7 @@ defmodule CoreWeb.SaveLive do
       <ol>
         <li :for={dialogue <- @scene.dialogues}>
           <p>
-            "<.link href="#"><%= dialogue.body %></.link>"
+            "<.link href="#" phx-click="select_dialogue" phx-value-id={dialogue.id}><%= dialogue.body %></.link>"
             <span :if={!dialogue.next_scene_id} class="text-xs text-grey-400">
               <em>This will end the conversation.</em>
             </span>
@@ -258,9 +284,28 @@ defmodule CoreWeb.SaveLive do
       </ol>
     </article>
 
-    <.slideover id={character.id} label={"Character sheet for #{character.name}"} :for={character <- @save.characters}>
+    <aside class="fixed z-9 top-1/2 right-0">
+      <ul class="mx-auto mx-auto grid grid-cols-1 grid-rows-2 gap-2 max-w-xl">
+        <li :for={character <- @save.characters} class={["rounded-lg border border-gray-300 bg-white shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400", @speaker == character && "border-highlight-400 hover:border-highlight-600"]}>
+          <div class="grid grid-cols-[1fr_max-content] content-start space-x-2 pr-2 py-2">
+            <p class="ml-2 text-md font-medium"><.link href="#" phx-click="open_character_sheet" phx-value-id={character.id} class="text-highlight-300"><%= Pretty.get(character, :name) %></.link></p>
+            <img class="h-6 w-6" src={~p"/images/class-fighter.svg"} alt="" />
+            <div class="col-span-2">
+              <p class="truncate text-sm text-gray-500"><%= Pretty.get(character.lineage, :name) %> <%= Pretty.get(character, :classes) %></p>
+            </div>
+          </div>
+          <div :if={@speaker == character} class="rounded-b-md bg-highlight-400 text-center uppercase font-medium text-light-500">
+            Speaker
+          </div>
+          <div :if={@speaker != character} phx-click="switch_speaker" phx-value-id={character.id} class="text-center uppercase opacity-25 hover:opacity-100 hover:cursor-pointer">
+            Switch
+          </div>
+        </li>
+      </ul>
+    </aside>
+    <.live_component id={character.id} module={CoreWeb.Components.SlidesheetComponent} label={"Character sheet for #{character.name}"} :for={character <- @save.characters}>
       <.sheet character={character} />
-    </.slideover>
+    </.live_component>
     """
   end
 end

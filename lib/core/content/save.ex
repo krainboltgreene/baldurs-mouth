@@ -8,7 +8,7 @@ defmodule Core.Content.Save do
     field(:playing_state, Ecto.Enum, values: [:playing, :completed], default: :playing)
     field(:inspiration, :integer, default: 0)
     timestamps()
-    belongs_to(:last_scene, Core.Theater.Scene)
+    belongs_to(:last_scene, Core.Theater.Scene, on_replace: :nilify)
     has_one(:campaign, through: [:last_scene, :campaign])
     many_to_many(:characters, Core.Gameplay.Character, join_through: "parties")
   end
