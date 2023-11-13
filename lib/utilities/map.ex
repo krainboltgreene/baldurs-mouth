@@ -23,4 +23,17 @@ defmodule Utilities.Map do
       {key, value} when is_binary(key) -> {key, value}
     end)
   end
+
+  @spec rewrite_lazy(map(), Map.key(), Map.key(), (Map.value() -> Map.value())) :: map()
+  def rewrite_lazy(mapping, old_key, new_key, function) when is_map(mapping) and is_function(function, 1) do
+    mapping
+    |> Map.has_key?(old_key)
+    |> case do
+      true ->
+        mapping
+        |> Map.delete(old_key)
+        |> Map.put(new_key, function.(Map.get(mapping, old_key)))
+      false -> mapping
+    end
+  end
 end

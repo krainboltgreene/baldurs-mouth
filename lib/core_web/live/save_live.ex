@@ -26,6 +26,7 @@ defmodule CoreWeb.SaveLive do
         ]
       )
     )
+    |> assign(:characters, Core.Gameplay.list_characters())
     |> assign(:campaigns, Core.Content.list_campaigns())
     |> assign(
       :form,
@@ -95,13 +96,41 @@ defmodule CoreWeb.SaveLive do
   @impl true
   def handle_event(
         "validate",
-        _params,
-        %{assigns: %{form: _form}} = socket
+        %{"save" => save_params},
+        socket
       ) do
     socket
+    |> assign(
+      :form,
+      %Core.Content.Save{}
+      |> Core.Repo.preload([:campaign, :characters])
+      |> Core.Content.change_save(from_form(save_params))
+      |> Map.put(:action, :validate)
+      |> then(fn changeset -> to_form(changeset, check_errors: !changeset.valid?) end)
+    )
     |> (&{:noreply, &1}).()
   end
 
+  @impl true
+  def handle_event(
+        "save",
+        %{"save" => save_params},
+        socket
+      ) do
+    save_params
+    |> from_form()
+    |> Core.Content.create_save()
+    |> case do
+      {:ok, save} ->
+        socket
+        |> put_flash(:info, "Enjoy the game!")
+        |> push_navigate(to: ~p"/saves/#{save.id}")
+    end
+    |> dbg()
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
   def handle_event(
         "switch_speaker",
         %{"id" => character_id},
@@ -110,6 +139,19 @@ defmodule CoreWeb.SaveLive do
     socket
     |> assign(:speaker, Enum.find(characters, fn character -> character.id == character_id end))
     |> (&{:noreply, &1}).()
+  end
+
+  defp from_form(params) when is_map(params) do
+    params
+    |> Utilities.Map.rewrite_lazy("campaign", "last_scene", fn
+      "" -> nil
+      campaign_id ->
+        Core.Theater.get_scene_by(campaign_id: campaign_id, opening: true)
+    end)
+    |> Map.put("campaign", params["campaign"])
+    |> Map.replace_lazy("characters", fn character_ids ->
+      Core.Gameplay.get_characters(character_ids)
+    end)
   end
 
   @impl true
@@ -125,6 +167,7 @@ defmodule CoreWeb.SaveLive do
     ~H"""
     <.simple_form for={@form} phx-change="validate" phx-submit="save">
       <.input field={@form[:campaign]} label="Campaign" type="select" prompt="Select a campaign" options={@campaigns |> Enum.map(fn campaign -> {campaign.name, campaign.id} end)} />
+      <.input field={@form[:characters]} label="Party" type="select" multiple value={@form[:characters].value |> Enum.map(fn character -> character.data.id end)} options={@characters |> Enum.map(fn character -> {character.name, character.id} end)} />
       <:actions>
         <.button usable_icon="plus">Start New Campaign</.button>
       </:actions>

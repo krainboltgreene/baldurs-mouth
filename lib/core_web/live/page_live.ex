@@ -44,7 +44,7 @@ defmodule CoreWeb.PageLive do
     <div class="mx-auto max-w-lg">
       <.list>
         <:item :if={@current_account} icon={%{as: "play"}}>
-          Start new game<.link navigate={~p"/saves/new"} class="underline"></.link>
+          <.link navigate={~p"/saves/new"} class="underline">Start new game</.link>
         </:item>
         <:item :if={@current_account} icon={%{as: "save"}}>
           <.link navigate={~p"/saves"}>Load game</.link>
@@ -55,10 +55,10 @@ defmodule CoreWeb.PageLive do
         <:item :if={@current_account} icon={%{as: "map"}}>
           <.link navigate={~p"/campaigns"}>Campaigns</.link>
         </:item>
-        <:item :if={!@current_account}>
+        <:item icon={%{as: "unlock"}} :if={!@current_account}>
           <.link navigate={~p"/accounts/log_in"} class="underline">Sign in</.link>
         </:item>
-        <:item :if={!@current_account}>
+        <:item icon={%{as: "user-plus"}} :if={!@current_account}>
           <.link navigate={~p"/accounts/register"} class="underline">Sign up</.link>
         </:item>
         <:item icon={%{as: "list"}}>
@@ -73,8 +73,11 @@ defmodule CoreWeb.PageLive do
     ~H"""
     <div class="prose mx-auto my-4">
       <ul>
-        <li>Kurtis Rainbolt-Greene</li>
-        <li>David</li>
+        <li>Kurtis Rainbolt-Greene (Programming, Writing)</li>
+        <li>David Reeves (Writing)</li>
+        <li>James (Feedback)</li>
+        <li>Charlie (Feedback)</li>
+        <li>Rani (RIP)</li>
       </ul>
     </div>
     """
