@@ -163,20 +163,6 @@ if Mix.env() == :dev do
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("wizard"), 2, %{}))
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("wizard"), 3, %{}))
 
-      # ,
-      #           lineage_choices: %{},
-      #           background_choices: %{
-      #             tool_proficiences: [
-      #               "dice",
-      #               "flute"
-      #             ]
-      #           }
-
-      # ,
-      #           lineage_choices: %{
-      #             cantrips: ["light"]
-      #           },
-      #           background_choices: %{}
       svet
       |> Core.Content.print_character_sheet()
       |> IO.puts()
@@ -188,10 +174,6 @@ if Mix.env() == :dev do
       shankar
       |> Core.Content.print_character_sheet()
       |> IO.puts()
-
-      campaign = Core.Content.random_campaign()
-
-      Core.Theater.play(campaign, [svet, onyeje, shankar])
     end)
 end
 

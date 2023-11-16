@@ -282,8 +282,7 @@
           %{
             type: "required",
             track: "tavern_keeper_secret_basement",
-            state: "known_guild_participant",
-            language: "thieves_cant"
+            state: "known_guild_participant"
           }
         )
       )
@@ -296,7 +295,7 @@
             type: "required",
             track: "tavern_keeper_secret_basement",
             state: "known_guild_participant",
-            language: "thieves_cant"
+            tag: "thieves_cant"
           }
         )
       )

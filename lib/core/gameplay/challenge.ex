@@ -6,9 +6,9 @@ defmodule Core.Gameplay.Challenge do
     field(:type, Ecto.Enum, values: [:optional, :required])
     field(:track, :string)
     field(:state, :string)
+    field(:tag, :string)
     field(:skill, :string)
     field(:ability, :string)
-    field(:skill_ability, :string)
     field(:target, :integer)
   end
 
@@ -24,9 +24,9 @@ defmodule Core.Gameplay.Challenge do
       :type,
       :track,
       :state,
+      :tag,
       :skill,
       :ability,
-      :skill_ability,
       :target
     ])
     |> Ecto.Changeset.validate_required(:type)

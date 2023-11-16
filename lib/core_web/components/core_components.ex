@@ -103,6 +103,7 @@ defmodule CoreWeb.CoreComponents do
   attr :failure_icon, :string, default: "bug"
   attr :successful_icon, :string, default: "check"
   attr :usable_icon, :string, required: true
+  attr :kind, :string, default: "normal"
   attr :class, :string, default: ""
   attr :rest, :global, include: ~w(disabled form name value)
 
@@ -110,23 +111,36 @@ defmodule CoreWeb.CoreComponents do
 
   def button(assigns) do
     ~H"""
-    <button :if={@state == "rejection"} disabled class={["phx-submit-loading:opacity-75 inline-flex items-center gap-x-1.5 rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600", @class]} {@rest}>
-      <.icon as={@rejection_icon} /> <%= render_slot(@inner_block) %> Rejected
-    </button>
-    <button :if={@state == "failure"} disabled class={["phx-submit-loading:opacity-75 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
-      <.icon as={@failure_icon} /> <%= render_slot(@inner_block) %> Failed
-    </button>
-    <button :if={@state == "successful"} disabled class={["phx-submit-loading:opacity-75 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
-      <.icon as={@successful_icon} /> <%= render_slot(@inner_block) %> Successful
-    </button>
-    <button :if={@state == "busy"} disabled class={["phx-submit-loading:opacity-75 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
-      <.icon as={@busy_icon} /> Busy...
-    </button>
-    <button :if={@state == "usable" || @state == nil} class={["phx-submit-loading:opacity-75 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", @class]} {@rest}>
-      <.icon as={@usable_icon} /> <%= render_slot(@inner_block) %>
+    <button
+      disabled={Enum.member?(["busy", "failure", "rejection"], @state)}
+      class={[
+        "phx-submit-loading:opacity-75",
+        "inline-flex items-center justify-center gap-x-1.5 rounded-md px-5 py-3 text-base font-medium text-center shadow-sm cursor-pointer",
+        @state == "usable" && @kind == "normal" && "bg-dark-500 text-white hover:bg-dark-600",
+        @state == "busy" && @kind == "normal" && "bg-dark-700 text-white hover:bg-dark-800",
+        @state == "successful" && @kind == "normal" && "bg-green-500 text-white hover:bg-green-600",
+        @state == "failure" && @kind == "normal" && "bg-red-500 text-white hover:bg-red-600",
+        @state == "rejection" && @kind == "normal" && "bg-red-500 text-white hover:bg-red-600",
+        @state == "usable" && @kind == "outline" && "bg-grey text-black hover:bg-grey-600 border border-dark-500",
+        @state == "busy" && @kind == "outline" && "bg-grey text-black hover:bg-grey-600 border border-dark-700",
+        @state == "successful" && @kind == "outline" && "bg-grey text-black hover:bg-grey-600 border border-green-500",
+        @state == "failure" && @kind == "outline" && "bg-grey text-black hover:bg-grey-600 border border-red-600",
+        @state == "rejection" && @kind == "outline" && "bg-grey text-black hover:bg-grey-600 border border-red-600",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+        @class
+      ]}
+      {@rest}>
+      <.icon as={case @state do
+        "usable" -> @usable_icon
+        "busy" -> @busy_icon
+        "successful" -> @successful_icon
+        "failure" -> @failure_icon
+        "rejection" -> @rejection_icon
+      end} /> <%= render_slot(@inner_block) %>
     </button>
     """
   end
+
 
   @doc """
   Renders a header with title.
@@ -281,12 +295,13 @@ defmodule CoreWeb.CoreComponents do
   end
 
   @spec tag(map()) :: Phoenix.LiveView.Rendered.t()
+  attr :class, :string, default: ""
   attr :rest, :global, include: ~w(disabled form name value class), doc: "the arbitrary HTML attributes to add to the flash container"
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
   def tag(assigns) do
     ~H"""
-    <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10" {@rest}>
+    <span {@rest} class={["rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-800 bg-yellow-50 ring-yellow-600/20", @class]} >
       <%= render_slot(@inner_block) %>
     </span>
     """

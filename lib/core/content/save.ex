@@ -31,13 +31,13 @@ defmodule Core.Content.Save do
     |> Ecto.Changeset.cast(attributes, [:playing_state, :inspiration])
     |> Ecto.Changeset.put_assoc(
       :last_scene,
-      attributes["last_scene"] || record_with_preload_relationships.last_scene
+      attributes[:last_scene] || record_with_preload_relationships.last_scene
     )
     |> Ecto.Changeset.put_assoc(
       :characters,
-      attributes["characters"] || record_with_preload_relationships.characters
+      attributes[:characters] || record_with_preload_relationships.characters
     )
-    |> Ecto.Changeset.validate_length(:characters, max: 2, min: 1, message: "can't have more than %{count} characters in a party")
+    |> Ecto.Changeset.validate_length(:characters, max: 3, min: 1, message: "can't have more than %{count} characters in a party")
     |> Ecto.Changeset.validate_required([:playing_state, :last_scene, :characters])
   end
 end

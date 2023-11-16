@@ -1,4 +1,4 @@
-defmodule CoreWeb.Components.SlidesheetComponent do
+defmodule CoreWeb.SlidesheetComponent do
   use(CoreWeb, :live_component)
 
   @impl true
