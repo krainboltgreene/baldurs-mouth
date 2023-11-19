@@ -60,13 +60,16 @@ defmodule Scaffolding.Read do
       """
       @spec unquote(:"get_#{plural}")(list(String.t())) :: list(unquote(schema).t())
       def unquote(:"get_#{plural}")([]), do: []
-      def unquote(:"get_#{plural}")(ids), do: from(table in unquote(schema), where: table.id in ^ids) |> Core.Repo.all()
+
+      def unquote(:"get_#{plural}")(ids),
+        do: from(table in unquote(schema), where: table.id in ^ids) |> Core.Repo.all()
 
       @doc """
       Returns a singular `#{unquote(schema)}` with the matching properties
       """
       @spec unquote(:"get_#{singular}_by")(Keyword.t()) :: unquote(schema).t() | nil
-      def unquote(:"get_#{singular}_by")(keywords), do: from(unquote(schema), where: ^keywords) |> Core.Repo.one()
+      def unquote(:"get_#{singular}_by")(keywords),
+        do: from(unquote(schema), where: ^keywords) |> Core.Repo.one()
 
       @doc """
       Returns a singular `#{unquote(schema)}` based on a query, but if it isn't found will raise an exception

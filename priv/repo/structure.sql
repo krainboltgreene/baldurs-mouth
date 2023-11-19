@@ -315,14 +315,6 @@ CREATE TABLE public.characters (
     id uuid NOT NULL,
     name text NOT NULL,
     slug public.citext NOT NULL,
-    strength integer DEFAULT 8 NOT NULL,
-    dexterity integer DEFAULT 8 NOT NULL,
-    constitution integer DEFAULT 8 NOT NULL,
-    intelligence integer DEFAULT 8 NOT NULL,
-    wisdom integer DEFAULT 8 NOT NULL,
-    charisma integer DEFAULT 8 NOT NULL,
-    lineage_choices jsonb DEFAULT '{}'::jsonb NOT NULL,
-    background_choices jsonb DEFAULT '{}'::jsonb NOT NULL,
     pronouns jsonb NOT NULL,
     account_id uuid NOT NULL,
     lineage_id uuid NOT NULL,
@@ -391,6 +383,12 @@ CREATE TABLE public.items (
 CREATE TABLE public.levels (
     id uuid NOT NULL,
     "position" integer NOT NULL,
+    strength integer DEFAULT 8 NOT NULL,
+    dexterity integer DEFAULT 8 NOT NULL,
+    constitution integer DEFAULT 8 NOT NULL,
+    intelligence integer DEFAULT 8 NOT NULL,
+    wisdom integer DEFAULT 8 NOT NULL,
+    charisma integer DEFAULT 8 NOT NULL,
     hitpoints integer DEFAULT 1 NOT NULL,
     features public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
     weapon_proficiencies public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
@@ -401,7 +399,7 @@ CREATE TABLE public.levels (
     tool_expertises public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
     cantrips public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
     languages public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL,
-    class_id uuid NOT NULL,
+    class_id uuid,
     character_id uuid NOT NULL
 );
 

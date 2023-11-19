@@ -25,7 +25,8 @@ defmodule Utilities.Map do
   end
 
   @spec migrate_lazy(map(), Map.key(), Map.key(), (Map.value() -> Map.value())) :: map()
-  def migrate_lazy(mapping, old_key, new_key, function) when is_map(mapping) and is_function(function, 1) do
+  def migrate_lazy(mapping, old_key, new_key, function)
+      when is_map(mapping) and is_function(function, 1) do
     if Map.has_key?(mapping, old_key) do
       mapping |> Map.put(new_key, function.(Map.get(mapping, old_key))) |> Map.delete(old_key)
     else

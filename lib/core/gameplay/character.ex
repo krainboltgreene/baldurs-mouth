@@ -7,15 +7,6 @@ defmodule Core.Gameplay.Character do
   schema "characters" do
     field(:name, :string)
     field(:slug, :string)
-    field(:strength, :integer, default: 8)
-    field(:dexterity, :integer, default: 8)
-    field(:constitution, :integer, default: 8)
-    field(:intelligence, :integer, default: 8)
-    field(:wisdom, :integer, default: 8)
-    field(:charisma, :integer, default: 8)
-
-    embeds_one(:lineage_choices, Core.Gameplay.Choices)
-    embeds_one(:background_choices, Core.Gameplay.Choices)
 
     embeds_one(:pronouns, Pronoun) do
       field(:normative, :string)
@@ -44,24 +35,17 @@ defmodule Core.Gameplay.Character do
   def changeset(record, attributes) do
     record_with_preloaded_relationships =
       Core.Repo.preload(record, [
-        :account,
-        :lineage,
-        :background
+        :account
       ])
 
     record_with_preloaded_relationships
-    |> Ecto.Changeset.cast(attributes, [
-      :name,
-      :strength,
-      :dexterity,
-      :constitution,
-      :intelligence,
-      :wisdom,
-      :charisma
-    ])
+    |> Ecto.Changeset.cast(
+      attributes,
+      [
+        :name
+      ]
+    )
     |> Ecto.Changeset.cast_embed(:pronouns, required: true, with: &pronouns_changeset/2)
-    |> Ecto.Changeset.cast_embed(:lineage_choices)
-    |> Ecto.Changeset.cast_embed(:background_choices)
     |> Ecto.Changeset.put_assoc(
       :account,
       attributes[:account] || record_with_preloaded_relationships.account

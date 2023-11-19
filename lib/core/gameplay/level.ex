@@ -7,6 +7,12 @@ defmodule Core.Gameplay.Level do
   schema "levels" do
     field(:position, :integer)
     field(:hitpoints, :integer, default: 1)
+    field(:strength, :integer, default: 0)
+    field(:dexterity, :integer, default: 0)
+    field(:constitution, :integer, default: 0)
+    field(:intelligence, :integer, default: 0)
+    field(:wisdom, :integer, default: 0)
+    field(:charisma, :integer, default: 0)
     field(:features, {:array, :string}, default: [])
     field(:weapon_proficiencies, {:array, :string}, default: [])
     field(:armor_proficiencies, {:array, :string}, default: [])
@@ -23,6 +29,12 @@ defmodule Core.Gameplay.Level do
   @type t :: %__MODULE__{
           position: integer(),
           hitpoints: integer(),
+          strength: integer(),
+          dexterity: integer(),
+          constitution: integer(),
+          intelligence: integer(),
+          wisdom: integer(),
+          charisma: integer(),
           features: list(String.t()),
           weapon_proficiencies: list(String.t()),
           armor_proficiencies: list(String.t()),
@@ -34,6 +46,13 @@ defmodule Core.Gameplay.Level do
         }
 
   @type options_t :: %{
+          optional(:hitpoints) => integer(),
+          optional(:strength) => integer(),
+          optional(:dexterity) => integer(),
+          optional(:constitution) => integer(),
+          optional(:intelligence) => integer(),
+          optional(:wisdom) => integer(),
+          optional(:charisma) => integer(),
           optional(:features) => list(String.t()),
           optional(:weapon_proficiencies) => list(String.t()),
           optional(:armor_proficiencies) => list(String.t()),
@@ -57,6 +76,12 @@ defmodule Core.Gameplay.Level do
     |> Ecto.Changeset.cast(attributes, [
       :position,
       :hitpoints,
+      :strength,
+      :dexterity,
+      :constitution,
+      :intelligence,
+      :wisdom,
+      :charisma,
       :features,
       :weapon_proficiencies,
       :armor_proficiencies,
@@ -74,7 +99,7 @@ defmodule Core.Gameplay.Level do
       :class,
       attributes[:class] || record_with_preloaded_relationships.class
     )
-    |> Ecto.Changeset.validate_required([:class, :character, :position, :hitpoints])
+    |> Ecto.Changeset.validate_required([:character, :position, :hitpoints])
     |> Ecto.Changeset.foreign_key_constraint(:character_id)
     |> Ecto.Changeset.foreign_key_constraint(:class_id)
   end

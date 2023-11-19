@@ -4,6 +4,12 @@ defmodule Core.Repo.Migrations.CreateLevels do
   def change do
     create(table(:levels)) do
       add(:position, :integer, null: false)
+      add(:strength, :integer, null: false, default: 8)
+      add(:dexterity, :integer, null: false, default: 8)
+      add(:constitution, :integer, null: false, default: 8)
+      add(:intelligence, :integer, null: false, default: 8)
+      add(:wisdom, :integer, null: false, default: 8)
+      add(:charisma, :integer, null: false, default: 8)
       add(:hitpoints, :integer, null: false, default: 1)
       add(:features, {:array, :citext}, null: false, default: [])
       add(:weapon_proficiencies, {:array, :citext}, null: false, default: [])
@@ -14,7 +20,7 @@ defmodule Core.Repo.Migrations.CreateLevels do
       add(:tool_expertises, {:array, :citext}, null: false, default: [])
       add(:cantrips, {:array, :citext}, null: false, default: [])
       add(:languages, {:array, :citext}, null: false, default: [])
-      add(:class_id, references(:classes, on_delete: :delete_all), null: false)
+      add(:class_id, references(:classes, on_delete: :delete_all))
       add(:character_id, references(:characters, on_delete: :delete_all), null: false)
     end
 

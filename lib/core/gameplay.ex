@@ -42,6 +42,71 @@ defmodule Core.Gameplay do
     4,
     4
   ]
+  @abilities [
+    :strength,
+    :dexterity,
+    :constitution,
+    :intelligence,
+    :wisdom,
+    :charisma
+  ]
+  @skills [
+    :athletics,
+    :acrobatics,
+    :sleight_of_hand,
+    :stealth,
+    :arcana,
+    :history,
+    :investigation,
+    :nature,
+    :religion,
+    :animal_handling,
+    :insight,
+    :medicine,
+    :perception,
+    :survival,
+    :deception,
+    :intimidation,
+    :performance,
+    :persuasion
+  ]
+
+  @spec abilities() :: list(atom())
+  def abilities(), do: @abilities
+
+  @spec skills() :: list(atom())
+  def skills(), do: @skills
+
+  @spec sum(list(Core.Gameplay.Level.t())) :: map()
+  def sum(levels) when is_list(levels) do
+    levels
+    |> Enum.map(&Map.take(&1, [
+      :hitpoints,
+      :strength,
+      :dexterity,
+      :constitution,
+      :intelligence,
+      :wisdom,
+      :charisma,
+      :features,
+      :weapon_proficiencies,
+      :armor_proficiencies,
+      :skill_proficiencies,
+      :skill_expertises,
+      :tool_proficiencies,
+      :tool_expertises,
+      :cantrips
+    ]))
+    |> Enum.reduce(%{}, fn level, accumulation ->
+      Map.merge(accumulation, level, fn
+        _key, left, right when is_integer(left) and is_integer(right) ->
+          left + right
+
+        _key, left, right when is_list(left) and is_list(right) ->
+          Enum.concat(left, right)
+      end)
+    end)
+  end
 
   @spec preview(
           Core.Gameplay.Character.t(),
@@ -123,25 +188,28 @@ defmodule Core.Gameplay do
   # Core.Gameplay.level_up(character, selected_class, 2, %{})
   @spec level_up(
           Core.Gameplay.Character.t(),
-          Core.Gameplay.Class.t(),
+          Core.Gameplay.Class.t() | Core.Gameplay.Lineage.t() | Core.Gameplay.Background.t(),
+          integer(),
           Core.Gameplay.Choices.new_t()
         ) ::
           {:error, Ecto.Changeset.t()}
           | {:ok, Core.Gameplay.Level.t()}
+
   def level_up(
-        %Core.Gameplay.Character{levels: []} = character,
+        %Core.Gameplay.Character{levels: levels} = character,
         %Core.Gameplay.Class{hit_dice: hit_dice} = class,
         position,
         choices
-      ) do
-    create_level(
+      )
+      when length(levels) > 2 do
+    create_level!(
       Map.merge(
         choices,
         %{
           character: character,
           class: class,
           position: position,
-          hitpoints: ability_modifier(character.constitution) + hit_dice
+          hitpoints: Enum.random(1..hit_dice) + hitpoints_modifier(levels)
         }
       )
     )
@@ -153,15 +221,15 @@ defmodule Core.Gameplay do
         position,
         choices
       )
-      when length(levels) > 0 do
-    create_level(
+      when length(levels) == 2 do
+    create_level!(
       Map.merge(
         choices,
         %{
           character: character,
           class: class,
           position: position,
-          hitpoints: ability_modifier(character.constitution) + Enum.random(1..hit_dice)
+          hitpoints: hit_dice + hitpoints_modifier(levels)
         }
       )
     )
@@ -173,27 +241,39 @@ defmodule Core.Gameplay do
           Core.Gameplay.Choices.new_t()
         ) ::
           {:error, Ecto.Changeset.t()}
-          | {:ok, Core.Gameplay.Character.t()}
+          | {:ok, Core.Gameplay.Level.t()}
+  def level_up(
+        %Core.Gameplay.Character{levels: levels} = character,
+        :background,
+        choices
+      )
+      when length(levels) == 1 do
+    create_level!(
+      Map.merge(
+        choices,
+        %{
+          character: character,
+          position: -1
+        }
+      )
+    )
+  end
+
   def level_up(
         %Core.Gameplay.Character{levels: levels} = character,
         :lineage,
         choices
       )
       when length(levels) == 0 do
-    update_character(character, %{
-      lineage_choices: choices
-    })
-  end
-
-  def level_up(
-        %Core.Gameplay.Character{levels: levels} = character,
-        :background,
-        choices
+    create_level!(
+      Map.merge(
+        choices,
+        %{
+          character: character,
+          position: -2
+        }
       )
-      when length(levels) == 0 do
-    update_character(character, %{
-      background_choices: choices
-    })
+    )
   end
 
   @spec ability_modifier(number()) :: integer()
@@ -224,11 +304,21 @@ defmodule Core.Gameplay do
         }
   def last_level_in_classes(levels) when is_list(levels) do
     levels
+    |> Enum.filter(fn %{position: position} -> position > 2 end)
     |> Enum.group_by(&Map.get(&1, :class))
     |> Enum.map(fn {class, sublevels} ->
       {class, Enum.max_by(sublevels, &Map.get(&1, :position))}
     end)
     |> Enum.map(fn {class, %Core.Gameplay.Level{position: position}} -> {class, position} end)
     |> Map.new()
+  end
+
+  # TODO: Fill in with more logic like Durable
+  @spec hitpoints_modifier(list(Core.Gameplay.Level.t())) :: integer()
+  def hitpoints_modifier(levels) when is_list(levels) do
+    levels
+    |> sum()
+    |> Map.get(:constitution)
+    |> ability_modifier()
   end
 end

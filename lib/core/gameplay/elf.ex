@@ -1,6 +1,6 @@
 defmodule Core.Gameplay.Elf do
   @spec preview(Core.Gameplay.Character.t()) :: Core.Gameplay.Level.options_t()
-  def preview(%Core.Gameplay.Character{levels: levels}) when length(levels) == 1 do
+  def preview(%Core.Gameplay.Character{levels: levels}) when length(levels) == 0 do
     %{}
   end
 

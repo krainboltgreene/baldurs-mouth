@@ -37,7 +37,11 @@ defmodule Core.Content.Save do
       :characters,
       attributes[:characters] || record_with_preload_relationships.characters
     )
-    |> Ecto.Changeset.validate_length(:characters, max: 3, min: 1, message: "can't have more than %{count} characters in a party")
+    |> Ecto.Changeset.validate_length(:characters,
+      max: 3,
+      min: 1,
+      message: "can't have more than %{count} characters in a party"
+    )
     |> Ecto.Changeset.validate_required([:playing_state, :last_scene, :characters])
   end
 end

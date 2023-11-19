@@ -55,10 +55,10 @@ defmodule CoreWeb.PageLive do
         <:item :if={@current_account} icon={%{as: "map"}}>
           <.link navigate={~p"/campaigns"}>Campaigns</.link>
         </:item>
-        <:item icon={%{as: "unlock"}} :if={!@current_account}>
+        <:item :if={!@current_account} icon={%{as: "unlock"}}>
           <.link navigate={~p"/accounts/log_in"} class="underline">Sign in</.link>
         </:item>
-        <:item icon={%{as: "user-plus"}} :if={!@current_account}>
+        <:item :if={!@current_account} icon={%{as: "user-plus"}}>
           <.link navigate={~p"/accounts/register"} class="underline">Sign up</.link>
         </:item>
         <:item icon={%{as: "list"}}>

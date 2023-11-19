@@ -19,8 +19,14 @@ defmodule CoreWeb.SaveLive do
         ]
       )
     )
-    |> assign(:characters, Core.Gameplay.list_characters() |> Enum.map(fn character -> {character.name, character.id} end))
-    |> assign(:campaigns, Core.Content.list_campaigns()
+    |> assign(
+      :characters,
+      Core.Gameplay.list_characters()
+      |> Enum.map(fn character -> {character.name, character.id} end)
+    )
+    |> assign(
+      :campaigns,
+      Core.Content.list_campaigns()
       |> Core.Repo.preload([:opening_scene])
       |> Enum.map(fn campaign -> {campaign.name, campaign.opening_scene.id} end)
     )
@@ -67,7 +73,6 @@ defmodule CoreWeb.SaveLive do
 
   def handle_params(_params, _url, %{assigns: %{live_action: :new}} = socket) do
     socket
-    |> assign(:page_title, "Start a new campaign")
     |> assign(
       :form,
       %Core.Content.Save{}
@@ -75,6 +80,7 @@ defmodule CoreWeb.SaveLive do
       |> Core.Content.new_save(%{})
       |> to_form()
     )
+    |> assign(:page_title, "Start a new campaign")
     |> (&{:noreply, &1}).()
   end
 
@@ -165,6 +171,7 @@ defmodule CoreWeb.SaveLive do
         socket
       ) do
     CoreWeb.SlidesheetComponent.open(character_id)
+
     socket
     |> (&{:noreply, &1}).()
   end
@@ -175,15 +182,17 @@ defmodule CoreWeb.SaveLive do
         %{"id" => dialogue_id},
         %{assigns: %{save: save}} = socket
       ) do
-    with %Core.Theater.Dialogue{next_scene: next_scene} <- Core.Repo.preload(Core.Theater.get_dialogue(dialogue_id), [:next_scene]),
-      {:ok, transitioned_save} <- Core.Content.update_save(save, %{"last_scene" => next_scene}) do
-        socket
-        |> put_flash(:info, "Changed to #{next_scene.id}")
-        |> push_navigate(to: ~p"/saves/#{transitioned_save.id}")
+    with %Core.Theater.Dialogue{next_scene: next_scene} <-
+           Core.Repo.preload(Core.Theater.get_dialogue(dialogue_id), [:next_scene]),
+         {:ok, transitioned_save} <- Core.Content.update_save(save, %{"last_scene" => next_scene}) do
+      socket
+      |> put_flash(:info, "Changed to #{next_scene.id}")
+      |> push_navigate(to: ~p"/saves/#{transitioned_save.id}")
     else
       nil ->
         socket
         |> put_flash(:error, "Couldn't find that dialogue!")
+
       {:error, _changeset} ->
         socket
         |> put_flash(:error, "Couldn't save your dialogue choice!")
@@ -257,7 +266,7 @@ defmodule CoreWeb.SaveLive do
   def render(%{live_action: :show} = assigns) do
     ~H"""
     <article data-current-line={@current_line} class="mx-auto px-2 py-4">
-      <.line :if={index <= @current_line} :for={{line, index} <- @lines |> Enum.with_index()} line={line}/>
+      <.line :for={{line, index} <- @lines |> Enum.with_index()} :if={index <= @current_line} line={line} />
       <div :if={show_more?(@lines, @current_line)} class="text-center">
         <.button usable_icon="comment-dots" phx-click="show_more" kind="outline">More</.button>
       </div>
@@ -269,7 +278,7 @@ defmodule CoreWeb.SaveLive do
           <strong><%= Pretty.get(@speaker, :name) %></strong> says ...
         </p>
         <ol>
-          <li id={dialogue.id} :for={dialogue <- @dialogues}>
+          <li :for={dialogue <- @dialogues} id={dialogue.id}>
             <p>
               "<.link href="#" phx-click="select_dialogue" phx-value-id={dialogue.id}><%= dialogue.body %></.link>" <.requirement :if={dialogue.challenge} challenge={dialogue.challenge} />
               <span :if={!dialogue.next_scene_id} class="text-xs text-grey-400">
@@ -280,7 +289,6 @@ defmodule CoreWeb.SaveLive do
         </ol>
       </div>
     </article>
-
 
     <aside class="fixed z-9 top-1/2 right-0">
       <ul class="mx-auto mx-auto grid grid-cols-1 grid-rows-2 gap-2 max-w-xl">
@@ -302,16 +310,17 @@ defmodule CoreWeb.SaveLive do
       </ul>
     </aside>
 
-    <.live_component id={character.id} module={CoreWeb.SlidesheetComponent} label={"Character sheet for #{character.name}"} :for={character <- @save.characters}>
+    <.live_component :for={character <- @save.characters} id={character.id} module={CoreWeb.SlidesheetComponent} label={"Character sheet for #{character.name}"}>
       <.sheet character={character} />
     </.live_component>
     """
   end
 
   attr :line, Core.Theater.Line, required: true
+
   defp line(assigns) do
     ~H"""
-    <div id={@line.id} class="my-2 opacity-5 mx-auto rounded-lg border border-dark-600 bg-dark-600" style="animation: 0.2s ease-out 0.25s normal forwards 1 fade-in-keys;" >
+    <div id={@line.id} class="my-2 opacity-5 mx-auto rounded-lg border border-dark-600 bg-dark-600" style="animation: 0.2s ease-out 0.25s normal forwards 1 fade-in-keys;">
       <div class="prose mx-auto px-6 py-4 text-light-500 font-serif">
         <p>
           <%= if @line.speaker_npc.slug == "narrator" do %>
@@ -326,6 +335,7 @@ defmodule CoreWeb.SaveLive do
   end
 
   attr :challenge, Core.Gameplay.Challenge, required: true
+
   defp requirement(assigns) do
     ~H"""
     <.tag :if={@challenge.tag} class="text-highlight-800 bg-highlight-50 ring-highlight-600/20 mr-1">

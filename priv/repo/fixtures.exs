@@ -75,30 +75,38 @@ if Mix.env() == :dev do
           account: krainboltgreene,
           name: "Svet the Happy",
           pronouns: they_them,
-          strength: 17,
-          dexterity: 10,
-          constitution: 15,
-          inteligence: 10,
-          wisdom: 13,
-          charisma: 10,
           lineage: Core.Gameplay.get_lineage_by_slug!("half-orc"),
           background: Core.Gameplay.get_background_by_slug!("folk-hero")
         })
 
       svet
       |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.preview(&1, :lineage))
-      |> tap(&Core.Gameplay.preview(&1, :background))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("fighter"), 1))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("fighter"), 2))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("fighter"), 3))
-
-      svet
-      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{}))
-      |> tap(&Core.Gameplay.level_up(&1, :background, %{}))
+      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{
+        strength: 15,
+        dexterity: 10,
+        constitution: 14,
+        inteligence: 10,
+        wisdom: 13,
+        charisma: 10,
+      }))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
+      |> tap(&Core.Gameplay.level_up(&1, :background, %{
+        constitution: 1,
+        strength: 2
+      }))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("fighter"), 1, %{}))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("fighter"), 2, %{}))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("fighter"), 3, %{}))
 
       {:ok, onyeje} =
@@ -106,30 +114,38 @@ if Mix.env() == :dev do
           account: krainboltgreene,
           name: "Sweet Onyeje",
           pronouns: she_her,
-          strength: 10,
-          dexterity: 15,
-          constitution: 8,
-          inteligence: 13,
-          wisdom: 12,
-          charisma: 17,
           lineage: Core.Gameplay.get_lineage_by_slug!("asmodeous-tiefling"),
           background: Core.Gameplay.get_background_by_slug!("failed-merchant")
         })
 
       onyeje
       |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.preview(&1, :lineage))
-      |> tap(&Core.Gameplay.preview(&1, :background))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("bard"), 1))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("bard"), 2))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("bard"), 3))
-
-      onyeje
-      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{}))
-      |> tap(&Core.Gameplay.level_up(&1, :background, %{}))
+      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{
+        strength: 10,
+        dexterity: 14,
+        constitution: 8,
+        inteligence: 13,
+        wisdom: 12,
+        charisma: 15
+      }))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
+      |> tap(&Core.Gameplay.level_up(&1, :background, %{
+        dexterity: 1,
+        charisma: 2
+      }))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("bard"), 1, %{}))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("bard"), 2, %{}))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("bard"), 3, %{}))
 
       {:ok, shankar} =
@@ -137,30 +153,38 @@ if Mix.env() == :dev do
           account: krainboltgreene,
           name: "Amal 'One-Eyed' Neerad",
           pronouns: he_him,
-          strength: 13,
-          dexterity: 10,
-          constitution: 15,
-          inteligence: 10,
-          wisdom: 17,
-          charisma: 10,
           lineage: Core.Gameplay.get_lineage_by_slug!("high-elf"),
           background: Core.Gameplay.get_background_by_slug!("acolyte")
         })
 
       shankar
       |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.preview(&1, :lineage))
-      |> tap(&Core.Gameplay.preview(&1, :background))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("wizard"), 1))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("wizard"), 2))
-      |> tap(&Core.Gameplay.preview(&1, Core.Gameplay.get_class_by_slug!("wizard"), 3))
-
-      shankar
-      |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{}))
-      |> tap(&Core.Gameplay.level_up(&1, :background, %{}))
+      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{
+        strength: 13,
+        dexterity: 10,
+        constitution: 14,
+        inteligence: 10,
+        wisdom: 15,
+        charisma: 10
+      }))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
+      |> tap(&Core.Gameplay.level_up(&1, :background, %{
+        wisdom: 2,
+        constitution: 1
+      }))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("wizard"), 1, %{}))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("wizard"), 2, %{}))
+      |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
+        force: true
+      )
       |> tap(&Core.Gameplay.level_up(&1, Core.Gameplay.get_class_by_slug!("wizard"), 3, %{}))
 
       svet

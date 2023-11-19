@@ -77,6 +77,7 @@ defmodule CoreWeb.Router do
       live "/lines/:id", CoreWeb.LineLive, :show
       live "/npcs/:id", CoreWeb.NPCLive, :show
       live "/characters", CoreWeb.CharacterLive, :list
+      live "/characters/new", CoreWeb.CharacterLive, :new
       live "/characters/:id", CoreWeb.CharacterLive, :show
       live "/saves", CoreWeb.SaveLive, :list
       live "/saves/new", CoreWeb.SaveLive, :new

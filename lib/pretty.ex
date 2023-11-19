@@ -38,13 +38,19 @@ defmodule Pretty do
     levels |> Core.Gameplay.proficiency_bonus() |> bonus_or_negative()
   end
 
-  # TODO: Fill in with more logic like Durable
-  def get(%Core.Gameplay.Character{constitution: constitution}, :hitpoints_modifier) do
-    Core.Gameplay.ability_modifier(constitution) |> bonus_or_negative()
+  def get(%Core.Gameplay.Character{levels: levels}, :hitpoints_modifier) do
+    levels
+    |> Core.Gameplay.hitpoints_modifier()
+    |> bonus_or_negative()
   end
 
-  def get(%Core.Gameplay.Character{} = record, ability) when ability in @abilities do
-    "#{Map.get(record, ability)} (#{record |> Map.get(ability) |> Core.Gameplay.ability_modifier() |> bonus_or_negative()})"
+  def get(%Core.Gameplay.Character{levels: levels}, ability) when ability in @abilities do
+    levels
+    |> Core.Gameplay.sum()
+    |> Map.get(ability)
+    |> then(fn value ->
+      "#{value} (#{value |> Core.Gameplay.ability_modifier() |> bonus_or_negative()})"
+    end)
   end
 
   def get(record, keys) when is_list(keys),

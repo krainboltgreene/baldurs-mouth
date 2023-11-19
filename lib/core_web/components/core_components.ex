@@ -54,7 +54,7 @@ defmodule CoreWeb.CoreComponents do
         <.icon :if={@kind == :error} as="exclamation-circle" class="h-4 w-4" />
         <%= @title %>
       </p>
-      <p  class={["text-sm leading-5", @title && "mt-2"]}><%= msg %></p>
+      <p class={["text-sm leading-5", @title && "mt-2"]}><%= msg %></p>
       <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
         <.icon as="x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
       </button>
@@ -129,18 +129,20 @@ defmodule CoreWeb.CoreComponents do
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
         @class
       ]}
-      {@rest}>
-      <.icon as={case @state do
-        "usable" -> @usable_icon
-        "busy" -> @busy_icon
-        "successful" -> @successful_icon
-        "failure" -> @failure_icon
-        "rejection" -> @rejection_icon
-      end} /> <%= render_slot(@inner_block) %>
+      {@rest}
+    >
+      <.icon as={
+        case @state do
+          "usable" -> @usable_icon
+          "busy" -> @busy_icon
+          "successful" -> @successful_icon
+          "failure" -> @failure_icon
+          "rejection" -> @rejection_icon
+        end
+      } /> <%= render_slot(@inner_block) %>
     </button>
     """
   end
-
 
   @doc """
   Renders a header with title.
@@ -296,12 +298,16 @@ defmodule CoreWeb.CoreComponents do
 
   @spec tag(map()) :: Phoenix.LiveView.Rendered.t()
   attr :class, :string, default: ""
-  attr :rest, :global, include: ~w(disabled form name value class), doc: "the arbitrary HTML attributes to add to the flash container"
+
+  attr :rest, :global,
+    include: ~w(disabled form name value class),
+    doc: "the arbitrary HTML attributes to add to the flash container"
+
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
   def tag(assigns) do
     ~H"""
-    <span {@rest} class={["rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-800 bg-yellow-50 ring-yellow-600/20", @class]} >
+    <span {@rest} class={["rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-800 bg-yellow-50 ring-yellow-600/20", @class]}>
       <%= render_slot(@inner_block) %>
     </span>
     """
