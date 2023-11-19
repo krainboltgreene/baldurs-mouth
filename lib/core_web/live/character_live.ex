@@ -39,7 +39,11 @@ defmodule CoreWeb.CharacterLive do
       :lineages,
       Core.Gameplay.list_lineages()
       |> Core.Repo.preload([:lineage_category])
-      |> Enum.map(fn lineage -> {lineage.name, lineage.id} end)
+      |> Enum.group_by(fn
+        %{lineage_category: nil} -> "Base"
+        %{lineage_category: lineage_category} -> lineage_category.name
+        end)
+      |> Enum.map(fn {lineage_category_name, lineages} -> {lineage_category_name, Enum.map(lineages, fn lineage -> {lineage.name, lineage.id} end)} end)
     )
     |> assign(
       :backgrounds,
@@ -92,11 +96,35 @@ defmodule CoreWeb.CharacterLive do
       ) do
     socket
     |> assign(
-      :form,
+      :character_form,
       %Core.Gameplay.Character{}
-      |> Core.Repo.preload(levels: [:class], lineage: [:lineage_category], background: [])
+      |> Core.Repo.preload([levels: [:class], lineage: [:lineage_category], background: []])
       |> Core.Gameplay.new_character(%{
         account: current_account
+      })
+      |> to_form()
+    )
+    |> assign(
+      :lineage_form,
+      %Core.Gameplay.Level{}
+      |> Core.Repo.preload([:class])
+      |> Core.Gameplay.new_level(%{
+        strength: 8,
+        dexterity: 8,
+        constitution: 8,
+        intelligence: 8,
+        wisdom: 8,
+        charisma: 8
+      })
+      |> to_form()
+    )
+    |> assign(
+      :background_form,
+      %Core.Gameplay.Level{}
+      |> Core.Repo.preload([:class])
+      |> Core.Gameplay.new_level(%{
+        strength: 2,
+        wisdom: 1
       })
       |> to_form()
     )
@@ -106,6 +134,41 @@ defmodule CoreWeb.CharacterLive do
 
   def handle_params(_params, _url, socket) do
     socket
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event(
+        "validate",
+        %{"character" => character_params},
+        socket
+      ) do
+    socket
+    |> assign(
+      :character_form,
+      %Core.Gameplay.Character{}
+      |> Core.Repo.preload([levels: [:class], lineage: [:lineage_category], background: []])
+      |> Core.Gameplay.change_character(from_form(character_params))
+      |> Map.put(:action, :validate)
+      |> then(fn changeset -> to_form(changeset, check_errors: !changeset.valid?) end)
+    )
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event(
+        "save",
+        %{"character" => character_params},
+        socket
+      ) do
+    character_params
+    |> from_form()
+    |> Core.Gameplay.create_character()
+    |> case do
+      {:ok, character} ->
+        socket
+        |> push_navigate(to: ~p"/character/#{character.id}")
+    end
     |> (&{:noreply, &1}).()
   end
 
@@ -139,19 +202,31 @@ defmodule CoreWeb.CharacterLive do
 
   def render(%{live_action: :new} = assigns) do
     ~H"""
-    <.simple_form for={@form} phx-change="validate" phx-submit="save">
-      <.input field={@form[:name]} label="Name" type="text" />
+    <.simple_form for={@character_form} phx-change="validate" phx-submit="save">
+      <.input field={@character_form[:name]} label="Name" type="text" />
       <div class="grid gap-2 grid-cols-2">
-        <.input field={@form[:lineage]} label="Lineage" type="select" prompt="Select a lineage" value={@form[:lineage].value && @form[:lineage].value.data.id} options={@lineages} />
-        <.input field={@form[:background]} label="Background" type="select" prompt="Select a background" value={@form[:background].value && @form[:background].value.data.id} options={@backgrounds} />
+        <.input field={@character_form[:lineage]} label="Lineage" type="select" prompt="Select a lineage" value={@character_form[:lineage].value && @character_form[:lineage].value} options={@lineages} />
+        <.input field={@character_form[:background]} label="Background" type="select" prompt="Select a background" value={@character_form[:background].value && @character_form[:background].value} options={@backgrounds} />
+      </div>
+    </.simple_form>
+    <.simple_form :if={@character_form[:lineage].value} for={@lineage_form} phx-change="validate" phx-submit="save">
+      <div class="grid gap-2 grid-cols-6 text-center">
+        <.input :for={ability <- Core.Gameplay.abilities()} field={@lineage_form[ability]} label={Phoenix.Naming.humanize(ability)} type="number" min="8" max="15" />
+      </div>
+    </.simple_form>
+    <.simple_form :if={@character_form[:lineage].value && @character_form[:background].value} for={@background_form} phx-change="validate" phx-submit="save">
+      <h1>Background: <%= Pretty.get(@character_form[:background], :name) %></h1>
+      <div class="grid gap-2 grid-cols-6 text-center">
+        <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio"/>
       </div>
       <div class="grid gap-2 grid-cols-6 text-center">
-        <.input :for={ability <- Core.Gameplay.abilities()} field={@form[ability]} label={Phoenix.Naming.humanize(ability)} type="number" min="8" max="15" />
-      </div>
-      <div class="grid gap-2 grid-cols-6 text-center">
-        <.input :for={skill <- Core.Gameplay.skills()} field={@form[skill]} label={Phoenix.Naming.humanize(skill)} type="number" min="8" max="15" />
+        <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio"/>
       </div>
     </.simple_form>
     """
+  end
+
+  defp from_form(params) when is_map(params) do
+    params
   end
 end
