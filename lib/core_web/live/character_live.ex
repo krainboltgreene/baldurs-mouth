@@ -42,8 +42,10 @@ defmodule CoreWeb.CharacterLive do
       |> Enum.group_by(fn
         %{lineage_category: nil} -> "Base"
         %{lineage_category: lineage_category} -> lineage_category.name
-        end)
-      |> Enum.map(fn {lineage_category_name, lineages} -> {lineage_category_name, Enum.map(lineages, fn lineage -> {lineage.name, lineage.id} end)} end)
+      end)
+      |> Enum.map(fn {lineage_category_name, lineages} ->
+        {lineage_category_name, Enum.map(lineages, fn lineage -> {lineage.name, lineage.id} end)}
+      end)
     )
     |> assign(
       :backgrounds,
@@ -98,7 +100,7 @@ defmodule CoreWeb.CharacterLive do
     |> assign(
       :character_form,
       %Core.Gameplay.Character{}
-      |> Core.Repo.preload([levels: [:class], lineage: [:lineage_category], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [:lineage_category], background: [])
       |> Core.Gameplay.new_character(%{
         account: current_account
       })
@@ -147,7 +149,7 @@ defmodule CoreWeb.CharacterLive do
     |> assign(
       :character_form,
       %Core.Gameplay.Character{}
-      |> Core.Repo.preload([levels: [:class], lineage: [:lineage_category], background: []])
+      |> Core.Repo.preload(levels: [:class], lineage: [:lineage_category], background: [])
       |> Core.Gameplay.change_character(from_form(character_params))
       |> Map.put(:action, :validate)
       |> then(fn changeset -> to_form(changeset, check_errors: !changeset.valid?) end)
@@ -202,31 +204,53 @@ defmodule CoreWeb.CharacterLive do
 
   def render(%{live_action: :new} = assigns) do
     ~H"""
-    <.simple_form for={@character_form} phx-change="validate" phx-submit="save">
-      <.input field={@character_form[:name]} label="Name" type="text" />
-      <div class="grid gap-2 grid-cols-2">
-        <.input field={@character_form[:lineage]} label="Lineage" type="select" prompt="Select a lineage" value={@character_form[:lineage].value && @character_form[:lineage].value} options={@lineages} />
-        <.input field={@character_form[:background]} label="Background" type="select" prompt="Select a background" value={@character_form[:background].value && @character_form[:background].value} options={@backgrounds} />
-      </div>
-    </.simple_form>
-    <.simple_form :if={@character_form[:lineage].value} for={@lineage_form} phx-change="validate" phx-submit="save">
-      <div class="grid gap-2 grid-cols-6 text-center">
-        <.input :for={ability <- Core.Gameplay.abilities()} field={@lineage_form[ability]} label={Phoenix.Naming.humanize(ability)} type="number" min="8" max="15" />
-      </div>
-    </.simple_form>
-    <.simple_form :if={@character_form[:lineage].value && @character_form[:background].value} for={@background_form} phx-change="validate" phx-submit="save">
-      <h1>Background: <%= Pretty.get(@character_form[:background], :name) %></h1>
-      <div class="grid gap-2 grid-cols-6 text-center">
-        <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio"/>
-      </div>
-      <div class="grid gap-2 grid-cols-6 text-center">
-        <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio"/>
-      </div>
-    </.simple_form>
+    <div class="grid grid-col-1 gap-8">
+      <.simple_form for={@character_form} phx-change="validate">
+        <:title>Personal Details</:title>
+        <.input field={@character_form[:name]} label="Name" type="text" />
+        <div class="grid gap-2 grid-cols-2">
+          <.input field={@character_form[:lineage]} label="Lineage" type="select" prompt="Select a lineage" value={@character_form[:lineage].value && @character_form[:lineage].value.data.id} options={@lineages} />
+          <.input field={@character_form[:background]} label="Background" type="select" prompt="Select a background" value={@character_form[:background].value && @character_form[:background].value.data.id} options={@backgrounds} />
+        </div>
+      </.simple_form>
+      <.simple_form :if={@character_form[:lineage].value} for={@lineage_form} phx-change="validate">
+        <:title>Lineage</:title>
+        <:subtitle><%= Pretty.get(@character_form[:lineage].value.data, :name) %></:subtitle>
+        <:description><%= Pretty.get(@character_form[:lineage].value.data, :description) %></:description>
+        <div class="grid gap-2 grid-cols-6 text-center">
+          <.input :for={ability <- Core.Gameplay.abilities()} field={@lineage_form[ability]} label={Phoenix.Naming.humanize(ability)} type="number" min="8" max="15" />
+        </div>
+        ...
+      </.simple_form>
+      <.simple_form :if={@character_form[:background].value} for={@background_form} phx-change="validate">
+        <:title>Background</:title>
+        <:subtitle><%= Pretty.get(@character_form[:background].value.data, :name) %></:subtitle>
+        <:description><%= Pretty.get(@character_form[:background].value.data, :description) %></:description>
+        <h1>+2 Ability Score Bonus Choice</h1>
+        <div class="grid gap-2 grid-cols-6 text-center">
+          <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio" />
+        </div>
+        <h1>+1 Ability Score Bonus Choice</h1>
+        <div class="grid gap-2 grid-cols-6 text-center">
+          <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio" />
+        </div>
+      </.simple_form>
+    </div>
     """
   end
 
   defp from_form(params) when is_map(params) do
     params
+    |> Utilities.Map.atomize_keys()
+    |> Map.replace_lazy(:lineage, fn
+      "" -> nil
+      lineage_id ->
+        Core.Gameplay.get_lineage(lineage_id)
+    end)
+    |> Map.replace_lazy(:background, fn
+      "" -> nil
+      background_id ->
+        Core.Gameplay.get_background(background_id)
+    end)
   end
 end

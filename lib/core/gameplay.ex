@@ -80,23 +80,25 @@ defmodule Core.Gameplay do
   @spec sum(list(Core.Gameplay.Level.t())) :: map()
   def sum(levels) when is_list(levels) do
     levels
-    |> Enum.map(&Map.take(&1, [
-      :hitpoints,
-      :strength,
-      :dexterity,
-      :constitution,
-      :intelligence,
-      :wisdom,
-      :charisma,
-      :features,
-      :weapon_proficiencies,
-      :armor_proficiencies,
-      :skill_proficiencies,
-      :skill_expertises,
-      :tool_proficiencies,
-      :tool_expertises,
-      :cantrips
-    ]))
+    |> Enum.map(
+      &Map.take(&1, [
+        :hitpoints,
+        :strength,
+        :dexterity,
+        :constitution,
+        :intelligence,
+        :wisdom,
+        :charisma,
+        :features,
+        :weapon_proficiencies,
+        :armor_proficiencies,
+        :skill_proficiencies,
+        :skill_expertises,
+        :tool_proficiencies,
+        :tool_expertises,
+        :cantrips
+      ])
+    )
     |> Enum.reduce(%{}, fn level, accumulation ->
       Map.merge(accumulation, level, fn
         _key, left, right when is_integer(left) and is_integer(right) ->
@@ -166,7 +168,17 @@ defmodule Core.Gameplay do
         %Core.Gameplay.Character{background: %Core.Gameplay.Background{slug: "folk-hero"}},
         :background
       ) do
-    %{}
+    %{
+      skill_proficiencies: [
+        %Core.Gameplay.Choices.SkillProficiency{name: :animal_handling},
+        %Core.Gameplay.Choices.SkillProficiency{name: :survival}
+      ],
+      selectable_skills: [],
+      skill_choices: 0,
+      forced_tools: [],
+      tool_choices: 1,
+      selectable_tools: ["gaming", "musical"]
+    }
   end
 
   def preview(

@@ -160,7 +160,7 @@ defmodule CoreWeb.CoreComponents do
         <h1 class="text-lg font-semibold leading-8 text-zinc-800">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+        <p :if={render_slot(@subtitle)} class="mt-2 text-sm leading-6 text-zinc-600">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
@@ -355,7 +355,7 @@ defmodule CoreWeb.CoreComponents do
             </.link>
           </nav>
         </div>
-        <p :if={@subtitle} class="ml-2 mt-1 truncate text-sm text-gray-500"><%= render_slot(@subtitle) %></p>
+        <p :if={render_slot(@subtitle)} class="ml-2 mt-1 truncate text-sm text-gray-500"><%= render_slot(@subtitle) %></p>
       </div>
     </div>
     """

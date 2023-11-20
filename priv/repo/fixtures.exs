@@ -81,21 +81,25 @@ if Mix.env() == :dev do
 
       svet
       |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{
-        strength: 15,
-        dexterity: 10,
-        constitution: 14,
-        inteligence: 10,
-        wisdom: 13,
-        charisma: 10,
-      }))
+      |> tap(
+        &Core.Gameplay.level_up(&1, :lineage, %{
+          strength: 15,
+          dexterity: 10,
+          constitution: 14,
+          inteligence: 10,
+          wisdom: 13,
+          charisma: 10
+        })
+      )
       |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
         force: true
       )
-      |> tap(&Core.Gameplay.level_up(&1, :background, %{
-        constitution: 1,
-        strength: 2
-      }))
+      |> tap(
+        &Core.Gameplay.level_up(&1, :background, %{
+          constitution: 1,
+          strength: 2
+        })
+      )
       |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
         force: true
       )
@@ -120,21 +124,25 @@ if Mix.env() == :dev do
 
       onyeje
       |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{
-        strength: 10,
-        dexterity: 14,
-        constitution: 8,
-        inteligence: 13,
-        wisdom: 12,
-        charisma: 15
-      }))
+      |> tap(
+        &Core.Gameplay.level_up(&1, :lineage, %{
+          strength: 10,
+          dexterity: 14,
+          constitution: 8,
+          inteligence: 13,
+          wisdom: 12,
+          charisma: 15
+        })
+      )
       |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
         force: true
       )
-      |> tap(&Core.Gameplay.level_up(&1, :background, %{
-        dexterity: 1,
-        charisma: 2
-      }))
+      |> tap(
+        &Core.Gameplay.level_up(&1, :background, %{
+          dexterity: 1,
+          charisma: 2
+        })
+      )
       |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
         force: true
       )
@@ -159,21 +167,25 @@ if Mix.env() == :dev do
 
       shankar
       |> Core.Repo.preload(levels: [:class], lineage: [lineage_category: []], background: [])
-      |> tap(&Core.Gameplay.level_up(&1, :lineage, %{
-        strength: 13,
-        dexterity: 10,
-        constitution: 14,
-        inteligence: 10,
-        wisdom: 15,
-        charisma: 10
-      }))
+      |> tap(
+        &Core.Gameplay.level_up(&1, :lineage, %{
+          strength: 13,
+          dexterity: 10,
+          constitution: 14,
+          inteligence: 10,
+          wisdom: 15,
+          charisma: 10
+        })
+      )
       |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
         force: true
       )
-      |> tap(&Core.Gameplay.level_up(&1, :background, %{
-        wisdom: 2,
-        constitution: 1
-      }))
+      |> tap(
+        &Core.Gameplay.level_up(&1, :background, %{
+          wisdom: 2,
+          constitution: 1
+        })
+      )
       |> Core.Repo.preload([levels: [:class], lineage: [lineage_category: []], background: []],
         force: true
       )

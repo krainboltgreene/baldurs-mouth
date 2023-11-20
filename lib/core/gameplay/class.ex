@@ -7,6 +7,7 @@ defmodule Core.Gameplay.Class do
   schema "classes" do
     field(:name, :string)
     field(:slug, :string)
+    field(:description, :string)
     field(:saving_throw_proficiencies, {:array, :string})
     field(:hit_dice, :integer)
     field(:spellcasting_ability, Ecto.Enum, values: [:charisma, :wisdom, :intelligence])
@@ -25,12 +26,13 @@ defmodule Core.Gameplay.Class do
     record
     |> Ecto.Changeset.cast(attributes, [
       :name,
+      :description,
       :saving_throw_proficiencies,
       :spellcasting_ability,
       :hit_dice
     ])
     |> Slugy.slugify(:name)
-    |> Ecto.Changeset.validate_required([:name, :slug, :saving_throw_proficiencies, :hit_dice])
+    |> Ecto.Changeset.validate_required([:name, :slug, :saving_throw_proficiencies, :hit_dice, :description])
     |> Ecto.Changeset.unique_constraint(:slug)
   end
 end

@@ -21,6 +21,7 @@ defmodule CoreWeb.FormComponents do
         </:actions>
       </.simple_form>
   """
+  attr :id, :any, default: nil
   attr :for, :any, required: true, doc: "the datastructure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
 
@@ -29,12 +30,17 @@ defmodule CoreWeb.FormComponents do
     doc: "the arbitrary HTML attributes to apply to the form tag"
 
   slot :inner_block, required: true
+  slot :title, doc: "the title of the form"
+  slot :subtitle, doc: "the subtitle of the form"
+  slot :description, doc: "a description of the form"
   slot :actions, doc: "the slot for form actions, such as a submit button"
 
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-2 space-y-8 bg-white">
+      <div class="space-y-6">
+        <h3  class="text-base font-semibold leading-7 text-gray-900 border-b border-gray-200"><%= render_slot(@title) %> <span :if={render_slot(@subtitle)} class="text-sm ml-3 text-gray-500"><%= render_slot(@subtitle) %></span></h3>
+        <p :if={render_slot(@description)} class="mt-1 text-sm leading-6 text-gray-600"><%= render_slot(@description) %></p>
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>

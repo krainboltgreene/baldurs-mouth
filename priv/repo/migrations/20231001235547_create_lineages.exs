@@ -5,6 +5,7 @@ defmodule Core.Repo.Migrations.CreateLineages do
     create(table(:lineages)) do
       add(:name, :text, null: false)
       add(:slug, :citext, null: false)
+      add(:description, :text, null: false)
       add(:lineage_category_id, references(:lineage_categories, on_delete: :delete_all))
     end
 

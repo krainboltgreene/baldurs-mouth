@@ -5,6 +5,7 @@ defmodule Core.Repo.Migrations.CreateClasses do
     create(table(:classes)) do
       add(:name, :text, null: false)
       add(:slug, :citext, null: false)
+      add(:description, :text, null: false)
       add(:saving_throw_proficiencies, {:array, :text}, null: false)
       add(:hit_dice, :integer, null: false)
       add(:spellcasting_ability, :citext)

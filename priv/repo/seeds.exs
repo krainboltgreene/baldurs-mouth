@@ -14,23 +14,17 @@
   Core.Repo.transaction(fn ->
     Core.Gameplay.create_background!(%{
       name: "Folk Hero",
-      forced_skills: [
-        "animal-handling",
-        "survival"
-      ],
-      selectable_skills: [],
-      skill_choices: 0,
-      forced_tools: [],
-      tool_choices: 1,
-      selectable_tools: ["gaming", "musical"]
+      description: "Lorem ipsum"
     })
 
     Core.Gameplay.create_background!(%{
-      name: "Failed Merchant"
+      name: "Failed Merchant",
+      description: "Lorem ipsum"
     })
 
     Core.Gameplay.create_background!(%{
-      name: "Acolyte"
+      name: "Acolyte",
+      description: "Lorem ipsum"
     })
 
     elf_lineage_category =
@@ -40,25 +34,30 @@
 
     tiefling_lineage_category =
       Core.Gameplay.create_lineage_category!(%{
-        name: "Tiefling"
+        name: "Tiefling",
+      description: "Lorem ipsum"
       })
 
     Core.Gameplay.create_lineage!(%{
       name: "High-Elf",
+      description: "Lorem ipsum",
       lineage_category: elf_lineage_category
     })
 
     Core.Gameplay.create_lineage!(%{
-      name: "Half-Orc"
+      name: "Half-Orc",
+      description: "Lorem ipsum"
     })
 
     Core.Gameplay.create_lineage!(%{
       name: "Asmodeous Tiefling",
+      description: "Lorem ipsum",
       lineage_category: tiefling_lineage_category
     })
 
     Core.Gameplay.create_class!(%{
       name: "Paladin",
+      description: "Lorem ipsum",
       hit_dice: 10,
       saving_throw_proficiencies: [
         "wisdom",
@@ -69,6 +68,7 @@
 
     Core.Gameplay.create_class!(%{
       name: "Fighter",
+      description: "Lorem ipsum",
       hit_dice: 10,
       saving_throw_proficiencies: [
         "strength",
@@ -78,6 +78,7 @@
 
     Core.Gameplay.create_class!(%{
       name: "Bard",
+      description: "Lorem ipsum",
       hit_dice: 8,
       saving_throw_proficiencies: [
         "dexterity",
@@ -88,6 +89,7 @@
 
     Core.Gameplay.create_class!(%{
       name: "Wizard",
+      description: "Lorem ipsum",
       hit_dice: 6,
       saving_throw_proficiencies: [
         "intelligence",

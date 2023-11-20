@@ -290,7 +290,8 @@ CREATE TABLE public.accounts_tokens (
 CREATE TABLE public.backgrounds (
     id uuid NOT NULL,
     name text NOT NULL,
-    slug public.citext NOT NULL
+    slug public.citext NOT NULL,
+    description text NOT NULL
 );
 
 
@@ -330,6 +331,7 @@ CREATE TABLE public.classes (
     id uuid NOT NULL,
     name text NOT NULL,
     slug public.citext NOT NULL,
+    description text NOT NULL,
     saving_throw_proficiencies text[] NOT NULL,
     hit_dice integer NOT NULL,
     spellcasting_ability public.citext
@@ -423,6 +425,7 @@ CREATE TABLE public.lineages (
     id uuid NOT NULL,
     name text NOT NULL,
     slug public.citext NOT NULL,
+    description text NOT NULL,
     lineage_category_id uuid
 );
 

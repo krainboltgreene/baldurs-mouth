@@ -2,6 +2,10 @@ defmodule Core.Gameplay.Choices do
   @moduledoc false
   use Ecto.Schema
 
+  defmodule SkillProficiency do
+    defstruct [:name, :required]
+  end
+
   embedded_schema do
     field(:features, {:array, :string}, default: [])
     field(:weapon_proficiencies, {:array, :string}, default: [])

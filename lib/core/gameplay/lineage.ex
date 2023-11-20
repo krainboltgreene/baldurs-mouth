@@ -7,6 +7,7 @@ defmodule Core.Gameplay.Lineage do
   schema "lineages" do
     field(:name, :string)
     field(:slug, :string)
+    field(:description, :string)
     belongs_to(:lineage_category, Core.Gameplay.LineageCategory)
   end
 
@@ -24,14 +25,14 @@ defmodule Core.Gameplay.Lineage do
       ])
 
     record_with_preloaded_relationships
-    |> Ecto.Changeset.cast(attributes, [:name])
+    |> Ecto.Changeset.cast(attributes, [:name, :description])
     |> Ecto.Changeset.put_assoc(
       :lineage_category,
       attributes[:lineage_category] ||
         record_with_preloaded_relationships.lineage_category
     )
     |> Slugy.slugify(:name)
-    |> Ecto.Changeset.validate_required([:name, :slug])
+    |> Ecto.Changeset.validate_required([:name, :slug, :description])
     |> Ecto.Changeset.unique_constraint(:slug)
   end
 end
