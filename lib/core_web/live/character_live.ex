@@ -243,12 +243,16 @@ defmodule CoreWeb.CharacterLive do
     params
     |> Utilities.Map.atomize_keys()
     |> Map.replace_lazy(:lineage, fn
-      "" -> nil
+      "" ->
+        nil
+
       lineage_id ->
         Core.Gameplay.get_lineage(lineage_id)
     end)
     |> Map.replace_lazy(:background, fn
-      "" -> nil
+      "" ->
+        nil
+
       background_id ->
         Core.Gameplay.get_background(background_id)
     end)

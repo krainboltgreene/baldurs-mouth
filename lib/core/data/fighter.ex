@@ -1,20 +1,21 @@
-defmodule Core.Gameplay.Fighter do
+defmodule Core.Data.Fighter do
   # https://5thsrd.org/character/classes/fighter/
-  @spec preview(Core.Gameplay.Character.t(), integer()) :: Core.Gameplay.Level.options_t()
-  def preview(_character, 1) do
-    %{}
+  @spec plan(Core.Gameplay.Character.t(), integer()) ::
+          list(Core.Data.forced_t() | Core.Data.any_of_t())
+  def plan(_character, 1) do
+    []
   end
 
-  def preview(_character, 2) do
-    %{}
+  def plan(_character, 2) do
+    []
   end
 
-  def preview(_character, 3) do
-    %{}
+  def plan(_character, 3) do
+    []
   end
 
-  def preview(_character, _position) do
-    %{}
+  def plan(_character, _position) do
+    []
   end
 end
 

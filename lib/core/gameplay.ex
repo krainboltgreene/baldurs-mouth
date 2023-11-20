@@ -110,89 +110,43 @@ defmodule Core.Gameplay do
     end)
   end
 
-  @spec preview(
+  @spec plan(
           Core.Gameplay.Character.t(),
           Core.Gameplay.Class.t(),
           integer()
-        ) :: Core.Gameplay.Level.options_t()
-  def preview(character, %Core.Gameplay.Class{slug: "fighter"}, position) do
-    Core.Gameplay.Fighter.preview(character, position)
+        ) :: list(Core.Gameplay.Choices.forced_t() | Core.Gameplay.Choices.any_of_t())
+  def plan(character, %Core.Gameplay.Class{slug: "fighter"}, position) do
+    Core.Data.Fighter.plan(character, position)
   end
 
-  def preview(character, %Core.Gameplay.Class{slug: "paladin"}, position) do
-    Core.Gameplay.Paladin.preview(character, position)
+  def plan(character, %Core.Gameplay.Class{slug: "paladin"}, position) do
+    Core.Data.Paladin.plan(character, position)
   end
 
-  def preview(character, %Core.Gameplay.Class{slug: "bard"}, position) do
-    Core.Gameplay.Bard.preview(character, position)
+  def plan(character, %Core.Gameplay.Class{slug: "bard"}, position) do
+    Core.Data.Bard.plan(character, position)
   end
 
-  def preview(character, %Core.Gameplay.Class{slug: "wizard"}, position) do
-    Core.Gameplay.Wizard.preview(character, position)
+  def plan(character, %Core.Gameplay.Class{slug: "wizard"}, position) do
+    Core.Data.Wizard.plan(character, position)
   end
 
-  @spec preview(
+  @spec plan(
           Core.Gameplay.Character.t(),
           atom()
-        ) :: Core.Gameplay.Level.options_t()
-  def preview(
-        %Core.Gameplay.Character{
-          lineage: %Core.Gameplay.Lineage{
-            lineage_category: %Core.Gameplay.LineageCategory{slug: "elf"}
-          }
-        } = character,
+        ) :: list(Core.Gameplay.Choices.forced_t() | Core.Gameplay.Choices.any_of_t())
+  def plan(
+        %Core.Gameplay.Character{} = character,
         :lineage
       ) do
-    Core.Gameplay.Elf.preview(character)
+    Core.Data.Lineage.plan(character)
   end
 
-  def preview(
-        %Core.Gameplay.Character{lineage: %Core.Gameplay.Lineage{slug: "half-orc"}} = character,
-        :lineage
-      ) do
-    Core.Gameplay.HalfOrc.preview(character)
-  end
-
-  def preview(
-        %Core.Gameplay.Character{
-          lineage: %Core.Gameplay.Lineage{
-            lineage_category: %Core.Gameplay.LineageCategory{slug: "tiefling"}
-          }
-        } = character,
-        :lineage
-      ) do
-    Core.Gameplay.Tiefling.preview(character)
-  end
-
-  def preview(
-        %Core.Gameplay.Character{background: %Core.Gameplay.Background{slug: "folk-hero"}},
+  def plan(
+        %Core.Gameplay.Character{} = character,
         :background
       ) do
-    %{
-      skill_proficiencies: [
-        %Core.Gameplay.Choices.SkillProficiency{name: :animal_handling},
-        %Core.Gameplay.Choices.SkillProficiency{name: :survival}
-      ],
-      selectable_skills: [],
-      skill_choices: 0,
-      forced_tools: [],
-      tool_choices: 1,
-      selectable_tools: ["gaming", "musical"]
-    }
-  end
-
-  def preview(
-        %Core.Gameplay.Character{background: %Core.Gameplay.Background{slug: "failed-merchant"}},
-        :background
-      ) do
-    %{}
-  end
-
-  def preview(
-        %Core.Gameplay.Character{background: %Core.Gameplay.Background{slug: "acolyte"}},
-        :background
-      ) do
-    %{}
+    Core.Data.Background.plan(character)
   end
 
   # character = Core.Gameplay.get_character_by_slug!("james")

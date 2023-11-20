@@ -367,12 +367,16 @@ defmodule CoreWeb.SaveLive do
   defp from_form(params) when is_map(params) do
     params
     |> Utilities.Map.migrate_lazy("last_scene", :last_scene, fn
-      "" -> nil
+      "" ->
+        nil
+
       last_scene_id ->
         Core.Theater.get_scene(last_scene_id)
     end)
     |> Utilities.Map.migrate_lazy("characters", :characters, fn
-      "" -> []
+      "" ->
+        []
+
       character_ids ->
         Core.Gameplay.get_characters(character_ids)
     end)

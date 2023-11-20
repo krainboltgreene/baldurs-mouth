@@ -32,7 +32,13 @@ defmodule Core.Gameplay.Class do
       :hit_dice
     ])
     |> Slugy.slugify(:name)
-    |> Ecto.Changeset.validate_required([:name, :slug, :saving_throw_proficiencies, :hit_dice, :description])
+    |> Ecto.Changeset.validate_required([
+      :name,
+      :slug,
+      :saving_throw_proficiencies,
+      :hit_dice,
+      :description
+    ])
     |> Ecto.Changeset.unique_constraint(:slug)
   end
 end

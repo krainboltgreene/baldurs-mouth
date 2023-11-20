@@ -1,20 +1,21 @@
-defmodule Core.Gameplay.Paladin do
+defmodule Core.Data.Paladin do
   # https://5thsrd.org/character/classes/paladin/
-  @spec preview(Core.Gameplay.Character.t(), integer()) :: Core.Gameplay.Level.options_t()
-  def preview(_character, 1) do
-    %{}
+  @spec plan(Core.Data.Character.t(), integer()) ::
+          list(Core.Data.forced_t() | Core.Data.any_of_t())
+  def plan(_character, 1) do
+    []
   end
 
-  def preview(_character, 2) do
-    %{}
+  def plan(_character, 2) do
+    []
   end
 
-  def preview(_character, 3) do
-    %{}
+  def plan(_character, 3) do
+    []
   end
 
-  def preview(_character, _position) do
-    %{}
+  def plan(_character, _position) do
+    []
   end
 end
 
@@ -46,5 +47,5 @@ end
 #           %{
 #             features: ["action-surge"]
 #           },
-#           %{}
+#           []
 #         ]
