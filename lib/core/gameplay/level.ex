@@ -44,8 +44,7 @@ defmodule Core.Gameplay.Level do
           tool_expertises: list(String.t()),
           cantrips: list(String.t())
         }
-
-  @type options_t :: %{
+  @type new_t :: %{
           optional(:hitpoints) => integer(),
           optional(:strength) => integer(),
           optional(:dexterity) => integer(),

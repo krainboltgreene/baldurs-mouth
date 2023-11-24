@@ -1,20 +1,19 @@
 defmodule Core.Data.Lineage do
-  @spec plan(Core.Gameplay.Character.t()) ::
-          list(Core.Data.forced_t() | Core.Data.any_of_t())
-  def plan(%Core.Gameplay.Character{levels: levels, lineage: %{slug: "half-orc"}})
+  @spec plan(Ecto.Changeset.t(Core.Gameplay.Character.t())) ::
+          list({:forced, atom(), any()} | {:any_of, atom(), list(any()), integer()})
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{levels: levels}, changes: %{lineage: %{data: %{slug: "half-orc"}}}})
       when length(levels) == 0 do
     [
-      %Core.Data.Forced{name: :animal_handling, type: :skill_proficiencies},
-      %Core.Data.Forced{name: :survival, type: :skill_proficiencies},
-      %Core.Data.AnyOf{
-        names: [:vehicle_land, :artisan_tool],
-        type: :tool_proficiencies,
-        count: 2
-      }
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("mark-of-gruumsh")},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("scarred-and-strong")},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("relentless-endurance")},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("menacing")},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("savage-attack")},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("darkvision")}
     ]
   end
 
-  def plan(%Core.Gameplay.Character{}) do
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset) do
     []
   end
 end

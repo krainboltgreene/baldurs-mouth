@@ -12,9 +12,66 @@
 
 {:ok, _} =
   Core.Repo.transaction(fn ->
+    Core.Gameplay.create_feature(%{
+      name: "Darkvision",
+      description: """
+      Thanks to your orc blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can’t discern color in darkness, only shades of gray.
+      """
+    })
+
+    Core.Gameplay.create_feature(%{
+      name: "Menacing",
+      description: """
+      You gain proficiency in the Intimidation skill.
+      """
+    })
+
+    Core.Gameplay.create_feature(%{
+      name: "Savage Attack",
+      description: """
+      When you score a critical hit with a melee weapon attack, you can roll one of the weapon’s damage dice one additional time and add it to the extra damage of the critical hit.
+      """
+    })
+
+    Core.Gameplay.create_feature(%{
+      name: "Relentless Endurance",
+      description: """
+      When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can’t use this feature again until you finish a long rest.
+      """
+    })
+
+    Core.Gameplay.create_feature(%{
+      name: "Rustic Hospitality",
+      description: """
+      Since you come from the ranks of the common folk, you fit in among them with ease. You can find a place to hide, rest, or recuperate among other commoners, unless you have shown yourself to be a danger to them. They will shield you from the law or anyone else searching for you, though they will not risk their lives for you.
+      """
+    })
+
+    Core.Gameplay.create_feature(%{
+      name: "Scarred And Strong",
+      description: """
+      Half-orcs exhibit a blend of orcish and human characteristics, and their appearance varies widely. Grayish skin tones and prominent teeth are the most common shared elements among these folk.
+
+      Orcs regard battle scars as tokens of pride and ornamental scars as things of beauty. Other scars, though, mark an orc or half-orc as a former prisoner or a disgraced exile. Any half-orc who has lived among or near orcs has scars, whether they are marks of humiliation or of pride, recounting their past exploits and injuries.
+      """
+    })
+
+    Core.Gameplay.create_feature(%{
+      name: "Mark of Gruumsh",
+      description: """
+      The one-eyed god Gruumsh—lord of war and fury—created the first orcs, and even those orcs who turn away from his worship carry his blessings of might and endurance. The same is true of half-orcs. Some half-orcs hear the whispers of Gruumsh in their dreams, calling them to unleash the rage that simmers within them. Others feel Gruumsh's exultation when they join in melee combat — and either exult along with him or shiver with fear and loathing.
+
+      Beyond the rage of Gruumsh, half-orcs feel emotion powerfully. Rage doesn't just quicken their pulse, it makes their bodies burn. An insult stings like acid, and sadness saps their strength. But they laugh loudly and heartily, and simple pleasures — feasting, drinking, wrestling, drumming, and wild dancing — fill their hearts with joy. They tend to be short-tempered and sometimes sullen, more inclined to action than contemplation and to fighting than arguing. And when their hearts swell with love, they leap to perform acts of great kindness and compassion.
+      """
+    })
+
     Core.Gameplay.create_background!(%{
       name: "Folk Hero",
-      description: "Lorem ipsum"
+      description: """
+      You come from a humble social rank, but you are destined for so much more. Already the people of your home village regard you as their champion, and your destiny calls you to stand against the tyrants and monsters that threaten the common folk everywhere.
+
+      You previously pursued a simple profession among the peasantry, perhaps as a farmer, miner, servant, shepherd, woodcutter, or gravedigger. But something happened that set you on a different path and marked you for greater things. Choose or randomly determine a defining event that marked you as a hero of the people.
+      """
     })
 
     Core.Gameplay.create_background!(%{

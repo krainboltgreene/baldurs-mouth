@@ -354,6 +354,18 @@ CREATE TABLE public.dialogues (
 
 
 --
+-- Name: features; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.features (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL,
+    description text DEFAULT ''::text NOT NULL
+);
+
+
+--
 -- Name: inventories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -582,6 +594,14 @@ ALTER TABLE ONLY public.dialogues
 
 
 --
+-- Name: features features_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.features
+    ADD CONSTRAINT features_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: inventories inventories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -772,6 +792,13 @@ CREATE INDEX dialogues_next_scene_id_index ON public.dialogues USING btree (next
 --
 
 CREATE UNIQUE INDEX dialogues_speaker_character_id_index ON public.dialogues USING btree (speaker_character_id);
+
+
+--
+-- Name: features_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX features_slug_index ON public.features USING btree (slug);
 
 
 --
@@ -1121,3 +1148,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20231002023356);
 INSERT INTO public."schema_migrations" (version) VALUES (20231002023407);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201929);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201930);
+INSERT INTO public."schema_migrations" (version) VALUES (20231123045217);

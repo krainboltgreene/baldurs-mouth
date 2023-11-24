@@ -1,20 +1,20 @@
 defmodule Core.Data.Fighter do
   # https://5thsrd.org/character/classes/fighter/
-  @spec plan(Core.Gameplay.Character.t(), integer()) ::
-          list(Core.Data.forced_t() | Core.Data.any_of_t())
-  def plan(_character, 1) do
+  @spec plan(Ecto.Changeset.t(Core.Gameplay.Character.t()), integer()) ::
+          list({:forced, atom(), any()} | {:any_of, atom(), list(any()), integer()})
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, 1) do
     []
   end
 
-  def plan(_character, 2) do
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, 2) do
     []
   end
 
-  def plan(_character, 3) do
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, 3) do
     []
   end
 
-  def plan(_character, _position) do
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, _position) do
     []
   end
 end

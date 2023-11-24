@@ -12,11 +12,11 @@ defmodule CoreWeb.CharacterLive do
       ) do
     characters =
       Core.Gameplay.list_characters()
-      |> Core.Repo.preload(
+      |> Core.Repo.preload([
         levels: [:class],
         lineage: [:lineage_category],
         background: []
-      )
+      ])
 
     socket
     |> assign(:characters, characters)
@@ -100,7 +100,7 @@ defmodule CoreWeb.CharacterLive do
     |> assign(
       :character_form,
       %Core.Gameplay.Character{}
-      |> Core.Repo.preload(levels: [:class], lineage: [:lineage_category], background: [])
+      |> Core.Repo.preload([levels: [:class], lineage: [:lineage_category], background: []])
       |> Core.Gameplay.new_character(%{
         account: current_account
       })
@@ -149,8 +149,25 @@ defmodule CoreWeb.CharacterLive do
     |> assign(
       :character_form,
       %Core.Gameplay.Character{}
-      |> Core.Repo.preload(levels: [:class], lineage: [:lineage_category], background: [])
-      |> Core.Gameplay.change_character(from_form(character_params))
+      |> Core.Repo.preload([levels: [:class], lineage: [:lineage_category], background: []])
+      |> Core.Gameplay.change_character(from_character_form(character_params))
+      |> Map.put(:action, :validate)
+      |> then(fn changeset -> to_form(changeset, check_errors: !changeset.valid?) end)
+    )
+    |> (&{:noreply, &1}).()
+  end
+
+  def handle_event(
+        "validate",
+        %{"level" => level_params},
+        socket
+      ) do
+    socket
+    |> assign(
+      :level_form,
+      %Core.Gameplay.Level{}
+      |> Core.Repo.preload([:class])
+      |> Core.Gameplay.change_level(from_level_form(level_params))
       |> Map.put(:action, :validate)
       |> then(fn changeset -> to_form(changeset, check_errors: !changeset.valid?) end)
     )
@@ -164,7 +181,7 @@ defmodule CoreWeb.CharacterLive do
         socket
       ) do
     character_params
-    |> from_form()
+    |> from_character_form()
     |> Core.Gameplay.create_character()
     |> case do
       {:ok, character} ->
@@ -217,6 +234,14 @@ defmodule CoreWeb.CharacterLive do
         <:title>Lineage</:title>
         <:subtitle><%= Pretty.get(@character_form[:lineage].value.data, :name) %></:subtitle>
         <:description><%= Pretty.get(@character_form[:lineage].value.data, :description) %></:description>
+        <% dbg(@character_form.source.data.levels) %>
+        <% dbg(@character_form.source.changes.lineage.data.slug) %>
+        <div class="prose">
+          <ul>
+            <li :for={{choice, type, value} <- Core.Data.plan(@character_form.source, :lineage)}><%= value.name %></li>
+          </ul>
+        </div>
+        <div>Ability Scores</div>
         <div class="grid gap-2 grid-cols-6 text-center">
           <.input :for={ability <- Core.Gameplay.abilities()} field={@lineage_form[ability]} label={Phoenix.Naming.humanize(ability)} type="number" min="8" max="15" />
         </div>
@@ -239,7 +264,7 @@ defmodule CoreWeb.CharacterLive do
     """
   end
 
-  defp from_form(params) when is_map(params) do
+  defp from_character_form(params) when is_map(params) do
     params
     |> Utilities.Map.atomize_keys()
     |> Map.replace_lazy(:lineage, fn
@@ -256,5 +281,10 @@ defmodule CoreWeb.CharacterLive do
       background_id ->
         Core.Gameplay.get_background(background_id)
     end)
+  end
+
+  defp from_level_form(params) when is_map(params) do
+    params
+    |> Utilities.Map.atomize_keys()
   end
 end

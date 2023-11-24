@@ -12,6 +12,8 @@ defmodule Core.Gameplay do
   use Scaffolding.Read.Slug, [Core.Gameplay.Lineage, :lineage]
   use Scaffolding.Read.Slug, [Core.Gameplay.LineageCategory, :lineage_category]
   use Scaffolding.Write, [Core.Gameplay.Level, :level, :changeset, :changeset]
+  use Scaffolding, [Core.Gameplay.Feature, :features, :feature]
+  use Scaffolding.Read.Slug, [Core.Gameplay.Feature, :feature]
 
   # Level, Proficiency Bonus
   @experience_table [
@@ -110,45 +112,6 @@ defmodule Core.Gameplay do
     end)
   end
 
-  @spec plan(
-          Core.Gameplay.Character.t(),
-          Core.Gameplay.Class.t(),
-          integer()
-        ) :: list(Core.Gameplay.Choices.forced_t() | Core.Gameplay.Choices.any_of_t())
-  def plan(character, %Core.Gameplay.Class{slug: "fighter"}, position) do
-    Core.Data.Fighter.plan(character, position)
-  end
-
-  def plan(character, %Core.Gameplay.Class{slug: "paladin"}, position) do
-    Core.Data.Paladin.plan(character, position)
-  end
-
-  def plan(character, %Core.Gameplay.Class{slug: "bard"}, position) do
-    Core.Data.Bard.plan(character, position)
-  end
-
-  def plan(character, %Core.Gameplay.Class{slug: "wizard"}, position) do
-    Core.Data.Wizard.plan(character, position)
-  end
-
-  @spec plan(
-          Core.Gameplay.Character.t(),
-          atom()
-        ) :: list(Core.Gameplay.Choices.forced_t() | Core.Gameplay.Choices.any_of_t())
-  def plan(
-        %Core.Gameplay.Character{} = character,
-        :lineage
-      ) do
-    Core.Data.Lineage.plan(character)
-  end
-
-  def plan(
-        %Core.Gameplay.Character{} = character,
-        :background
-      ) do
-    Core.Data.Background.plan(character)
-  end
-
   # character = Core.Gameplay.get_character_by_slug!("james")
   # selected_class = Core.Gameplay.get_class_by_slug!("paladin")
   # Core.Gameplay.level_up(character, selected_class, 2, %{})
@@ -156,7 +119,7 @@ defmodule Core.Gameplay do
           Core.Gameplay.Character.t(),
           Core.Gameplay.Class.t() | Core.Gameplay.Lineage.t() | Core.Gameplay.Background.t(),
           integer(),
-          Core.Gameplay.Choices.new_t()
+          Core.Gameplay.Level.new_t()
         ) ::
           {:error, Ecto.Changeset.t()}
           | {:ok, Core.Gameplay.Level.t()}
@@ -204,7 +167,7 @@ defmodule Core.Gameplay do
   @spec level_up(
           Core.Gameplay.Character.t(),
           atom(),
-          Core.Gameplay.Choices.new_t()
+          Core.Gameplay.Level.new_t()
         ) ::
           {:error, Ecto.Changeset.t()}
           | {:ok, Core.Gameplay.Level.t()}

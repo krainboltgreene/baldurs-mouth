@@ -1,50 +1,44 @@
 defmodule Core.Data.Bard do
-  @spec plan(Core.Gameplay.Character.t(), integer()) ::
-          list(Core.Data.forced_t() | Core.Data.any_of_t())
-  def plan(_character, 1) do
+  @spec plan(Ecto.Changeset.t(Core.Gameplay.Character.t()), integer()) ::
+          list({:forced, atom(), any()} | {:any_of, atom(), list(any()), integer()})
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, 1) do
     [
-      %Core.Data.Forced{name: :hand_crossbows, type: :weapon_proficiencies},
-      %Core.Data.Forced{name: :longswords, type: :weapon_proficiencies},
-      %Core.Data.Forced{name: :rapiers, type: :weapon_proficiencies},
-      %Core.Data.Forced{name: :shortswords, type: :weapon_proficiencies},
-      %Core.Data.Forced{name: :simple_weapons, type: :weapon_proficiencies},
-      %Core.Data.Forced{name: :light, type: :armor_proficiencies},
-      %Core.Data.Forced{name: :ritual_casting, type: :features},
-      %Core.Data.Forced{name: :musical_spellcasting_focus, type: :features},
-      %Core.Data.Forced{name: :bardic_inspiration, type: :features},
-      %Core.Data.AnyOf{
-        names: [
-          :vicious_mockery,
-          :dancing_lights,
-          :light,
-          :mage_hand,
-          :mending,
-          :message,
-          :minor_illusion,
-          :prestidigitation,
-          :true_strike
-        ],
-        type: :cantrips,
-        count: 2
-      },
-      %Core.Data.AnyOf{
-        names: Core.Gameplay.skills(),
-        type: :skill_proficiencies,
-        count: 3
-      },
-      %Core.Data.AnyOf{names: [:musical], type: :tool_proficiencies, count: 3}
+      # {:forced, :weapon_proficiencies, :hand_crossbows},
+      # {:forced, :weapon_proficiencies, :longswords},
+      # {:forced, :weapon_proficiencies, :rapiers},
+      # {:forced, :weapon_proficiencies, :shortswords},
+      # {:forced, :weapon_proficiencies, :simple_weapons},
+      # {:forced, :armor_proficiencies, :light},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("ritual-casting")},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("musical-spellcasting-focus")},
+      {:forced, :features, Core.Gameplay.get_feature_by_slug("bardic-inspiration")},
+      # {:any_of, :cantrips, Core.Gameplay.list_spells_with_tags(["bard", "cantrip"]), 2},
+      # {:any_of, :skill_proficiencies, Core.Gameplay.list_skills(), 3},
+      # {:any_of, :tool_proficiencies, Core.Gameplay.list_tools_with_tags(["musical"]), 3},
     ]
   end
 
-  def plan(_character, 2) do
+  # [
+  #         :vicious_mockery,
+  #         :dancing_lights,
+  #         :light,
+  #         :mage_hand,
+  #         :mending,
+  #         :message,
+  #         :minor_illusion,
+  #         :prestidigitation,
+  #         :true_strike
+  #       ]
+
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, 2) do
     []
   end
 
-  def plan(_character, 3) do
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, 3) do
     []
   end
 
-  def plan(_character, _position) do
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset, _position) do
     []
   end
 end

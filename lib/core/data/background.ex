@@ -1,20 +1,16 @@
 defmodule Core.Data.Background do
-  @spec plan(Core.Gameplay.Character.t()) ::
-          list(Core.Data.forced_t() | Core.Data.any_of_t())
-  def plan(%Core.Gameplay.Character{levels: levels, background: %{slug: "folk-hero"}})
+  @spec plan(Ecto.Changeset.t(Core.Gameplay.Character.t())) ::
+          list({:forced, atom(), any()} | {:any_of, atom(), list(any()), integer()})
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{levels: levels}, changes: %{background: %{data: %{slug: "folk-hero"}}}})
       when length(levels) == 0 do
     [
-      %Core.Data.Forced{name: :animal_handling, type: :skill_proficiencies},
-      %Core.Data.Forced{name: :survival, type: :skill_proficiencies},
-      %Core.Data.AnyOf{
-        names: [:vehicle_land, :artisan_tool],
-        type: :tool_proficiencies,
-        count: 2
-      }
+      # {:forced, :skill_proficiencies, Core.Gameplay.get_skill_by_slug("animal-handling")},
+      # {:forced, :skill_proficiencies, Core.Gameplay.get_skill_by_slug("survival")},
+      # {:any_of, :tool_proficiencies, [:land_vehicle, :artisan], 2}
     ]
   end
 
-  def plan(%Core.Gameplay.Character{}) do
+  def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{}} = _character_changeset) do
     []
   end
 end

@@ -1,19 +1,40 @@
 defmodule Core.Data do
-  defmodule Forced do
-    @enforce_keys [:name, :type]
-    defstruct [:name, :type]
+  @spec plan(
+          Ecto.Changeset.t(Core.Gameplay.Character.t()),
+          Core.Gameplay.Class.t(),
+          integer()
+        ) :: list({:forced, atom(), any()} | {:any_of, atom(), list(any()), integer()})
+  def plan(%Ecto.Changeset{} = character_changeset, %Core.Gameplay.Class{slug: "fighter"}, position) do
+    Core.Data.Fighter.plan(character_changeset, position)
   end
 
-  defmodule AnyOf do
-    @enforce_keys [:names, :type, :count]
-    defstruct [:names, :type, :count, unique: true]
+  def plan(%Ecto.Changeset{} = character_changeset, %Core.Gameplay.Class{slug: "paladin"}, position) do
+    Core.Data.Paladin.plan(character_changeset, position)
   end
 
-  @type forced_t :: %__MODULE__.Forced{name: atom(), type: atom()}
-  @type any_of_t :: %__MODULE__.AnyOf{
-          names: list(atom()),
-          type: atom(),
-          count: integer(),
-          unique: boolean()
-        }
+  def plan(%Ecto.Changeset{} = character_changeset, %Core.Gameplay.Class{slug: "bard"}, position) do
+    Core.Data.Bard.plan(character_changeset, position)
+  end
+
+  def plan(%Ecto.Changeset{} = character_changeset, %Core.Gameplay.Class{slug: "wizard"}, position) do
+    Core.Data.Wizard.plan(character_changeset, position)
+  end
+
+  @spec plan(
+          Ecto.Changeset.t(Core.Gameplay.Character.t()),
+          atom()
+        ) :: list({:forced, atom(), any()} | {:any_of, atom(), list(any()), integer()})
+  def plan(
+        %Ecto.Changeset{} = character_changeset,
+        :lineage
+      ) do
+    Core.Data.Lineage.plan(character_changeset)
+  end
+
+  def plan(
+        %Ecto.Changeset{} = character_changeset,
+        :background
+      ) do
+    Core.Data.Background.plan(character_changeset)
+  end
 end
