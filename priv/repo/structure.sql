@@ -379,6 +379,16 @@ CREATE TABLE public.inventories (
 
 
 --
+-- Name: item_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.item_tags (
+    tag_id uuid NOT NULL,
+    item_id uuid NOT NULL
+);
+
+
+--
 -- Name: items; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -386,7 +396,8 @@ CREATE TABLE public.items (
     id uuid NOT NULL,
     name text NOT NULL,
     slug public.citext NOT NULL,
-    tags public.citext[] DEFAULT ARRAY[]::public.citext[] NOT NULL
+    description text DEFAULT ''::text NOT NULL,
+    weight integer DEFAULT 0 NOT NULL
 );
 
 
@@ -835,6 +846,20 @@ CREATE INDEX inventories_item_id_index ON public.inventories USING btree (item_i
 
 
 --
+-- Name: item_tags_item_id_tag_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX item_tags_item_id_tag_id_index ON public.item_tags USING btree (item_id, tag_id);
+
+
+--
+-- Name: item_tags_tag_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX item_tags_tag_id_index ON public.item_tags USING btree (tag_id);
+
+
+--
 -- Name: items_slug_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1062,6 +1087,22 @@ ALTER TABLE ONLY public.inventories
 
 
 --
+-- Name: item_tags item_tags_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_tags
+    ADD CONSTRAINT item_tags_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON DELETE CASCADE;
+
+
+--
+-- Name: item_tags item_tags_tag_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_tags
+    ADD CONSTRAINT item_tags_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES public.tags(id) ON DELETE CASCADE;
+
+
+--
 -- Name: levels levels_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1176,3 +1217,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20231028201929);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201930);
 INSERT INTO public."schema_migrations" (version) VALUES (20231123045217);
 INSERT INTO public."schema_migrations" (version) VALUES (20231125020721);
+INSERT INTO public."schema_migrations" (version) VALUES (20231125211930);

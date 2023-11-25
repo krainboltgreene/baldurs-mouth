@@ -1,6 +1,7 @@
 defmodule Core.Gameplay do
   use Scaffolding, [Core.Gameplay.Spell, :spells, :spell]
   use Scaffolding.Read.Slug, [Core.Gameplay.Spell, :spell]
+  use Scaffolding.Read.Tagged, [Core.Gameplay.Spell, :spells]
   use Scaffolding, [Core.Gameplay.Background, :backgrounds, :background]
   use Scaffolding.Read.Slug, [Core.Gameplay.Background, :background]
   use Scaffolding, [Core.Gameplay.Character, :characters, :character]
@@ -8,6 +9,7 @@ defmodule Core.Gameplay do
   use Scaffolding.Read.Slug, [Core.Gameplay.Class, :class]
   use Scaffolding, [Core.Gameplay.Inventory, :inventories, :inventory]
   use Scaffolding, [Core.Gameplay.Item, :items, :item]
+  use Scaffolding.Read.Tagged, [Core.Gameplay.Item, :items]
   use Scaffolding.Read.Slug, [Core.Gameplay.Item, :item]
   use Scaffolding, [Core.Gameplay.LineageCategory, :lineage_categories, :lineage_category]
   use Scaffolding.Read.Slug, [Core.Gameplay.LineageCategory, :lineage_category]

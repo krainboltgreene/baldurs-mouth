@@ -39,7 +39,7 @@ defmodule CoreWeb.FormComponents do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="space-y-6">
-        <h3 class="text-base font-semibold leading-7 text-gray-900 border-b border-gray-200"><%= render_slot(@title) %> <span :if={render_slot(@subtitle)} class="text-sm ml-3 text-gray-500"><%= render_slot(@subtitle) %></span></h3>
+        <h3 class="text-2xl font-semibold leading-7 text-gray-900 border-b border-gray-200"><%= render_slot(@title) %> <span :if={render_slot(@subtitle)} class="text-sm ml-3 text-gray-500"><%= render_slot(@subtitle) %></span></h3>
         <p :if={render_slot(@description)} class="mt-1 text-sm leading-6 text-gray-600"><%= render_slot(@description) %></p>
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">

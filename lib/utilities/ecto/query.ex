@@ -3,6 +3,17 @@ defmodule Utilities.Ecto.Query do
   Contains useful function for Ecto.Query
   """
   require Ecto.Query
+  import Ecto.Function
+
+  defqueryfunc array_agg/1
+
+  defmacro extract(from, field) do
+    quote do: fragment("extract(? FROM ?)", unquote(field), unquote(from))
+  end
+
+  defmacro array_contains(left, right) do
+    quote do: fragment("? @> ?", unquote(left), unquote(right))
+  end
 
   @doc """
   Takes a database table name or an `Ecto.Query` partial and either a singular field or many fields to map each returned record to. For example:

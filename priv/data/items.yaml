@@ -1,4 +1,102 @@
 ---
 name: "Greatsword"
+description: |
+  A large sword that has a double-edged blade and requires two hands to wield, with an elongated hilt to accommodate the extra grip. Proficiency with a greatsword allows you to add your proficiency bonus to the attack roll for any attack you make with it.
 tags:
   - "martial-weapons"
+---
+name: "Large wagon"
+description: |
+  Big, two-storey wagons often drawn by fantastical creatures, in my world they are usually pulled by Guard Drakes or Triceratops. They are often driven by halflings or gnomes, the smaller races find it easier to live in such confined areas. Highly personalised both inside and out, they are usually used by nomads and nomadic traders. The picture shows an average Wagon top floor, with two different lower floor designs depending of whether or not it is intended to carry cargo. The design is a rough guide for a three-person wagon, with the bed icons including some personal storage space. The wagons often have a second trap door above the first, leading to an open-air area at the top-almost always with a low wall around it. Generally, if the players decide to buy one it will be outfitted to their needs after a week, or they may be able to buy a pre-equipped one. Used ones are almost impossible to find, as they are passed down through the generations.
+tags:
+  - "land-vehicles"
+---
+name: "Alchemist's Supplies"
+description: |
+  Alchemist's supplies enable a character to produce useful concoctions, such as acid or alchemist's fire. Crafting alchemical items can be done by using materials worth half the price of purchasing the item.
+
+  This proficiency gives a character knowledge of chemistry as well as other related sciences. To that end, if firearms are allowed in your game this tool would also allow the creation of gunpowder.
+
+  Alchemist's supplies include two glass beakers, a metal frame to hold a beaker in place over an open flame, a glass stirring rod, a small mortar and pestle, and a pouch of common alchemical ingredients, including salt, powdered iron, and purified water.
+tags:
+  - "artisan-tools"
+---
+name: "Brewer's Supplies"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Calligrapher's Supplies"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Carpenter's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Cartographer's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Cobbler's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Cook's Utensils"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Glassblower's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Jeweler's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Leatherworker's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Mason's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Painter's Supplies"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Potter's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Smith's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Tinker's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Weaver's Tools"
+description: |
+tags:
+  - "artisan-tools"
+---
+name: "Woodcarver's Tools"
+description: |
+tags:
+  - "artisan-tools"

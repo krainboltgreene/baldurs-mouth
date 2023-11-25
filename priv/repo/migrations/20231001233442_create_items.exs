@@ -5,7 +5,8 @@ defmodule Core.Repo.Migrations.CreateItems do
     create(table(:items)) do
       add(:name, :text, null: false)
       add(:slug, :citext, null: false)
-      add(:tags, {:array, :citext}, null: false, default: [])
+      add(:description, :text, null: false, default: "")
+      add(:weight, :integer, null: false, default: 0)
     end
 
     create(unique_index(:items, [:slug]))

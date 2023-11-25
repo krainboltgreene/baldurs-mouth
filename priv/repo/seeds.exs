@@ -10,46 +10,42 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+defmodule Seeds do
+  def load(type, function) do
+    Application.app_dir(:core, "priv/data/#{type}.yaml")
+    |> YamlElixir.read_all_from_file!()
+    |> Enum.map(fn entry ->
+      entry
+      |> Utilities.Map.atomize_keys()
+      |> then(fn
+        %{tags: tags} = record when is_list(tags) ->
+          record
+          |> Map.put(
+            :tags,
+            Enum.map(tags, fn tag_name ->
+              case Core.Content.get_tag_by_slug(tag_name) do
+                nil -> Core.Content.create_tag!(%{name: tag_name})
+                tag -> tag
+              end
+            end)
+          )
+        elsewise -> elsewise
+      end)
+      |> function.()
+    end)
+  end
+end
+
 {:ok, _} =
   Core.Repo.transaction(fn ->
-    Application.app_dir(:core, "priv/data/classes.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Utilities.Map.atomize_keys/1)
-    |> Enum.map(&Core.Gameplay.create_class!/1)
-
-    Application.app_dir(:core, "priv/data/features.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Utilities.Map.atomize_keys/1)
-    |> Enum.map(&Core.Content.create_tag!/1)
-
-    Application.app_dir(:core, "priv/data/items.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Utilities.Map.atomize_keys/1)
-    |> Enum.map(&Core.Gameplay.create_item!/1)
-
-    Application.app_dir(:core, "priv/data/spells.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Utilities.Map.atomize_keys/1)
-    |> Enum.map(&Core.Gameplay.create_spell!/1)
-
-    Application.app_dir(:core, "priv/data/backgrounds.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Utilities.Map.atomize_keys/1)
-    |> Enum.map(&Core.Gameplay.create_background!/1)
-
-    Application.app_dir(:core, "priv/data/npcs.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Utilities.Map.atomize_keys/1)
-    |> Enum.map(&Core.Gameplay.create_npc!/1)
-
-    Application.app_dir(:core, "priv/data/lineage_categories.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Core.Gameplay.create_lineage_category!/1)
-
-    Application.app_dir(:core, "priv/data/lineages.yaml")
-    |> YamlElixir.read_all_from_file!()
-    |> Enum.map(&Utilities.Map.atomize_keys/1)
-    |> Enum.map(fn
+    Seeds.load("classes", &Core.Gameplay.create_class!/1)
+    Seeds.load("features", &Core.Content.create_tag!/1)
+    Seeds.load("items", &Core.Gameplay.create_item!/1)
+    Seeds.load("spells", &Core.Gameplay.create_spell!/1)
+    Seeds.load("backgrounds", &Core.Gameplay.create_background!/1)
+    Seeds.load("npcs", &Core.Gameplay.create_npc!/1)
+    Seeds.load("lineage_categories", &Core.Gameplay.create_lineage_category!/1)
+    Seeds.load("lineages", fn
       %{lineage_category: lineage_category} = lineage ->
         lineage
         |> Map.put(:lineage_category, Core.Gameplay.get_lineage_category_by_slug!(lineage_category))
@@ -113,7 +109,7 @@
         )
       )
 
-    haggling_fail_a_room_scene =
+    _haggling_fail_a_room_scene =
       Core.Theater.create_scene!(%{
         campaign: campaign,
         name: "Unsuccessfully Haggling the Price of Room & Board"

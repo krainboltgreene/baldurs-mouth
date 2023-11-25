@@ -231,16 +231,16 @@ defmodule CoreWeb.CharacterLive do
         </div>
       </.simple_form>
       <.simple_form :if={@character_form[:lineage].value} for={@lineage_form} phx-change="validate">
-        <:title>Lineage</:title>
-        <:subtitle><%= Pretty.get(@character_form[:lineage].value.data, :name) %></:subtitle>
+        <:title><%= Pretty.get(@character_form[:lineage].value.data, :name) %></:title>
+        <:subtitle>Lineage</:subtitle>
         <:description><%= Pretty.get(@character_form[:lineage].value.data, :description) %></:description>
         <% dbg(@character_form.source.data.levels) %>
         <% dbg(@character_form.source.changes.lineage.data.slug) %>
-        <div class="prose">
-          <ul>
-            <li :for={{_choice, _type, value} <- Core.Data.plan(@character_form.source, :lineage)}><%= value.name %></li>
-          </ul>
-        </div>
+        <.planned_change
+          :for={{action, kind, value} <- Core.Data.plan(@character_form.source, :lineage)}
+          action={action}
+          kind={kind}
+          value={value} />
         <div>Ability Scores</div>
         <div class="grid gap-2 grid-cols-6 text-center">
           <.input :for={ability <- Core.Gameplay.abilities()} field={@lineage_form[ability]} label={Phoenix.Naming.humanize(ability)} type="number" min="8" max="15" />
@@ -248,9 +248,14 @@ defmodule CoreWeb.CharacterLive do
         ...
       </.simple_form>
       <.simple_form :if={@character_form[:background].value} for={@background_form} phx-change="validate">
-        <:title>Background</:title>
-        <:subtitle><%= Pretty.get(@character_form[:background].value.data, :name) %></:subtitle>
+        <:title><%= Pretty.get(@character_form[:background].value.data, :name) %></:title>
+        <:subtitle>Background</:subtitle>
         <:description><%= Pretty.get(@character_form[:background].value.data, :description) %></:description>
+        <.planned_change
+          :for={{action, kind, value} <- Core.Data.plan(@character_form.source, :background)}
+          action={action}
+          kind={kind}
+          value={value} />
         <h1>+2 Ability Score Bonus Choice</h1>
         <div class="grid gap-2 grid-cols-6 text-center">
           <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio" />
@@ -260,6 +265,15 @@ defmodule CoreWeb.CharacterLive do
           <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio" />
         </div>
       </.simple_form>
+    </div>
+    """
+  end
+
+  defp planned_change(%{action: :forced, kind: :features} = assigns) do
+    ~H"""
+    <div>
+      <div class="pb-2"><span class="text-xl font-semibold text-highlight-800"><%= @value.name %></span> <.tag>Feature</.tag></div>
+      <p class="text-sm text-gray-600"><%= @value.description %></p>
     </div>
     """
   end
