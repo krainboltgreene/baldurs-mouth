@@ -3,6 +3,20 @@ defmodule Utilities.String do
   Extra functionality relating to strings
   """
 
+  @race_to_collective_mapping %{
+    "human" => "human",
+    "elf" => "elven",
+    "dwarf" => "dwarven",
+    "goblin" => "goblin",
+    "orc" => "orcish",
+    "gnome" => "gnomen",
+    "halfling" => "halfling",
+    "dragonborn" => "dragonborn",
+    "hobgoblin" => "hobgoblin",
+    "kobold" => "kobold"
+  }
+
+
   @doc """
   Generate a random string
   """
