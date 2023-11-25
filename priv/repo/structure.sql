@@ -525,6 +525,18 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: spells; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.spells (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    slug public.citext NOT NULL,
+    description text DEFAULT ''::text NOT NULL
+);
+
+
+--
 -- Name: tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -532,8 +544,7 @@ CREATE TABLE public.tags (
     id uuid NOT NULL,
     name text NOT NULL,
     slug public.citext NOT NULL,
-    inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    description text DEFAULT ''::text NOT NULL
 );
 
 
@@ -679,6 +690,14 @@ ALTER TABLE ONLY public.scenes
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: spells spells_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.spells
+    ADD CONSTRAINT spells_pkey PRIMARY KEY (id);
 
 
 --
@@ -949,6 +968,13 @@ CREATE UNIQUE INDEX scenes_slug_index ON public.scenes USING btree (slug);
 
 
 --
+-- Name: spells_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX spells_slug_index ON public.spells USING btree (slug);
+
+
+--
 -- Name: tags_slug_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1149,3 +1175,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20231002023407);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201929);
 INSERT INTO public."schema_migrations" (version) VALUES (20231028201930);
 INSERT INTO public."schema_migrations" (version) VALUES (20231123045217);
+INSERT INTO public."schema_migrations" (version) VALUES (20231125020721);

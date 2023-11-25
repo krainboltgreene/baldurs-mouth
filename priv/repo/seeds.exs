@@ -14,26 +14,32 @@
   Core.Repo.transaction(fn ->
     Application.app_dir(:core, "priv/data/classes.yaml")
     |> YamlElixir.read_all_from_file!()
+    |> Enum.map(&Utilities.Map.atomize_keys/1)
     |> Enum.map(&Core.Gameplay.create_class!/1)
 
     Application.app_dir(:core, "priv/data/features.yaml")
     |> YamlElixir.read_all_from_file!()
+    |> Enum.map(&Utilities.Map.atomize_keys/1)
     |> Enum.map(&Core.Content.create_tag!/1)
 
     Application.app_dir(:core, "priv/data/items.yaml")
     |> YamlElixir.read_all_from_file!()
+    |> Enum.map(&Utilities.Map.atomize_keys/1)
     |> Enum.map(&Core.Gameplay.create_item!/1)
 
     Application.app_dir(:core, "priv/data/spells.yaml")
     |> YamlElixir.read_all_from_file!()
+    |> Enum.map(&Utilities.Map.atomize_keys/1)
     |> Enum.map(&Core.Gameplay.create_spell!/1)
 
     Application.app_dir(:core, "priv/data/backgrounds.yaml")
     |> YamlElixir.read_all_from_file!()
+    |> Enum.map(&Utilities.Map.atomize_keys/1)
     |> Enum.map(&Core.Gameplay.create_background!/1)
 
     Application.app_dir(:core, "priv/data/npcs.yaml")
     |> YamlElixir.read_all_from_file!()
+    |> Enum.map(&Utilities.Map.atomize_keys/1)
     |> Enum.map(&Core.Gameplay.create_npc!/1)
 
     Application.app_dir(:core, "priv/data/lineage_categories.yaml")
@@ -42,11 +48,14 @@
 
     Application.app_dir(:core, "priv/data/lineages.yaml")
     |> YamlElixir.read_all_from_file!()
+    |> Enum.map(&Utilities.Map.atomize_keys/1)
     |> Enum.map(fn
       %{lineage_category: lineage_category} = lineage ->
         lineage
         |> Map.put(:lineage_category, Core.Gameplay.get_lineage_category_by_slug!(lineage_category))
-        |> Core.Gameplay.create_lineages!()
+        |> Core.Gameplay.create_lineage!()
+      lineage ->
+        Core.Gameplay.create_lineage!(lineage)
     end)
 
     narrator =
@@ -65,7 +74,7 @@
         name: "Ill-Omens at Daggerford"
       })
 
-    purchasing_a_room_scene =
+    _purchasing_a_room_scene =
       Core.Theater.create_scene!(%{
         campaign: campaign,
         name: "Paying For Room & Board"
@@ -91,7 +100,7 @@
         )
       )
 
-    haggling_win_a_room_scene =
+    _haggling_win_a_room_scene =
       Core.Theater.create_scene!(%{
         campaign: campaign,
         name: "Successfully Haggling the Price of Room & Board"
@@ -182,7 +191,7 @@
         )
       )
 
-    opening_scene =
+    _opening_scene =
       Core.Theater.create_scene!(%{
         campaign: campaign,
         opening: true,

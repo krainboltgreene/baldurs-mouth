@@ -1,19 +1,19 @@
 defmodule Core.Gameplay do
+  use Scaffolding, [Core.Gameplay.Spell, :spells, :spell]
+  use Scaffolding.Read.Slug, [Core.Gameplay.Spell, :spell]
   use Scaffolding, [Core.Gameplay.Background, :backgrounds, :background]
+  use Scaffolding.Read.Slug, [Core.Gameplay.Background, :background]
   use Scaffolding, [Core.Gameplay.Character, :characters, :character]
   use Scaffolding, [Core.Gameplay.Class, :classes, :class]
+  use Scaffolding.Read.Slug, [Core.Gameplay.Class, :class]
   use Scaffolding, [Core.Gameplay.Inventory, :inventories, :inventory]
   use Scaffolding, [Core.Gameplay.Item, :items, :item]
-  use Scaffolding, [Core.Gameplay.Lineage, :lineages, :lineage]
-  use Scaffolding, [Core.Gameplay.LineageCategory, :lineage_categories, :lineage_category]
-  use Scaffolding.Read.Slug, [Core.Gameplay.Background, :background]
-  use Scaffolding.Read.Slug, [Core.Gameplay.Class, :class]
   use Scaffolding.Read.Slug, [Core.Gameplay.Item, :item]
-  use Scaffolding.Read.Slug, [Core.Gameplay.Lineage, :lineage]
+  use Scaffolding, [Core.Gameplay.LineageCategory, :lineage_categories, :lineage_category]
   use Scaffolding.Read.Slug, [Core.Gameplay.LineageCategory, :lineage_category]
+  use Scaffolding, [Core.Gameplay.Lineage, :lineages, :lineage]
+  use Scaffolding.Read.Slug, [Core.Gameplay.Lineage, :lineage]
   use Scaffolding.Write, [Core.Gameplay.Level, :level, :changeset, :changeset]
-  use Scaffolding, [Core.Gameplay.Feature, :features, :feature]
-  use Scaffolding.Read.Slug, [Core.Gameplay.Feature, :feature]
 
   # Level, Proficiency Bonus
   @experience_table [
@@ -177,7 +177,7 @@ defmodule Core.Gameplay do
         choices
       )
       when length(levels) == 1 do
-    create_level!(
+    create_level(
       Map.merge(
         choices,
         %{
@@ -194,7 +194,7 @@ defmodule Core.Gameplay do
         choices
       )
       when length(levels) == 0 do
-    create_level!(
+    create_level(
       Map.merge(
         choices,
         %{
