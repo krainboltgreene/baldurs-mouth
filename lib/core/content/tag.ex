@@ -7,20 +7,20 @@ defmodule Core.Content.Tag do
   schema "tags" do
     field(:name, :string)
     field(:slug, :string)
-
-    timestamps()
+    field(:description, :string, default: "")
   end
 
   @type t :: %__MODULE__{
           name: String.t(),
-          slug: String.t()
+          slug: String.t(),
+          description: String.t()
         }
 
   @doc false
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())
   def changeset(record, attributes) do
     record
-    |> Ecto.Changeset.cast(attributes, [:name])
+    |> Ecto.Changeset.cast(attributes, [:name, :description])
     |> Slugy.slugify(:name)
     |> Ecto.Changeset.validate_required([:name, :slug])
     |> Ecto.Changeset.unique_constraint(:slug)

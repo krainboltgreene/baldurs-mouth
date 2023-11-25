@@ -186,7 +186,7 @@ defmodule CoreWeb.CharacterLive do
     |> case do
       {:ok, character} ->
         socket
-        |> push_navigate(to: ~p"/character/#{character.id}")
+        |> push_navigate(to: ~p"/characters/#{character.id}")
     end
     |> (&{:noreply, &1}).()
   end
@@ -238,7 +238,7 @@ defmodule CoreWeb.CharacterLive do
         <% dbg(@character_form.source.changes.lineage.data.slug) %>
         <div class="prose">
           <ul>
-            <li :for={{choice, type, value} <- Core.Data.plan(@character_form.source, :lineage)}><%= value.name %></li>
+            <li :for={{_choice, _type, value} <- Core.Data.plan(@character_form.source, :lineage)}><%= value.name %></li>
           </ul>
         </div>
         <div>Ability Scores</div>

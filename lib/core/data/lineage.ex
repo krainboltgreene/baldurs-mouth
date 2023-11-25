@@ -4,12 +4,12 @@ defmodule Core.Data.Lineage do
   def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{levels: levels}, changes: %{lineage: %{data: %{slug: "half-orc"}}}})
       when length(levels) == 0 do
     [
-      {:forced, :features, Core.Gameplay.get_feature_by_slug("mark-of-gruumsh")},
-      {:forced, :features, Core.Gameplay.get_feature_by_slug("scarred-and-strong")},
-      {:forced, :features, Core.Gameplay.get_feature_by_slug("relentless-endurance")},
-      {:forced, :features, Core.Gameplay.get_feature_by_slug("menacing")},
-      {:forced, :features, Core.Gameplay.get_feature_by_slug("savage-attack")},
-      {:forced, :features, Core.Gameplay.get_feature_by_slug("darkvision")}
+      {:forced, :features, Core.Content.get_tag_by_slug("mark-of-gruumsh")},
+      {:forced, :features, Core.Content.get_tag_by_slug("scarred-and-strong")},
+      {:forced, :features, Core.Content.get_tag_by_slug("relentless-endurance")},
+      {:forced, :features, Core.Content.get_tag_by_slug("menacing")},
+      {:forced, :features, Core.Content.get_tag_by_slug("savage-attack")},
+      {:forced, :features, Core.Content.get_tag_by_slug("darkvision")}
     ]
   end
 

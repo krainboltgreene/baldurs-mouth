@@ -1,0 +1,35 @@
+---
+name: "Paladin"
+description: |
+  Lorem ipsum
+hit_dice: 10
+saving_throw_proficiencies:
+  - "wisdom"
+  - "charisma"
+spellcasting_ability: "charisma"
+---
+name: "Fighter"
+description: |
+  Lorem ipsum
+hit_dice: 10
+saving_throw_proficiencies:
+  - "strength"
+  - "constitution"
+---
+name: "Bard"
+description: |
+  Lorem ipsum
+hit_dice: 8
+saving_throw_proficiencies:
+  - "dexterity"
+  - "charisma"
+spellcasting_ability: "charisma"
+---
+name: "Wizard"
+description: |
+  Lorem ipsum
+hit_dice: 6
+saving_throw_proficiencies:
+  - "intelligence"
+  - "wisdom"
+spellcasting_ability: "intelligence"
