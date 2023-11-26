@@ -12,10 +12,15 @@ defmodule Core.Theater.Scene do
     has_many(:lines, Core.Theater.Line)
     has_many(:dialogues, Core.Theater.Dialogue, foreign_key: :for_scene_id)
     has_many(:saves, Core.Content.Save, foreign_key: :last_scene_id)
+    has_many(:speakers, through: [:lines, :speaker_npc])
     many_to_many(:listeners, Core.Theater.NPC, join_through: "listeners")
   end
 
-  @type t :: %__MODULE__{}
+  @type t :: %__MODULE__{
+    name: String.t(),
+    slug: String.t(),
+    opening: boolean()
+  }
 
   @doc false
   @spec changeset(struct, map) :: Ecto.Changeset.t(t())

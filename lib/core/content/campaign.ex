@@ -11,6 +11,8 @@ defmodule Core.Content.Campaign do
     has_one(:opening_scene, Core.Theater.Scene, where: [opening: true])
     has_many(:scenes, Core.Theater.Scene)
     has_many(:saves, through: [:scenes, :saves])
+    has_many(:speakers, through: [:scenes, :speakers])
+    has_many(:listeners, through: [:scenes, :listeners])
   end
 
   @type t :: %__MODULE__{

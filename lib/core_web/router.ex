@@ -71,7 +71,10 @@ defmodule CoreWeb.Router do
         {CoreWeb.AccountAuthenticationHelpers, :ensure_authenticated}
       ] do
       live "/campaigns", CoreWeb.CampaignLive, :list
+      live "/campaigns/:id/edit", CoreWeb.CampaignLive, :edit
       live "/campaigns/:id", CoreWeb.CampaignLive, :show
+      live "/scenes/new", CoreWeb.SceneLive, :new
+      live "/scenes/:id/edit", CoreWeb.SceneLive, :edit
       live "/scenes/:id", CoreWeb.SceneLive, :show
       live "/dialogues/:id", CoreWeb.DialogueLive, :show
       live "/lines/:id", CoreWeb.LineLive, :show

@@ -303,22 +303,6 @@ defmodule CoreWeb.CharacterLive do
     """
   end
 
-  defp choice_change(%{kind: :tool_proficiencies} = assigns) do
-    ~H"""
-    <div>
-      <div class="pb-2"><span class="text-lg font-semibold text-highlight-800"><%= @values |> Enum.map(&Map.get(&1, :name)) |> Utilities.List.to_sentence("or") %> (0 / <%= @count %>)</span> <.tag>Tool Proficiency</.tag></div>
-    </div>
-    """
-  end
-
-  defp choice_change(%{kind: :skill_proficiencies} = assigns) do
-    ~H"""
-    <div>
-      <div class="pb-2"><span class="text-lg font-semibold text-highlight-800"><%= @values |> Enum.map(&Map.get(&1, :name)) |> Utilities.List.to_sentence("or") %> (0 / <%= @count %>)</span> <.tag>Skill Proficiency</.tag></div>
-    </div>
-    """
-  end
-
   defp from_character_form(params) when is_map(params) do
     params
     |> Utilities.Map.atomize_keys()

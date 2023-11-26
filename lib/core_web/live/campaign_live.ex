@@ -11,13 +11,6 @@ defmodule CoreWeb.CampaignLive do
       when username != "krainboltgreene",
       do: raise(CoreWeb.Exceptions.NotFoundException)
 
-  def mount(_params, _session, %{transport_pid: nil} = socket),
-    do:
-      socket
-      |> assign(:page_title, "Loading...")
-      |> assign(:page_loading, true)
-      |> (&{:ok, &1}).()
-
   def mount(
         _params,
         _session,
@@ -39,14 +32,30 @@ defmodule CoreWeb.CampaignLive do
     |> (&{:ok, &1}).()
   end
 
-  def mount(%{"id" => campaign_id}, _session, %{assigns: %{live_action: :show}} = socket) do
+  def mount(%{"id" => campaign_id}, _session, %{assigns: %{live_action: :edit}} = socket) do
     campaign =
       Core.Content.get_campaign(campaign_id)
-      |> Core.Repo.preload(
+      |> Core.Repo.preload([
         opening_scene: [dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc]],
         saves: [last_scene: [dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc]]],
         scenes: [dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc]]
-      )
+      ])
+
+    socket
+    |> assign(:campaign, campaign)
+    |> assign(:page_title, campaign.name)
+    |> assign(:page_subtitle, "Campaign")
+    |> (&{:ok, &1}).()
+  end
+
+  def mount(%{"id" => campaign_id}, _session, %{assigns: %{live_action: :show}} = socket) do
+    campaign =
+      Core.Content.get_campaign(campaign_id)
+      |> Core.Repo.preload([
+        opening_scene: [dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc]],
+        saves: [last_scene: [dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc]]],
+        scenes: [dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc]]
+      ])
 
     socket
     |> assign(:campaign, campaign)
@@ -56,8 +65,70 @@ defmodule CoreWeb.CampaignLive do
   end
 
   @impl true
+  @spec handle_params(map(), String.t(), map()) :: {:noreply, map()}
+  def handle_params(_params, _url, %{transport_pid: nil} = socket),
+    do:
+      socket
+      |> assign(:page_title, "Loading...")
+      |> assign(:page_loading, true)
+      |> (&{:noreply, &1}).()
+
+  @impl true
+  def handle_params(_params, _url, %{assigns: %{live_action: :edit, campaign: campaign}} = socket) do
+    socket
+    |> assign(
+      :form,
+      campaign
+      |> Core.Content.change_campaign(from_form(%{}))
+      |> to_form()
+    )
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
   def handle_params(_params, _url, socket) do
     socket
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event("edit", _params, socket) do
+    socket
+    |> assign(:editing, true)
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event("validate", %{"campaign" => campaign_params}, %{assigns: %{campaign: campaign}} = socket) do
+    socket
+    |> assign(
+      :campaign_form,
+      campaign
+      |> Core.Content.change_campaign(from_form(campaign_params))
+      |> Map.put(:action, :validate)
+      |> then(fn changeset -> to_form(changeset, check_errors: !changeset.valid?) end)
+    )
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event("save", %{"campaign" => campaign_params}, %{assigns: %{campaign: campaign}} = socket) do
+    campaign
+    |> Core.Content.update_campaign(from_form(campaign_params))
+    |> case do
+      {:ok, record} ->
+        socket
+        |> assign(:campaign, record)
+        |> put_flash(:info, "Saved!")
+        |> push_patch(to: ~p"/campaigns/#{campaign.id}")
+      {:error, changeset} ->
+        socket
+        |> put_flash(:error, "Woops, something was wrong!")
+        |> assign(
+          :form,
+          to_form(changeset, check_errors: !changeset.valid?)
+        )
+    end
     |> (&{:noreply, &1}).()
   end
 
@@ -158,9 +229,22 @@ defmodule CoreWeb.CampaignLive do
     """
   end
 
+  def render(%{live_action: :edit} = assigns) do
+    ~H"""
+    <.simple_form for={@form} phx-change="validate" phx-submit="save">
+      <.input field={@form[:name]} label="Name" type="text" />
+      <:actions>
+        <.button phx-disable-with="Saving..." type="submit" usable_icon="save">Save</.button>
+      </:actions>
+    </.simple_form>
+    """
+  end
+
   def render(%{live_action: :show} = assigns) do
     ~H"""
     <%!-- <div id="campaign-chart" class="w-full h-80" phx-hook="CampaignGraph"></div> --%>
+    <.link navigate={~p"/scenes/new?campaign_id=#{@campaign.id}"}>New Scene</.link>
+    <.link navigate={~p"/campaigns/#{@campaign.id}/edit"}>Edit Campaign</.link>
     <.list>
       <:item title="Saves"><%= length(@campaign.saves) %></:item>
       <:item title="Opening scene"><%= Pretty.get(@campaign.opening_scene, :name) %></:item>
@@ -205,5 +289,16 @@ defmodule CoreWeb.CampaignLive do
       </ul>
     </p>
     """
+  end
+
+  defp from_form(params) when is_map(params) do
+    params
+    |> Utilities.Map.migrate_lazy("opening_scene", :opening_scene, fn
+      "" ->
+        nil
+
+      opening_scene_id ->
+        Core.Theater.get_scene(opening_scene_id)
+    end)
   end
 end
