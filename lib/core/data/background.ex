@@ -4,8 +4,8 @@ defmodule Core.Data.Background do
   def plan(%Ecto.Changeset{data: %Core.Gameplay.Character{levels: levels}, changes: %{background: %{data: %{slug: "folk-hero"}}}})
       when length(levels) == 0 do
     [
-      {:forced, :skill_proficiencies, Core.Content.get_tag_by_slug("animal-handling")},
-      {:forced, :skill_proficiencies, Core.Content.get_tag_by_slug("survival")},
+      {:forced, :skill_proficiencies, %{name: "Animal Handling", slug: "animal-handling"}},
+      {:forced, :skill_proficiencies, %{name: "Survival", slug: "survival"}},
       {:any_of, :tool_proficiencies, Enum.concat([Core.Gameplay.list_items_with_tags(["land-vehicles"]), Core.Gameplay.list_items_with_tags(["artisans"])]), 2}
     ]
   end

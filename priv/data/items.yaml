@@ -5,6 +5,24 @@ description: |
 tags:
   - "martial-weapons"
 ---
+name: "Chariot"
+description: |
+  lorem ipsum
+tags:
+  - "land-vehicles"
+---
+name: "Cart"
+description: |
+  A heavy, usually horse-drawn, 2-wheeled vehicle used for farming or transporting freight.
+tags:
+  - "land-vehicles"
+---
+name: "Wagon"
+description: |
+  A four-wheeled vehicle, usually drawn by horse or oxen, primarily used for carrying goods. Most wagons are pulled by a single horse, although 2 horses can pull a wagon as well.
+tags:
+  - "land-vehicles"
+---
 name: "Large wagon"
 description: |
   Big, two-storey wagons often drawn by fantastical creatures, in my world they are usually pulled by Guard Drakes or Triceratops. They are often driven by halflings or gnomes, the smaller races find it easier to live in such confined areas. Highly personalised both inside and out, they are usually used by nomads and nomadic traders. The picture shows an average Wagon top floor, with two different lower floor designs depending of whether or not it is intended to carry cargo. The design is a rough guide for a three-person wagon, with the bed icons including some personal storage space. The wagons often have a second trap door above the first, leading to an open-air area at the top-almost always with a low wall around it. Generally, if the players decide to buy one it will be outfitted to their needs after a week, or they may be able to buy a pre-equipped one. Used ones are almost impossible to find, as they are passed down through the generations.

@@ -234,13 +234,7 @@ defmodule CoreWeb.CharacterLive do
         <:title><%= Pretty.get(@character_form[:lineage].value.data, :name) %></:title>
         <:subtitle>Lineage</:subtitle>
         <:description><%= Pretty.get(@character_form[:lineage].value.data, :description) %></:description>
-        <% dbg(@character_form.source.data.levels) %>
-        <% dbg(@character_form.source.changes.lineage.data.slug) %>
-        <.planned_change
-          :for={{action, kind, value} <- Core.Data.plan(@character_form.source, :lineage)}
-          action={action}
-          kind={kind}
-          value={value} />
+        <.level_plan plans={Core.Data.plan(@character_form.source, :lineage)} level_form={@lineage_form} />
         <div>Ability Scores</div>
         <div class="grid gap-2 grid-cols-6 text-center">
           <.input :for={ability <- Core.Gameplay.abilities()} field={@lineage_form[ability]} label={Phoenix.Naming.humanize(ability)} type="number" min="8" max="15" />
@@ -251,11 +245,7 @@ defmodule CoreWeb.CharacterLive do
         <:title><%= Pretty.get(@character_form[:background].value.data, :name) %></:title>
         <:subtitle>Background</:subtitle>
         <:description><%= Pretty.get(@character_form[:background].value.data, :description) %></:description>
-        <.planned_change
-          :for={{action, kind, value} <- Core.Data.plan(@character_form.source, :background)}
-          action={action}
-          kind={kind}
-          value={value} />
+        <.level_plan plans={Core.Data.plan(@character_form.source, :background)} level_form={@background_form} />
         <h1>+2 Ability Score Bonus Choice</h1>
         <div class="grid gap-2 grid-cols-6 text-center">
           <.input :for={ability <- Core.Gameplay.abilities()} field={@background_form[ability]} label={Phoenix.Naming.humanize(ability)} type="radio" />
@@ -269,11 +259,62 @@ defmodule CoreWeb.CharacterLive do
     """
   end
 
-  defp planned_change(%{action: :forced, kind: :features} = assigns) do
+  defp level_plan(assigns) do
+    ~H"""
+    <div :if={Enum.any?(for {:forced, :features, value} <- @plans, do: value)}>
+      <div class="text-xl font-semibold">Features</div>
+      <div :for={{:forced, :features, value} <- @plans}>
+        <div class="py-2"><span class="text-lg font-semibold text-highlight-800"><%= value.name %></span></div>
+        <p class="text-sm text-gray-600"><%= value.description %></p>
+      </div>
+    </div>
+    <div :if={Enum.any?(for {:forced, :skill_proficiencies, value} <- @plans, do: value)}>
+      <div class="text-xl font-semibold">Free Skill Proficiencies</div>
+      <%= for {:forced, :skill_proficiencies, value} <- @plans do %>
+        <div><%= value.name %></div>
+      <% end %>
+    </div>
+    <.pick_proficiencies
+      :for={{:any_of, :skill_proficiencies, options, count} <- @plans}
+      field={@level_form[:skill_proficiencies]}
+      options={options}
+      count={count} />
+    <div :if={Enum.any?(for {:forced, :tool_proficiencies, value} <- @plans, do: value)}>
+      <div class="text-xl font-semibold">Free Tool Proficiencies</div>
+      <%= for {:forced, :tool_proficiencies, value} <- @plans do %>
+        <div><%= value.name %></div>
+      <% end %>
+    </div>
+    <.pick_proficiencies
+      :for={{:any_of, :tool_proficiencies, options, count} <- @plans}
+      field={@level_form[:tool_proficiencies]}
+      options={options}
+      count={count} />
+    """
+  end
+
+  defp pick_proficiencies(assigns) do
     ~H"""
     <div>
-      <div class="pb-2"><span class="text-xl font-semibold text-highlight-800"><%= @value.name %></span> <.tag>Feature</.tag></div>
-      <p class="text-sm text-gray-600"><%= @value.description %></p>
+      <div>Select <%= @count %></div>
+      <div>selected <% dbg(@field.value) %></div>
+      <.input field={@field} options={@options |> Enum.map(fn value -> {value.name, value.slug} end)} multiple type="select" />
+    </div>
+    """
+  end
+
+  defp choice_change(%{kind: :tool_proficiencies} = assigns) do
+    ~H"""
+    <div>
+      <div class="pb-2"><span class="text-lg font-semibold text-highlight-800"><%= @values |> Enum.map(&Map.get(&1, :name)) |> Utilities.List.to_sentence("or") %> (0 / <%= @count %>)</span> <.tag>Tool Proficiency</.tag></div>
+    </div>
+    """
+  end
+
+  defp choice_change(%{kind: :skill_proficiencies} = assigns) do
+    ~H"""
+    <div>
+      <div class="pb-2"><span class="text-lg font-semibold text-highlight-800"><%= @values |> Enum.map(&Map.get(&1, :name)) |> Utilities.List.to_sentence("or") %> (0 / <%= @count %>)</span> <.tag>Skill Proficiency</.tag></div>
     </div>
     """
   end
