@@ -39,7 +39,7 @@ defmodule CoreWeb.FormComponents do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="space-y-6">
-        <h3 class="text-2xl font-semibold leading-7 text-gray-900 border-b border-gray-200"><%= render_slot(@title) %> <span :if={render_slot(@subtitle)} class="text-sm ml-3 text-gray-500"><%= render_slot(@subtitle) %></span></h3>
+        <h3 :if={render_slot(@title)} class="text-2xl font-semibold leading-7 text-gray-900 border-b border-gray-200"><%= render_slot(@title) %> <span :if={render_slot(@subtitle)} class="text-sm ml-3 text-gray-500"><%= render_slot(@subtitle) %></span></h3>
         <p :if={render_slot(@description)} class="mt-1 text-sm leading-6 text-gray-600"><%= render_slot(@description) %></p>
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
@@ -137,7 +137,7 @@ defmodule CoreWeb.FormComponents do
         <option :if={@prompt} value=""><%= @prompt %></option>
         <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
       </select>
-      <div :if={@details} class="mt-3 text-sm leading-6 text-gray-600"><%= @details %></div>
+      <div :if={@details || @rest[:required]} class="mt-3 text-sm leading-6 text-gray-600"><span :if={@rest[:required]} class="italic">Required.</span> <%= @details %></div>
       <.error :for={msg <- @errors} describing={@id}><%= msg %></.error>
     </div>
     """
@@ -159,7 +159,7 @@ defmodule CoreWeb.FormComponents do
         aria-describedby={"#{@id}-feedback"}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-      <div :if={@details} class="mt-3 text-sm leading-6 text-gray-600"><%= @details %></div>
+      <div :if={@details || @rest[:required]} class="mt-3 text-sm leading-6 text-gray-600"><span :if={@rest[:required]} class="italic">Required.</span><%= @details %></div>
       <.error :for={msg <- @errors} describing={@id}><%= msg %></.error>
     </div>
     """
@@ -184,7 +184,7 @@ defmodule CoreWeb.FormComponents do
         aria-describedby={"#{@id}-feedback"}
         {@rest}
       />
-      <div :if={@details} class="mt-3 text-sm leading-6 text-gray-600"><%= @details %></div>
+      <div :if={@details || @rest[:required]} class="mt-3 text-sm leading-6 text-gray-600"><span :if={@rest[:required]} class="italic">Required.</span><%= @details %></div>
       <.error :for={msg <- @errors} describing={@id}><%= msg %></.error>
     </div>
     """

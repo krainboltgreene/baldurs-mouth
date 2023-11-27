@@ -126,9 +126,9 @@ defmodule CoreWeb.SceneLive do
   def render(%{live_action: :new} = assigns) do
     ~H"""
     <.simple_form for={@scene_form} phx-change="validate" phx-submit="save">
-      <.input field={@scene_form[:name]} label="Name" type="text" />
+      <.input field={@scene_form[:name]} label="Name" type="text" required />
       <div class="grid gap-2 grid-cols-2">
-        <.input field={@scene_form[:next_scene]} label="Next Scene" type="select" prompt="Select a Scene" value={@scene_form[:next_scene].value && @scene_form[:next_scene].value.data.id} options={@scenes} />
+        <.input field={@scene_form[:next_scene]} label="Next Scene" type="select" required prompt="Select a Scene" value={@scene_form[:next_scene].value && @scene_form[:next_scene].value.data.id} options={@scenes} />
         <.input field={@scene_form[:failure_scene]} label="Failure Scene" type="select" prompt="Select a Scene" value={@scene_form[:failure_scene].value && @scene_form[:failure_scene].value.data.id} options={@scenes} />
       </div>
       <:actions>
