@@ -53,18 +53,6 @@ defmodule CoreWeb.SceneLive do
 
     socket
     |> assign(:campaign, campaign)
-    |> assign(:npcs,
-      campaign.speakers
-      |> Enum.concat(campaign.listeners)
-      |> Enum.concat(Core.Theater.list_npcs())
-      |> Enum.uniq_by(&Map.get(&1, :slug))
-      |> Enum.map(fn record -> {record.name, record.id} end)
-    )
-    |> assign(:scenes,
-      [campaign.opening_scene | campaign.scenes]
-      |> Enum.uniq_by(&Map.get(&1, :slug))
-      |> Enum.map(fn record -> {record.name, record.id} end)
-    )
     |> (&{:ok, &1}).()
   end
 
@@ -88,8 +76,7 @@ defmodule CoreWeb.SceneLive do
       %Core.Theater.Scene{}
       |> Core.Repo.preload([dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc], speakers: [], listeners: []])
       |> Core.Theater.new_scene(%{
-        campaign: campaign,
-        speaker_npc: Core.Theater.get_npc_by_slug("narrator")
+        campaign: campaign
       })
       |> to_form()
     )
@@ -101,6 +88,50 @@ defmodule CoreWeb.SceneLive do
   @impl true
   def handle_params(_params, _url, socket) do
     socket
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event(
+        "validate",
+        %{"scene" => scene_params},
+        %{assigns: %{campaign: campaign}} = socket
+      ) do
+    socket
+    |> assign(
+      :scene_form,
+      %Core.Theater.Scene{}
+      |> Core.Repo.preload([dialogues: [:next_scene, :failure_scene], lines: [:speaker_npc], speakers: [], listeners: []])
+      |> Core.Theater.change_scene(from_form(
+        scene_params
+        |> Map.merge(%{
+          campaign: campaign
+        })
+      ))
+      |> Map.put(:action, :validate)
+      |> then(fn changeset -> to_form(changeset, check_errors: !changeset.valid?) end)
+    )
+    |> (&{:noreply, &1}).()
+  end
+
+  @impl true
+  def handle_event(
+        "save",
+        %{"scene" => scene_params},
+        %{assigns: %{campaign: campaign}} = socket
+      ) do
+    scene_params
+    |> from_form()
+    |> Map.merge(%{
+          campaign: campaign
+        })
+    |> Core.Theater.create_scene()
+    |> case do
+      {:ok, scene} ->
+        socket
+        |> put_flash(:info, "Saved!")
+        |> push_navigate(to: ~p"/scenes/#{scene.id}")
+    end
     |> (&{:noreply, &1}).()
   end
 
@@ -127,10 +158,6 @@ defmodule CoreWeb.SceneLive do
     ~H"""
     <.simple_form for={@scene_form} phx-change="validate" phx-submit="save">
       <.input field={@scene_form[:name]} label="Name" type="text" required />
-      <div class="grid gap-2 grid-cols-2">
-        <.input field={@scene_form[:next_scene]} label="Next Scene" type="select" required prompt="Select a Scene" value={@scene_form[:next_scene].value && @scene_form[:next_scene].value.data.id} options={@scenes} />
-        <.input field={@scene_form[:failure_scene]} label="Failure Scene" type="select" prompt="Select a Scene" value={@scene_form[:failure_scene].value && @scene_form[:failure_scene].value.data.id} options={@scenes} />
-      </div>
       <:actions>
         <.button phx-disable-with="Saving..." type="submit" usable_icon="save">Save</.button>
       </:actions>
@@ -140,6 +167,9 @@ defmodule CoreWeb.SceneLive do
 
   def render(%{live_action: :show} = assigns) do
     ~H"""
+    <.link navigate={~p"/lines/new?scene_id=#{@scene.id}"}>New Line</.link>
+    <.link navigate={~p"/dialogues/new?scene_id=#{@scene.id}"}>New Dialogue</.link>
+    <.link navigate={~p"/scenes/#{@scene.id}/edit"}>Edit Scene</.link>
     <.list>
       <:item title="Campaign">
         <.link navigate={~p"/campaigns/#{@scene.campaign.id}"}><%= Pretty.get(@scene.campaign, :name) %></.link>
@@ -164,5 +194,24 @@ defmodule CoreWeb.SceneLive do
       </:item>
     </.list>
     """
+  end
+
+  defp from_form(params) when is_map(params) do
+    params
+    |> Utilities.Map.migrate_lazy("next_scene", :next_scene, fn
+      "" ->
+        nil
+
+      next_scene_id ->
+        Core.Theater.get_scene(next_scene_id)
+    end)
+    |> Utilities.Map.migrate_lazy("failure_scene", :failure_scene, fn
+      "" ->
+        nil
+
+      failure_scene_id ->
+        Core.Theater.get_scene(failure_scene_id)
+    end)
+    |> Utilities.Map.atomize_keys()
   end
 end

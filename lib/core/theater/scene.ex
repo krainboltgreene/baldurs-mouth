@@ -37,9 +37,10 @@ defmodule Core.Theater.Scene do
       :campaign,
       attributes[:campaign] || record_with_preloaded_relationships.campaign
     )
-    |> Ecto.Changeset.validate_required([:name, :slug])
+    |> Ecto.Changeset.validate_required([:name, :slug, :campaign])
     |> Ecto.Changeset.unique_constraint(:slug)
     |> Ecto.Changeset.unique_constraint([:opening, :campaign_id])
+    |> Ecto.Changeset.foreign_key_constraint(:campaign_id)
   end
 
   @doc false
