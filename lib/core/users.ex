@@ -6,7 +6,7 @@ defmodule Core.Users do
   import Ecto.Query, warn: false
   require Logger
 
-  use Scaffolding.Read, [Core.Users.Account, :accounts, :account]
+  use EctoInterface.Read, [Core.Users.Account, :accounts, :account]
 
   def can_read?(_record, %Core.Users.Account{} = _current_account) do
     false

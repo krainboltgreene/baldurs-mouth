@@ -1,10 +1,10 @@
 defmodule Core.Theater do
-  use Scaffolding, [Core.Theater.Scene, :scenes, :scene]
-  use Scaffolding, [Core.Theater.Line, :lines, :line]
-  use Scaffolding, [Core.Theater.NPC, :npcs, :npc]
-  use Scaffolding, [Core.Theater.Dialogue, :dialogues, :dialogue]
-  use Scaffolding.Read.Slug, [Core.Theater.NPC, :npc]
-  use Scaffolding.Read.Slug, [Core.Theater.Scene, :scene]
+  use EctoInterface, [Core.Theater.Scene, :scenes, :scene]
+  use EctoInterface, [Core.Theater.Line, :lines, :line]
+  use EctoInterface, [Core.Theater.NPC, :npcs, :npc]
+  use EctoInterface, [Core.Theater.Dialogue, :dialogues, :dialogue]
+  use EctoInterface.Read.Slug, [Core.Theater.NPC, :npc]
+  use EctoInterface.Read.Slug, [Core.Theater.Scene, :scene]
 
   @spec add_line_to!(Core.Theater.Scene.t(), String.t(), Core.Theater.NPC.t()) ::
           Core.Theater.Line.t()
