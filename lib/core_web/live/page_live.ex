@@ -45,37 +45,37 @@ defmodule CoreWeb.PageLive do
       <.menu>
         <:item :if={@current_account}>
           <.link navigate={~p"/saves/new"}>
-            <Heroicons.LiveView.icon name="play" class="h-4 w-4" /> Start new game
+            <.icon name="play" class="h-4 w-4" /> Start new game
           </.link>
         </:item>
         <:item :if={@current_account}>
           <.link navigate={~p"/saves"}>
-            <Heroicons.LiveView.icon name="document-check" class="h-4 w-4" /> Load game
+            <.icon name="document-check" class="h-4 w-4" /> Load game
           </.link>
         </:item>
         <:item :if={@current_account}>
           <.link navigate={~p"/characters"}>
-            <Heroicons.LiveView.icon name="user-circle" class="h-4 w-4" /> Characters
+            <.icon name="user-circle" class="h-4 w-4" /> Characters
           </.link>
         </:item>
         <:item :if={@current_account}>
           <.link navigate={~p"/campaigns"}>
-            <Heroicons.LiveView.icon name="map" class="h-4 w-4" /> Campaigns
+            <.icon name="map" class="h-4 w-4" /> Campaigns
           </.link>
         </:item>
         <:item :if={!@current_account}>
           <.link navigate={~p"/accounts/log_in"} >
-            <Heroicons.LiveView.icon name="lock-open" class="h-4 w-4" /> Sign in
+            <.icon name="lock-open" class="h-4 w-4" /> Sign in
           </.link>
         </:item>
         <:item :if={!@current_account}>
           <.link navigate={~p"/accounts/register"}>
-            <Heroicons.LiveView.icon name="user-plus" class="h-4 w-4" /> Sign up
+            <.icon name="user-plus" class="h-4 w-4" /> Sign up
           </.link>
         </:item>
         <:item>
           <.link navigate={~p"/credits"} class="underline">
-            <Heroicons.LiveView.icon name="queue-list" class="h-4 w-4" /> Credits
+            <.icon name="queue-list" class="h-4 w-4" /> Credits
           </.link>
         </:item>
       </.menu>
