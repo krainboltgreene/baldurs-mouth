@@ -1,5 +1,6 @@
 defmodule CoreWeb.AccountSessionController do
   use CoreWeb, :controller
+  # plug Ueberauth
 
   def create(conn, %{"_action" => "registered"} = params) do
     conn

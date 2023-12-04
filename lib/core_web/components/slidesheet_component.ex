@@ -54,7 +54,7 @@ defmodule CoreWeb.SlidesheetComponent do
                       <button phx-click="close" phx-target={@myself} type="button" class="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         <span class="absolute -inset-2.5"></span>
                         <span class="sr-only">Close panel</span>
-                        <.icon as="times" />
+                        <Heroicons.LiveView.icon name="xmark" />
                       </button>
                     </div>
                   </div>

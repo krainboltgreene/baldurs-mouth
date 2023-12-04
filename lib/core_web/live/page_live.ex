@@ -42,29 +42,43 @@ defmodule CoreWeb.PageLive do
       </p>
     </div>
     <div class="mx-auto max-w-lg">
-      <.list>
-        <:item :if={@current_account} icon={%{as: "play"}}>
-          <.link navigate={~p"/saves/new"} class="underline">Start new game</.link>
+      <.menu>
+        <:item :if={@current_account}>
+          <.link navigate={~p"/saves/new"}>
+            <Heroicons.LiveView.icon name="play" class="h-4 w-4" /> Start new game
+          </.link>
         </:item>
-        <:item :if={@current_account} icon={%{as: "save"}}>
-          <.link navigate={~p"/saves"}>Load game</.link>
+        <:item :if={@current_account}>
+          <.link navigate={~p"/saves"}>
+            <Heroicons.LiveView.icon name="document-check" class="h-4 w-4" /> Load game
+          </.link>
         </:item>
-        <:item :if={@current_account} icon={%{as: "person"}}>
-          <.link navigate={~p"/characters"}>Characters</.link>
+        <:item :if={@current_account}>
+          <.link navigate={~p"/characters"}>
+            <Heroicons.LiveView.icon name="user-circle" class="h-4 w-4" /> Characters
+          </.link>
         </:item>
-        <:item :if={@current_account} icon={%{as: "map"}}>
-          <.link navigate={~p"/campaigns"}>Campaigns</.link>
+        <:item :if={@current_account}>
+          <.link navigate={~p"/campaigns"}>
+            <Heroicons.LiveView.icon name="map" class="h-4 w-4" /> Campaigns
+          </.link>
         </:item>
-        <:item :if={!@current_account} icon={%{as: "unlock"}}>
-          <.link navigate={~p"/accounts/log_in"} class="underline">Sign in</.link>
+        <:item :if={!@current_account}>
+          <.link navigate={~p"/accounts/log_in"} >
+            <Heroicons.LiveView.icon name="lock-open" class="h-4 w-4" /> Sign in
+          </.link>
         </:item>
-        <:item :if={!@current_account} icon={%{as: "user-plus"}}>
-          <.link navigate={~p"/accounts/register"} class="underline">Sign up</.link>
+        <:item :if={!@current_account}>
+          <.link navigate={~p"/accounts/register"}>
+            <Heroicons.LiveView.icon name="user-plus" class="h-4 w-4" /> Sign up
+          </.link>
         </:item>
-        <:item icon={%{as: "list"}}>
-          <.link navigate={~p"/credits"} class="underline">Credits</.link>
+        <:item>
+          <.link navigate={~p"/credits"} class="underline">
+            <Heroicons.LiveView.icon name="queue-list" class="h-4 w-4" /> Credits
+          </.link>
         </:item>
-      </.list>
+      </.menu>
     </div>
     """
   end

@@ -203,10 +203,10 @@ defmodule CoreWeb.CharacterLive do
   def render(%{live_action: :list} = assigns) do
     ~H"""
     <.list>
-      <:item icon={%{as: "user-plus"}}>
+      <:item icon={%{name: "user-plus"}}>
         <.link navigate={~p"/characters/new"}>Create New Character</.link>
       </:item>
-      <:item :for={character <- @characters} icon={%{as: ""}}>
+      <:item :for={character <- @characters} icon={%{name: ""}}>
         <.link navigate={~p"/characters/#{character.id}"}><%= Pretty.get(character, :name) %></.link>
       </:item>
     </.list>

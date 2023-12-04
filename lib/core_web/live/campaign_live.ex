@@ -234,7 +234,7 @@ defmodule CoreWeb.CampaignLive do
     <.simple_form for={@form} phx-change="validate" phx-submit="save">
       <.input field={@form[:name]} label="Name" type="text" />
       <:actions>
-        <.button phx-disable-with="Saving..." type="submit" usable_icon="save">Save</.button>
+        <.button phx-disable-with="Saving..." type="submit" usable_icon="check">Save</.button>
       </:actions>
     </.simple_form>
     """

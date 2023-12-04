@@ -50,13 +50,13 @@ defmodule CoreWeb.CoreComponents do
       {@rest}
     >
       <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <.icon :if={@kind == :info} as="information-circle" class="h-4 w-4" />
-        <.icon :if={@kind == :error} as="exclamation-circle" class="h-4 w-4" />
+        <Heroicons.LiveView.icon :if={@kind == :info} name="information-circle" class="h-4 w-4" />
+        <Heroicons.LiveView.icon :if={@kind == :error} name="exclamation-circle" class="h-4 w-4" />
         <%= @title %>
       </p>
       <p class={["text-sm leading-5", @title && "mt-2"]}><%= msg %></p>
       <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
-        <.icon as="x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
+        <Heroicons.LiveView.icon name="x-mark" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
       </button>
     </div>
     """
@@ -78,11 +78,11 @@ defmodule CoreWeb.CoreComponents do
       <.flash kind={:info} title="Success!" flash={@flash} />
       <.flash kind={:error} title="Error!" flash={@flash} />
       <.flash id="client-error" kind={:error} title="We can't find the internet" hidden>
-        Attempting to reconnect <.icon as="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+        Attempting to reconnect <Heroicons.LiveView.icon as="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
       </.flash>
 
       <.flash id="server-error" kind={:error} title="Something went wrong!" hidden>
-        Hang in there while we get back on track <.icon as="arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+        Hang in there while we get back on track <Heroicons.LiveView.icon as="arrow-path" class="ml-1 h-3 w-3 animate-spin" />
       </.flash>
     </div>
     """
@@ -131,7 +131,7 @@ defmodule CoreWeb.CoreComponents do
       ]}
       {@rest}
     >
-      <.icon as={
+      <Heroicons.LiveView.icon name={
         case @state do
           "usable" -> @usable_icon
           "busy" -> @busy_icon
@@ -257,7 +257,7 @@ defmodule CoreWeb.CoreComponents do
       <dl class="-my-4 divide-y divide-zinc-100">
         <div :for={item <- @item} class="flex gap-4 py-4 leading-6">
           <dt :if={item[:title]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500"><%= item.title %></dt>
-          <dt :if={item[:icon]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500 text-right"><.icon {item.icon} /></dt>
+          <dt :if={item[:icon]} class="w-1/4 flex-none text-zinc-500 hover:text-highlight-500 text-right"><Heroicons.LiveView.icon {item.icon} /></dt>
           <dd class="w-3/4 text-zinc-700"><%= render_slot(item) %></dd>
         </div>
       </dl>
@@ -265,15 +265,15 @@ defmodule CoreWeb.CoreComponents do
     """
   end
 
-  @spec icon(map()) :: Phoenix.LiveView.Rendered.t()
-  attr :type, :string, default: "solid"
-  attr :as, :string, required: true
-  attr :modifiers, :string, default: ""
-  attr :rest, :global, include: ~w(disabled form name value class)
+  slot :item, required: true
 
-  def icon(assigns) do
+  def menu(assigns) do
     ~H"""
-    <i class={"fa-#{@type} fa-#{@as} #{@modifiers}"} {@rest}></i>
+    <ul class="menu bg-base-200 w-56 rounded-box">
+      <li :for={item <- @item}>
+        <%= render_slot(item) %>
+      </li>
+    </ul>
     """
   end
 
@@ -282,7 +282,7 @@ defmodule CoreWeb.CoreComponents do
 
   def loading_text_indicator(assigns) do
     ~H"""
-    <.icon :for={number <- 1..@size} as="square-full" modifiers="fa-fade text-highlight-500" style={"--fa-animation-duration: 3s; --fa-fade-opacity: 0.2; --fa-animation-delay: #{number / 2.0}s"} />
+    <Heroicons.LiveView.icon :for={number <- 1..@size} as="square-full" modifiers="text-highlight-500" style={"--fa-animation-duration: 3s; --fa-fade-opacity: 0.2; --fa-animation-delay: #{number / 2.0}s"} />
     """
   end
 

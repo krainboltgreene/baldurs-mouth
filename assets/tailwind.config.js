@@ -11,6 +11,9 @@ module.exports = {
     "../lib/*_web.ex",
     "../lib/*_web/**/*.*ex"
   ],
+  daisyui: {
+    themes: ["light"],
+  },
   theme: {
     fontFamily: {
       'sans': ['Noto Sans', 'ui-sans-serif', 'system-ui'],
@@ -67,7 +70,8 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
-    require('@tailwindcss/typography'),
+    require("@tailwindcss/typography"),
+    require("daisyui"),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //
