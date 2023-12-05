@@ -52,7 +52,7 @@ defmodule Core.MixProject do
       {:finch, "~> 0.16.0"},
       {:telemetry_metrics, "~> 0.6.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.23.1"},
+      {:gettext, "~> 0.24.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:mimic, "~> 1.7", only: :test},
