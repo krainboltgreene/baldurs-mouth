@@ -300,7 +300,7 @@ defmodule CoreWeb.CoreComponents do
 
   def timestamp_in_words_ago(assigns) do
     ~H"""
-    <time time={@at} title={@at}><%= Timex.from_now(@at) %></time>
+    <time datetime={@at} title={@at}><%= Timex.from_now(@at) %></time>
     """
   end
 
