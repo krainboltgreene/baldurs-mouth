@@ -8,12 +8,9 @@ const path = require("path");
 module.exports = {
   content: [
     "./js/**/*.js",
-    "../lib/*_web.ex",
-    "../lib/*_web/**/*.*ex"
+    "../lib/core_web.ex",
+    "../lib/core_web/**/*.*ex"
   ],
-  daisyui: {
-    themes: ["light"],
-  },
   theme: {
     fontFamily: {
       'sans': ['Noto Sans', 'ui-sans-serif', 'system-ui'],
@@ -21,49 +18,57 @@ module.exports = {
     },
     extend: {
       colors: {
-        dark: {
-          100: "#d4d6db",
-          200: "#a8adb7",
-          300: "#7d8492",
-          400: "#515b6e",
-          500: "#26324a",
-          600: "#1e283b",
-          700: "#171e2c",
-          800: "#0f141e",
-          900: "#080a0f"
+        'big-stone': {
+          '50': '#f4f6fb',
+          '100': '#e9ecf5',
+          '200': '#ced8e9',
+          '300': '#a3b7d6',
+          '400': '#7290be',
+          '500': '#5072a7',
+          '600': '#3d598c',
+          '700': '#324872',
+          '800': '#2d3f5f',
+          '900': '#26324a',
+          '950': '#1b2336',
         },
-        light: {
-          100: "#fdfcfb",
-          200: "#fbfaf7",
-          300: "#faf7f2",
-          400: "#f8f5ee",
-          500: "#f6f2ea",
-          600: "#c5c2bb",
-          700: "#94918c",
-          800: "#62615e",
-          900: "#31302f"
+        'merino': {
+          '50': '#faf7f2',
+          '100': '#f6f2ea',
+          '200': '#e5d8c3',
+          '300': '#d4be9d',
+          '400': '#c29f75',
+          '500': '#b5885a',
+          '600': '#a7754f',
+          '700': '#8b5f43',
+          '800': '#714d3b',
+          '900': '#5c4132',
+          '950': '#312019',
         },
-        contrast: {
-          100: "#e7d1d0",
-          200: "#cfa4a2",
-          300: "#b87673",
-          400: "#a04945",
-          500: "#881b16",
-          600: "#6d1612",
-          700: "#52100d",
-          800: "#360b09",
-          900: "#1b0504"
+        'falu-red': {
+          '50': '#fff2f1',
+          '100': '#ffe1e0',
+          '200': '#ffc8c6',
+          '300': '#ffa39f',
+          '400': '#ff6e67',
+          '500': '#fc4037',
+          '600': '#ea2118',
+          '700': '#c51810',
+          '800': '#a21812',
+          '900': '#881b16',
+          '950': '#490906',
         },
-        highlight: {
-          100: "#fbe1d0",
-          200: "#f8c4a0",
-          300: "#f4a671",
-          400: "#f18941",
-          500: "#ed6b12",
-          600: "#be560e",
-          700: "#8e400b",
-          800: "#5f2b07",
-          900: "#2f1504"
+        'clementine': {
+          '50': '#fff8ed',
+          '100': '#fef0d6',
+          '200': '#fcdcac',
+          '300': '#fac277',
+          '400': '#f69e41',
+          '500': '#f4821b',
+          '600': '#ed6b12',
+          '700': '#be4e10',
+          '800': '#973e15',
+          '900': '#793415',
+          '950': '#421908',
         },
       }
     },
@@ -71,13 +76,12 @@ module.exports = {
   plugins: [
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
-    require("daisyui"),
+
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //
     //     <div class="phx-click-loading:animate-ping">
     //
-    plugin(({ addVariant }) => addVariant("phx-no-feedback", [".phx-no-feedback&", ".phx-no-feedback &"])),
     plugin(({ addVariant }) => addVariant("phx-click-loading", [".phx-click-loading&", ".phx-click-loading &"])),
     plugin(({ addVariant }) => addVariant("phx-submit-loading", [".phx-submit-loading&", ".phx-submit-loading &"])),
     plugin(({ addVariant }) => addVariant("phx-change-loading", [".phx-change-loading&", ".phx-change-loading &"]))
