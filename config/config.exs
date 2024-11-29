@@ -9,34 +9,24 @@ import Config
 
 config :core,
   ecto_repos: [Core.Repo],
-  generators: [binary_id: true],
+  generators: [timestamp_type: :utc_datetime, binary_id: true],
   application_name: "Baldur's Mouth",
   support_email_address: "support@baldurs-mouth.com",
   theme_color: "#ffffff",
   description: "",
   short_description: "",
-  google_site_verification: "",
-  google_tag_manager_id: ""
-
-config :core,
-       Core.Repo,
-       migration_primary_key: [name: :id, type: :binary_id],
-       migration_foreign_key: [column: :id, type: :binary_id]
+  google_site_verification: ""
 
 # Configures the endpoint
 config :core, CoreWeb.Endpoint,
-  url: [host: Application.get_env(:core, :domain)],
+  url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: CoreWeb.ErrorHTML, json: CoreWeb.ErrorJSON],
     layout: false
   ],
   pubsub_server: Core.PubSub,
-  live_view: [signing_salt: "JKEx/AEF"]
-
-config :ueberauth, Ueberauth,
-  providers: [
-    twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email"]}
-  ]
+  live_view: [signing_salt: "S4uW/jOU"]
 
 # Configures the mailer
 #
@@ -50,40 +40,44 @@ config :core, Core.Mailer, adapter: Swoosh.Adapters.Local
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
-  default: [
+  core: [
     args:
-      ~w(js/application.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.3.2",
-  default: [
+  version: "3.4.3",
+  core: [
     args: ~w(
       --config=tailwind.config.js
-      --input=css/application.css
-      --output=../priv/static/assets/application.css
+      --input=css/app.css
+      --output=../priv/static/assets/app.css
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
 
 # Configures Elixir's Logger
-import IO
-
-# Configures Elixir's Logger
 config :logger, :console,
-  format: "$metadata[$level] #{IO.ANSI.bright()}$message#{IO.ANSI.normal()}\n",
-  metadata: [:request_id],
-  color: :enabled
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :ex_heroicons, type: "outline"
+config :ecto_interface, default_repo: Core.Repo, default_pubsub: Core.PubSub
 
-config :ecto_interface, :default_repo, Core.Repo
+config :core,
+       Core.Repo,
+       migration_primary_key: [name: :id, type: :binary_id],
+       migration_foreign_key: [column: :id, type: :binary_id]
+
+config :ueberauth, Ueberauth,
+  providers: [
+    twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email"]}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

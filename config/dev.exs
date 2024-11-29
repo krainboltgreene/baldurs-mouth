@@ -1,19 +1,13 @@
 import Config
 
-config :core,
-  domain: "localhost",
-  base_url: "http://localhost:4000/",
-  production: false
-
 # Configure your database
 config :core, Core.Repo,
   username: "postgres",
-  password: if(System.get_env("GITHUB_CODESPACE"), do: "postgres"),
+  password: "postgres",
   hostname: "localhost",
   database: "core_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  prepare: :unnamed,
   pool_size: 10
 
 # For development, we disable any cache and enable
@@ -29,10 +23,10 @@ config :core, CoreWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "hPnBNsKd4PUfmSLk2QUu4wLsIFY5Mt1kzplLpgEGQnTkWcNmk9kovkbMujnsm3OI",
+  secret_key_base: "iLU7DW//iuxhWgy6V/u32ILLrEVeCoN/njTsLP7gvYiA+V2yXoEnZyQxbX4eXXef",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:core, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:core, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -62,9 +56,9 @@ config :core, CoreWeb.Endpoint,
 config :core, CoreWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/core_web/(controllers|live|components)/.*(ex|heex|eex)$"
+      ~r"lib/core_web/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 
@@ -74,11 +68,6 @@ config :core, dev_routes: true
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
-config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
-  client_id: System.get_env("TWITCH_CLIENT_ID"),
-  client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
-  redirect_uri: System.get_env("TWITCH_REDIRECT_URI")
-
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
@@ -86,7 +75,16 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-config :phoenix_live_view, debug_heex_annotations: true
+config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
+  client_id: System.get_env("TWITCH_CLIENT_ID"),
+  client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
+  redirect_uri: System.get_env("TWITCH_REDIRECT_URI")
