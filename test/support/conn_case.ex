@@ -14,6 +14,7 @@ defmodule CoreWeb.ConnCase do
   by setting `use CoreWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
+
   use ExUnit.CaseTemplate
 
   using do
@@ -32,7 +33,32 @@ defmodule CoreWeb.ConnCase do
 
   setup tags do
     Core.DataCase.setup_sandbox(tags)
-
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  @doc """
+  Setup helper that registers and logs in accounts.
+
+      setup :register_and_log_in_account
+
+  It stores an updated connection and a registered account in the
+  test context.
+  """
+  def register_and_log_in_account(%{conn: conn}) do
+    account = Core.UsersFixtures.account_fixture()
+    %{conn: log_in_account(conn, account), account: account}
+  end
+
+  @doc """
+  Logs the given `account` into the `conn`.
+
+  It returns an updated `conn`.
+  """
+  def log_in_account(conn, account) do
+    token = Core.Users.generate_account_session_token(account)
+
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Plug.Conn.put_session(:account_token, token)
   end
 end

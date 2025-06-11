@@ -42,8 +42,9 @@ defmodule CoreWeb do
         formats: [:html, :json],
         layouts: [html: CoreWeb.Layouts]
 
+      use Gettext, backend: CoreWeb.Gettext
+
       import Plug.Conn
-      import CoreWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -84,6 +85,9 @@ defmodule CoreWeb do
 
   defp html_helpers do
     quote do
+      # Translation
+      use Gettext, backend: CoreWeb.Gettext
+
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
@@ -99,29 +103,6 @@ defmodule CoreWeb do
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
-
-      def elixir_as_html(source) do
-        inspect(source, pretty: true, limit: :infinity)
-        |> (&"```\n#{&1}\n```").()
-        |> Earmark.as_html!(smartypants: false, inner_html: true)
-        |> Phoenix.HTML.raw()
-      end
-
-      def code_as_html(source) do
-        source
-        |> (&"```\n#{&1}\n```").()
-        |> Earmark.as_html!(smartypants: false, inner_html: true)
-        |> Phoenix.HTML.raw()
-      end
-
-      def error_at_ago(%{"at" => at}) do
-        at
-        |> DateTime.from_iso8601()
-        |> case do
-          {:ok, datetime, _} -> Timex.from_now(datetime)
-          {:error, _} -> at
-        end
-      end
     end
   end
 
@@ -135,7 +116,7 @@ defmodule CoreWeb do
   end
 
   @doc """
-  When used, dispatch to the appropriate controller/view/etc.
+  When used, dispatch to the appropriate controller/live_view/etc.
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])

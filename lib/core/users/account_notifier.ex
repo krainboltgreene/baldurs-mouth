@@ -1,20 +1,18 @@
 defmodule Core.Users.AccountNotifier do
-  @moduledoc false
   import Swoosh.Email
+
+  alias Core.Mailer
 
   # Delivers the email using the application mailer.
   defp deliver(recipient, subject, body) do
     email =
       new()
       |> to(recipient)
-      |> from({
-        Application.get_env(:core, :application_name),
-        Application.get_env(:core, :support_email_address)
-      })
+      |> from({"Core", "contact@example.com"})
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Core.Mailer.deliver(email) do
+    with {:ok, _metadata} <- Mailer.deliver(email) do
       {:ok, email}
     end
   end
@@ -23,35 +21,31 @@ defmodule Core.Users.AccountNotifier do
   Deliver instructions to confirm account.
   """
   def deliver_confirmation_instructions(account, url) do
-    deliver(
-      account.email_address,
-      "Finish setting up your #{Application.get_env(:core, :application_name)} Account",
-      """
+    deliver(account.email, "Confirmation instructions", """
 
-      ==============================
+    ==============================
 
-      Hi #{account.email_address},
+    Hi #{account.email},
 
-      You can confirm your account by visiting the URL below:
+    You can confirm your account by visiting the URL below:
 
-      #{url}
+    #{url}
 
-      If you didn't create an account with us, please ignore this.
+    If you didn't create an account with us, please ignore this.
 
-      ==============================
-      """
-    )
+    ==============================
+    """)
   end
 
   @doc """
   Deliver instructions to reset a account password.
   """
   def deliver_reset_password_instructions(account, url) do
-    deliver(account.email_address, "Reset password instructions", """
+    deliver(account.email, "Reset password instructions", """
 
     ==============================
 
-    Hi #{account.email_address},
+    Hi #{account.email},
 
     You can reset your password by visiting the URL below:
 
@@ -66,12 +60,12 @@ defmodule Core.Users.AccountNotifier do
   @doc """
   Deliver instructions to update a account email.
   """
-  def deliver_update_email_address_instructions(account, url) do
-    deliver(account.email_address, "Update email instructions", """
+  def deliver_update_email_instructions(account, url) do
+    deliver(account.email, "Update email instructions", """
 
     ==============================
 
-    Hi #{account.email_address},
+    Hi #{account.email},
 
     You can change your email by visiting the URL below:
 

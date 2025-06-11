@@ -1,12 +1,9 @@
 defmodule CoreWeb.AccountSettingsLiveTest do
-  use CoreWeb.ConnCase
+  use CoreWeb.ConnCase, async: true
 
+  alias Core.Users
   import Phoenix.LiveViewTest
-  import Swoosh.TestAssertions
   import Core.UsersFixtures
-  import Core.SessionsFixtures
-
-  setup :set_swoosh_global
 
   describe "Settings page" do
     test "renders settings page", %{conn: conn} do
@@ -36,7 +33,7 @@ defmodule CoreWeb.AccountSettingsLiveTest do
     end
 
     test "updates the account email", %{conn: conn, password: password, account: account} do
-      new_email = unique_account_email_address()
+      new_email = unique_account_email()
 
       {:ok, lv, _html} = live(conn, ~p"/accounts/settings")
 
@@ -44,12 +41,12 @@ defmodule CoreWeb.AccountSettingsLiveTest do
         lv
         |> form("#email_form", %{
           "current_password" => password,
-          "account" => %{"email_address" => new_email}
+          "account" => %{"email" => new_email}
         })
         |> render_submit()
 
       assert result =~ "A link to confirm your email"
-      assert Core.Users.get_account_by_email_address(account.email_address)
+      assert Users.get_account_by_email(account.email)
     end
 
     test "renders errors with invalid data (phx-change)", %{conn: conn} do
@@ -61,7 +58,7 @@ defmodule CoreWeb.AccountSettingsLiveTest do
         |> render_change(%{
           "action" => "update_email",
           "current_password" => "invalid",
-          "account" => %{"email_address" => "with spaces"}
+          "account" => %{"email" => "with spaces"}
         })
 
       assert result =~ "Change Email"
@@ -75,7 +72,7 @@ defmodule CoreWeb.AccountSettingsLiveTest do
         lv
         |> form("#email_form", %{
           "current_password" => "invalid",
-          "account" => %{"email_address" => account.email_address}
+          "account" => %{"email" => account.email}
         })
         |> render_submit()
 
@@ -101,7 +98,7 @@ defmodule CoreWeb.AccountSettingsLiveTest do
         form(lv, "#password_form", %{
           "current_password" => password,
           "account" => %{
-            "email_address" => account.email_address,
+            "email" => account.email,
             "password" => new_password,
             "password_confirmation" => new_password
           }
@@ -118,10 +115,7 @@ defmodule CoreWeb.AccountSettingsLiveTest do
       assert Phoenix.Flash.get(new_password_conn.assigns.flash, :info) =~
                "Password updated successfully"
 
-      assert Core.Users.get_account_by_email_address_and_password(
-               account.email_address,
-               new_password
-             )
+      assert Users.get_account_by_email_and_password(account.email, new_password)
     end
 
     test "renders errors with invalid data (phx-change)", %{conn: conn} do
@@ -167,34 +161,25 @@ defmodule CoreWeb.AccountSettingsLiveTest do
   describe "confirm email" do
     setup %{conn: conn} do
       account = account_fixture()
-      email = unique_account_email_address()
+      email = unique_account_email()
 
       token =
         extract_account_token(fn url ->
-          Core.Users.deliver_account_update_email_address_instructions(
-            %{account | email_address: email},
-            account.email_address,
-            url
-          )
+          Users.deliver_account_update_email_instructions(%{account | email: email}, account.email, url)
         end)
 
-      %{conn: log_in_account(conn, account), token: token, email_address: email, account: account}
+      %{conn: log_in_account(conn, account), token: token, email: email, account: account}
     end
 
-    test "updates the account email once", %{
-      conn: conn,
-      account: account,
-      token: token,
-      email_address: email_address
-    } do
+    test "updates the account email once", %{conn: conn, account: account, token: token, email: email} do
       {:error, redirect} = live(conn, ~p"/accounts/settings/confirm_email/#{token}")
 
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/accounts/settings"
       assert %{"info" => message} = flash
       assert message == "Email changed successfully."
-      refute Core.Users.get_account_by_email_address(account.email_address)
-      assert Core.Users.get_account_by_email_address(email_address)
+      refute Users.get_account_by_email(account.email)
+      assert Users.get_account_by_email(email)
 
       # use confirm token again
       {:error, redirect} = live(conn, ~p"/accounts/settings/confirm_email/#{token}")
@@ -210,7 +195,7 @@ defmodule CoreWeb.AccountSettingsLiveTest do
       assert path == ~p"/accounts/settings"
       assert %{"error" => message} = flash
       assert message == "Email change link is invalid or it has expired."
-      assert Core.Users.get_account_by_email_address(account.email_address)
+      assert Users.get_account_by_email(account.email)
     end
 
     test "redirects if account is not logged in", %{token: token} do

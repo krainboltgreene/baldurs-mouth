@@ -23,7 +23,7 @@ config :core, CoreWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "iLU7DW//iuxhWgy6V/u32ILLrEVeCoN/njTsLP7gvYiA+V2yXoEnZyQxbX4eXXef",
+  secret_key_base: "Td89j6Vt045OMY1fkMzmVqmqpfXydwnYeUyPxz5AiXXiBFv4Hok7oWu5G1W27HV+",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:core, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:core, ~w(--watch)]}

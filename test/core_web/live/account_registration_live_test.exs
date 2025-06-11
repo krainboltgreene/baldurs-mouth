@@ -1,12 +1,8 @@
 defmodule CoreWeb.AccountRegistrationLiveTest do
-  use CoreWeb.ConnCase
+  use CoreWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Swoosh.TestAssertions
   import Core.UsersFixtures
-  import Core.SessionsFixtures
-
-  setup :set_swoosh_global
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
@@ -32,7 +28,7 @@ defmodule CoreWeb.AccountRegistrationLiveTest do
       result =
         lv
         |> element("#registration_form")
-        |> render_change(account: %{"email_address" => "with spaces", "password" => "too short"})
+        |> render_change(account: %{"email" => "with spaces", "password" => "too short"})
 
       assert result =~ "Register"
       assert result =~ "must have the @ sign and no spaces"
@@ -44,13 +40,8 @@ defmodule CoreWeb.AccountRegistrationLiveTest do
     test "creates account and logs the account in", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
 
-      email_address = unique_account_email_address()
-
-      form =
-        form(lv, "#registration_form",
-          account: valid_account_attributes(email_address: email_address)
-        )
-
+      email = unique_account_email()
+      form = form(lv, "#registration_form", account: valid_account_attributes(email: email))
       render_submit(form)
       conn = follow_trigger_action(form, conn)
 
@@ -59,19 +50,20 @@ defmodule CoreWeb.AccountRegistrationLiveTest do
       # Now do a logged in request and assert on the menu
       conn = get(conn, "/")
       response = html_response(conn, 200)
-      assert response =~ "Account"
+      assert response =~ email
+      assert response =~ "Settings"
       assert response =~ "Log out"
     end
 
     test "renders errors for duplicated email", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
 
-      account = account_fixture(%{email_address: "test@email.com"})
+      account = account_fixture(%{email: "test@email.com"})
 
       result =
         lv
         |> form("#registration_form",
-          account: %{"email_address" => account.email_address, "password" => "valid_password"}
+          account: %{"email" => account.email, "password" => "valid_password"}
         )
         |> render_submit()
 
@@ -85,7 +77,7 @@ defmodule CoreWeb.AccountRegistrationLiveTest do
 
       {:ok, _login_live, login_html} =
         lv
-        |> element(~s|main a:fl-contains("Sign in")|)
+        |> element(~s|main a:fl-contains("Log in")|)
         |> render_click()
         |> follow_redirect(conn, ~p"/accounts/log_in")
 

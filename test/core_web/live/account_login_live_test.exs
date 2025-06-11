@@ -1,9 +1,8 @@
 defmodule CoreWeb.AccountLoginLiveTest do
-  use CoreWeb.ConnCase
+  use CoreWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
   import Core.UsersFixtures
-  import Core.SessionsFixtures
 
   describe "Log in page" do
     test "renders log in page", %{conn: conn} do
@@ -33,9 +32,7 @@ defmodule CoreWeb.AccountLoginLiveTest do
       {:ok, lv, _html} = live(conn, ~p"/accounts/log_in")
 
       form =
-        form(lv, "#login_form",
-          account: %{email_address: account.email_address, password: password, remember_me: true}
-        )
+        form(lv, "#login_form", account: %{email: account.email, password: password, remember_me: true})
 
       conn = submit_form(form, conn)
 
@@ -49,7 +46,7 @@ defmodule CoreWeb.AccountLoginLiveTest do
 
       form =
         form(lv, "#login_form",
-          account: %{email_address: "test@email.com", password: "123456", remember_me: true}
+          account: %{email: "test@email.com", password: "123456", remember_me: true}
         )
 
       conn = submit_form(form, conn)

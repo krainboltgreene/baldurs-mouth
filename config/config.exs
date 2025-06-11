@@ -26,7 +26,7 @@ config :core, CoreWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Core.PubSub,
-  live_view: [signing_salt: "S4uW/jOU"]
+  live_view: [signing_salt: "VtJHOsE1"]
 
 # Configures the mailer
 #

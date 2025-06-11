@@ -2,7 +2,6 @@ defmodule CoreWeb.AccountSessionControllerTest do
   use CoreWeb.ConnCase, async: true
 
   import Core.UsersFixtures
-  import Core.SessionsFixtures
 
   setup do
     %{account: account_fixture()}
@@ -12,10 +11,7 @@ defmodule CoreWeb.AccountSessionControllerTest do
     test "logs the account in", %{conn: conn, account: account} do
       conn =
         post(conn, ~p"/accounts/log_in", %{
-          "account" => %{
-            "email_address" => account.email_address,
-            "password" => valid_account_password()
-          }
+          "account" => %{"email" => account.email, "password" => valid_account_password()}
         })
 
       assert get_session(conn, :account_token)
@@ -24,7 +20,7 @@ defmodule CoreWeb.AccountSessionControllerTest do
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")
       response = html_response(conn, 200)
-      assert response =~ "Account"
+      assert response =~ account.email
       assert response =~ ~p"/accounts/settings"
       assert response =~ ~p"/accounts/log_out"
     end
@@ -33,7 +29,7 @@ defmodule CoreWeb.AccountSessionControllerTest do
       conn =
         post(conn, ~p"/accounts/log_in", %{
           "account" => %{
-            "email_address" => account.email_address,
+            "email" => account.email,
             "password" => valid_account_password(),
             "remember_me" => "true"
           }
@@ -43,19 +39,18 @@ defmodule CoreWeb.AccountSessionControllerTest do
       assert redirected_to(conn) == ~p"/"
     end
 
-    # Implement this feature at some point
     test "logs the account in with return to", %{conn: conn, account: account} do
       conn =
         conn
-        |> init_test_session(account_return_to: ~p"/")
+        |> init_test_session(account_return_to: "/foo/bar")
         |> post(~p"/accounts/log_in", %{
           "account" => %{
-            "email_address" => account.email_address,
+            "email" => account.email,
             "password" => valid_account_password()
           }
         })
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == "/foo/bar"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Welcome back!"
     end
 
@@ -65,7 +60,7 @@ defmodule CoreWeb.AccountSessionControllerTest do
         |> post(~p"/accounts/log_in", %{
           "_action" => "registered",
           "account" => %{
-            "email_address" => account.email_address,
+            "email" => account.email,
             "password" => valid_account_password()
           }
         })
@@ -80,7 +75,7 @@ defmodule CoreWeb.AccountSessionControllerTest do
         |> post(~p"/accounts/log_in", %{
           "_action" => "password_updated",
           "account" => %{
-            "email_address" => account.email_address,
+            "email" => account.email,
             "password" => valid_account_password()
           }
         })
@@ -92,7 +87,7 @@ defmodule CoreWeb.AccountSessionControllerTest do
     test "redirects to login page with invalid credentials", %{conn: conn} do
       conn =
         post(conn, ~p"/accounts/log_in", %{
-          "account" => %{"email_address" => "invalid@email.com", "password" => "invalid_password"}
+          "account" => %{"email" => "invalid@email.com", "password" => "invalid_password"}
         })
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password"

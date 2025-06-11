@@ -1,17 +1,37 @@
 defmodule CoreWeb.AccountConfirmationLive do
   use CoreWeb, :live_view
 
+  alias Core.Users
+
+  def render(%{live_action: :edit} = assigns) do
+    ~H"""
+    <div class="mx-auto max-w-sm">
+      <.header class="text-center">Confirm Account</.header>
+
+      <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
+        <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
+        <:actions>
+          <.button phx-disable-with="Confirming..." class="w-full">Confirm my account</.button>
+        </:actions>
+      </.simple_form>
+
+      <p class="text-center mt-4">
+        <.link href={~p"/accounts/register"}>Register</.link>
+        | <.link href={~p"/accounts/log_in"}>Log in</.link>
+      </p>
+    </div>
+    """
+  end
+
   def mount(%{"token" => token}, _session, socket) do
-    socket
-    |> assign(:page_title, "Confirm Account")
-    |> assign(form: to_form(%{"token" => token}, as: "account"))
-    |> (&{:ok, &1, temporary_assigns: [form: nil]}).()
+    form = to_form(%{"token" => token}, as: "account")
+    {:ok, assign(socket, form: form), temporary_assigns: [form: nil]}
   end
 
   # Do not log in the account after confirmation to avoid a
   # leaked token giving the account access to the account.
   def handle_event("confirm_account", %{"account" => %{"token" => token}}, socket) do
-    case Core.Users.confirm_account(token) do
+    case Users.confirm_account(token) do
       {:ok, _} ->
         {:noreply,
          socket
@@ -34,22 +54,5 @@ defmodule CoreWeb.AccountConfirmationLive do
              |> redirect(to: ~p"/")}
         end
     end
-  end
-
-  def render(%{live_action: :edit} = assigns) do
-    ~H"""
-    <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
-      <.input field={@form[:token]} type="hidden" />
-      <:actions>
-        <.button phx-disable-with="Confirming..." type="submit" usable_icon="envelope">
-          Confirm my account
-        </.button>
-      </:actions>
-    </.simple_form>
-
-    <p>
-      <.link navigate={~p"/accounts/register"}>Register</.link> | <.link navigate={~p"/accounts/log_in"}>Log in</.link>
-    </p>
-    """
   end
 end

@@ -1,15 +1,17 @@
 defmodule CoreWeb.AccountResetPasswordLiveTest do
-  use CoreWeb.ConnCase
+  use CoreWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
   import Core.UsersFixtures
+
+  alias Core.Users
 
   setup do
     account = account_fixture()
 
     token =
       extract_account_token(fn url ->
-        Core.Users.deliver_account_reset_password_instructions(account, url)
+        Users.deliver_account_reset_password_instructions(account, url)
       end)
 
     %{token: token, account: account}
@@ -38,7 +40,7 @@ defmodule CoreWeb.AccountResetPasswordLiveTest do
         lv
         |> element("#reset_password_form")
         |> render_change(
-          account: %{"password" => "secret12", "confirmation_password" => "secret123456"}
+          account: %{"password" => "secret12", "password_confirmation" => "secret123456"}
         )
 
       assert result =~ "should be at least 12 character"
@@ -63,11 +65,7 @@ defmodule CoreWeb.AccountResetPasswordLiveTest do
 
       refute get_session(conn, :account_token)
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Password reset successfully"
-
-      assert Core.Users.get_account_by_email_address_and_password(
-               account.email_address,
-               "new valid password"
-             )
+      assert Users.get_account_by_email_and_password(account.email, "new valid password")
     end
 
     test "does not reset password on invalid data", %{conn: conn, token: token} do
@@ -93,28 +91,28 @@ defmodule CoreWeb.AccountResetPasswordLiveTest do
     test "redirects to login page when the Log in button is clicked", %{conn: conn, token: token} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/reset_password/#{token}")
 
-      {:ok, _lv, html} =
+      {:ok, conn} =
         lv
         |> element(~s|main a:fl-contains("Log in")|)
         |> render_click()
         |> follow_redirect(conn, ~p"/accounts/log_in")
 
-      assert html =~ "Log in"
+      assert conn.resp_body =~ "Log in"
     end
 
-    test "redirects to password reset page when the Register button is clicked", %{
+    test "redirects to registration page when the Register button is clicked", %{
       conn: conn,
       token: token
     } do
       {:ok, lv, _html} = live(conn, ~p"/accounts/reset_password/#{token}")
 
-      {:ok, _lv, html} =
+      {:ok, conn} =
         lv
         |> element(~s|main a:fl-contains("Register")|)
         |> render_click()
         |> follow_redirect(conn, ~p"/accounts/register")
 
-      assert html =~ "Register"
+      assert conn.resp_body =~ "Register"
     end
   end
 end

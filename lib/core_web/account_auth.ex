@@ -1,8 +1,10 @@
-defmodule CoreWeb.AccountAuthenticationHelpers do
-  @moduledoc false
+defmodule CoreWeb.AccountAuth do
   use CoreWeb, :verified_routes
+
   import Plug.Conn
   import Phoenix.Controller
+
+  alias Core.Users
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
@@ -24,14 +26,14 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
   if you are not using LiveView.
   """
   def log_in_account(conn, account, params \\ %{}) do
-    token = Core.Users.generate_account_session_token(account)
+    token = Users.generate_account_session_token(account)
     account_return_to = get_session(conn, :account_return_to)
 
     conn
     |> renew_session()
     |> put_token_in_session(token)
     |> maybe_write_remember_me_cookie(token, params)
-    |> redirect(to: params[:return_to] || account_return_to || signed_in_path(conn))
+    |> redirect(to: account_return_to || signed_in_path(conn))
   end
 
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
@@ -58,6 +60,8 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
   #     end
   #
   defp renew_session(conn) do
+    delete_csrf_token()
+
     conn
     |> configure_session(renew: true)
     |> clear_session()
@@ -70,7 +74,7 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
   """
   def log_out_account(conn) do
     account_token = get_session(conn, :account_token)
-    account_token && Core.Users.delete_account_session_token(account_token)
+    account_token && Users.delete_account_session_token(account_token)
 
     if live_socket_id = get_session(conn, :live_socket_id) do
       CoreWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
@@ -79,7 +83,7 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
     conn
     |> renew_session()
     |> delete_resp_cookie(@remember_me_cookie)
-    |> redirect(to: "/")
+    |> redirect(to: ~p"/")
   end
 
   @doc """
@@ -88,7 +92,7 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
   """
   def fetch_current_account(conn, _opts) do
     {account_token, conn} = ensure_account_token(conn)
-    account = account_token && Core.Users.get_account_by_session_token(account_token)
+    account = account_token && Users.get_account_by_session_token(account_token)
     assign(conn, :current_account, account)
   end
 
@@ -131,22 +135,22 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
       defmodule CoreWeb.PageLive do
         use CoreWeb, :live_view
 
-        on_mount {CoreWeb.AccountAuthenticationHelpers, :mount_current_account}
+        on_mount {CoreWeb.AccountAuth, :mount_current_account}
         ...
       end
 
   Or use the `live_session` of your router to invoke the on_mount callback:
 
-      live_session :authenticated, on_mount: [{CoreWeb.AccountAuthenticationHelpers, :ensure_authenticated}] do
+      live_session :authenticated, on_mount: [{CoreWeb.AccountAuth, :ensure_authenticated}] do
         live "/profile", ProfileLive, :index
       end
   """
   def on_mount(:mount_current_account, _params, session, socket) do
-    {:cont, mount_current_account(session, socket)}
+    {:cont, mount_current_account(socket, session)}
   end
 
   def on_mount(:ensure_authenticated, _params, session, socket) do
-    socket = mount_current_account(session, socket)
+    socket = mount_current_account(socket, session)
 
     if socket.assigns.current_account do
       {:cont, socket}
@@ -161,7 +165,7 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
   end
 
   def on_mount(:redirect_if_account_is_authenticated, _params, session, socket) do
-    socket = mount_current_account(session, socket)
+    socket = mount_current_account(socket, session)
 
     if socket.assigns.current_account do
       {:halt, Phoenix.LiveView.redirect(socket, to: signed_in_path(socket))}
@@ -170,16 +174,12 @@ defmodule CoreWeb.AccountAuthenticationHelpers do
     end
   end
 
-  defp mount_current_account(session, socket) do
-    case session do
-      %{"account_token" => account_token} ->
-        Phoenix.Component.assign_new(socket, :current_account, fn ->
-          Core.Users.get_account_by_session_token(account_token)
-        end)
-
-      %{} ->
-        Phoenix.Component.assign_new(socket, :current_account, fn -> nil end)
-    end
+  defp mount_current_account(socket, session) do
+    Phoenix.Component.assign_new(socket, :current_account, fn ->
+      if account_token = session["account_token"] do
+        Users.get_account_by_session_token(account_token)
+      end
+    end)
   end
 
   @doc """

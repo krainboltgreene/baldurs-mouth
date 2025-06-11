@@ -1,7 +1,7 @@
 defmodule Core.Users.AccountToken do
-  @moduledoc false
   use Ecto.Schema
   import Ecto.Query
+  alias Core.Users.AccountToken
 
   @hash_algorithm :sha256
   @rand_size 32
@@ -21,7 +21,7 @@ defmodule Core.Users.AccountToken do
     field :sent_to, :string
     belongs_to :account, Core.Users.Account
 
-    timestamps(updated_at: false)
+    timestamps(type: :utc_datetime, updated_at: false)
   end
 
   @doc """
@@ -45,13 +45,7 @@ defmodule Core.Users.AccountToken do
   """
   def build_session_token(account) do
     token = :crypto.strong_rand_bytes(@rand_size)
-
-    {token,
-     %Core.Users.AccountToken{
-       token: token,
-       context: "session",
-       account_id: account.id
-     }}
+    {token, %AccountToken{token: token, context: "session", account_id: account.id}}
   end
 
   @doc """
@@ -64,7 +58,7 @@ defmodule Core.Users.AccountToken do
   """
   def verify_session_token_query(token) do
     query =
-      from token in token_and_context_query(token, "session"),
+      from token in by_token_and_context_query(token, "session"),
         join: account in assoc(token, :account),
         where: token.inserted_at > ago(@session_validity_in_days, "day"),
         select: account
@@ -86,7 +80,7 @@ defmodule Core.Users.AccountToken do
   for example, by phone numbers.
   """
   def build_email_token(account, context) do
-    build_hashed_token(account, context, account.email_address)
+    build_hashed_token(account, context, account.email)
   end
 
   defp build_hashed_token(account, context, sent_to) do
@@ -94,7 +88,7 @@ defmodule Core.Users.AccountToken do
     hashed_token = :crypto.hash(@hash_algorithm, token)
 
     {Base.url_encode64(token, padding: false),
-     %Core.Users.AccountToken{
+     %AccountToken{
        token: hashed_token,
        context: context,
        sent_to: sent_to,
@@ -122,10 +116,9 @@ defmodule Core.Users.AccountToken do
         days = days_for_context(context)
 
         query =
-          from token in token_and_context_query(hashed_token, context),
+          from token in by_token_and_context_query(hashed_token, context),
             join: account in assoc(token, :account),
-            where:
-              token.inserted_at > ago(^days, "day") and token.sent_to == account.email_address,
+            where: token.inserted_at > ago(^days, "day") and token.sent_to == account.email,
             select: account
 
         {:ok, query}
@@ -158,7 +151,7 @@ defmodule Core.Users.AccountToken do
         hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
 
         query =
-          from token in token_and_context_query(hashed_token, context),
+          from token in by_token_and_context_query(hashed_token, context),
             where: token.inserted_at > ago(@change_email_validity_in_days, "day")
 
         {:ok, query}
@@ -171,19 +164,18 @@ defmodule Core.Users.AccountToken do
   @doc """
   Returns the token struct for the given token value and context.
   """
-  def token_and_context_query(token, context) do
-    from Core.Users.AccountToken, where: [token: ^token, context: ^context]
+  def by_token_and_context_query(token, context) do
+    from AccountToken, where: [token: ^token, context: ^context]
   end
 
   @doc """
   Gets all tokens for the given account for the given contexts.
   """
-  def account_and_contexts_query(account, :all) do
-    from t in Core.Users.AccountToken, where: t.account_id == ^account.id
+  def by_account_and_contexts_query(account, :all) do
+    from t in AccountToken, where: t.account_id == ^account.id
   end
 
-  def account_and_contexts_query(account, [_ | _] = contexts) do
-    from t in Core.Users.AccountToken,
-      where: t.account_id == ^account.id and t.context in ^contexts
+  def by_account_and_contexts_query(account, [_ | _] = contexts) do
+    from t in AccountToken, where: t.account_id == ^account.id and t.context in ^contexts
   end
 end

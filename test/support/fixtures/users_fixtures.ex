@@ -4,16 +4,12 @@ defmodule Core.UsersFixtures do
   entities via the `Core.Users` context.
   """
 
-  def create_account(context) do
-    Map.put(context, :account, Core.UsersFixtures.account_fixture())
-  end
-
-  def unique_account_email_address, do: "account#{System.unique_integer()}@example.com"
+  def unique_account_email, do: "account#{System.unique_integer()}@example.com"
   def valid_account_password, do: "hello world!"
 
   def valid_account_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
-      email_address: unique_account_email_address(),
+      email: unique_account_email(),
       password: valid_account_password()
     })
   end

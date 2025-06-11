@@ -8,38 +8,17 @@ defmodule Core.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       CoreWeb.Telemetry,
-      # Start the Ecto repository
       Core.Repo,
-      # Start the PubSub system
+      {DNSCluster, query: Application.get_env(:core, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Core.PubSub},
-      # Start Finch
-      {
-        Finch,
-        name: Core.Finch
-      },
-      # Start the Endpoint (http/https)
-      CoreWeb.Endpoint,
-      # Start the Presence tracker
-      CoreWeb.Channels.Presence
-
+      # Start the Finch HTTP client for sending emails
+      {Finch, name: Core.Finch},
       # Start a worker by calling: Core.Worker.start_link(arg)
-      # {Core.Worker, arg}
+      # {Core.Worker, arg},
+      # Start to serve requests, typically the last entry
+      CoreWeb.Endpoint
     ]
-
-    # In HTTP Responses use the Server-Timing spec to tell us response times
-    Plug.Telemetry.ServerTiming.install([
-      {[:phoenix, :endpoint, :stop], :duration, description: ~s("Endpoint Duration")},
-      {[:phoenix, :router_dispatch, :stop], :duration, description: ~s("Router Duration")},
-      {[:phoenix, :live_view, :mount, :stop], :duration,
-       description: ~s("LiveView Mount Duration")},
-      {[:core, :repo, :query], :total_time, description: ~s("Ecto Query Total Time")},
-      {[:core, :repo, :query], :decode_time, description: ~s("Ecto Query Decode Time")},
-      {[:core, :repo, :query], :query_time, description: ~s("Ecto Query Query Time")},
-      {[:core, :repo, :query], :queue_time, description: ~s("Ecto Query Queue Time")},
-      {[:core, :repo, :query], :idle_time, description: ~s("Ecto Query Idle Time")}
-    ])
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
